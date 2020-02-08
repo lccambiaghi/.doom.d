@@ -1,10 +1,33 @@
+# Preamble
+
+This is my private DOOM emacs configuration. It is tangled by the
+`config.org` and exported to markdown to produce this README.
+
+Username and e-mail:
+
+``` commonlisp
 (setq user-full-name "Luca Cambiaghi"
       user-mail-address "luca.cambiaghi@me.com")
+```
 
+Scratch buffer major mode:
+
+``` emacs-lisp
 (setq doom-scratch-buffer-major-mode 'emacs-lisp-mode)
+```
 
+# Keybindings
+
+Let's have `general` auto-unbind keys:
+
+``` emacs-lisp
 (general-auto-unbind-keys)
+```
 
+We then remap some of the bindings (inspired by
+[bindings.el](https://github.com/jsmestad/dfiles/blob/master/.doom.d/%2Bbindings.el#L496-L854)).
+
+``` emacs-lisp
 (map! :leader
       :desc "M-x"                   :n "SPC" #'counsel-M-x
       :desc "Async shell command"   :n "!"   #'async-shell-command
@@ -19,17 +42,39 @@
       (:desc "project" :prefix "p"
         :desc "Eshell"               :n "'" #'projectile-run-eshell )
 )
+```
 
+# User Interface
+
+## Turn off line numbers
+
+``` emacs-lisp
 (setq display-line-numbers-type nil)
+```
 
+## Font and font size:
+
+``` emacs-lisp
 (setq doom-font (font-spec :family "Menlo" :size 14))
+```
 
+## Transparency
+
+``` emacs-lisp
 ;transparent adjustment
 (set-frame-parameter (selected-frame)'alpha '(94 . 94))
 (add-to-list 'default-frame-alist'(alpha . (94 . 94)))
+```
 
+## Theme:
+
+``` emacs-lisp
 (setq doom-theme 'doom-vibrant)
+```
 
+## Centaur-tabs
+
+``` emacs-lisp
 (after! centaur-tabs
     (setq centaur-tabs-set-modified-marker t
         centaur-tabs-modified-marker "M"
@@ -40,7 +85,11 @@
           :n "g T" #'centaur-tabs-backward)
     (add-hook! dired-mode #'centaur-tabs-local-mode)
 )
+```
 
+## Winum
+
+``` emacs-lisp
 (after! winum
   ;; (defun winum-assign-0-to-treemacs ()
   ;;   (when (string-match-p (buffer-name) "*Treemacs*") 10))
@@ -54,9 +103,17 @@
             :n "2" #'winum-select-window-2
             :n "3" #'winum-select-window-3
         )))
+```
 
+## Pretty code
+
+``` emacs-lisp
 (setq +pretty-code-enabled-modes '(org-mode))
+```
 
+## <span class="todo TODO">TODO</span> Golden ratio
+
+``` emacs-lisp
 ;; add to ~/.doom.d/config.el
 ;; (use-package! golden-ratio
 ;;   :after-call pre-command-hook
@@ -66,7 +123,11 @@
 ;;   ;; `doom-switch-window-hook'.
 ;;   (remove-hook 'window-configuration-change-hook #'golden-ratio)
 ;;   (add-hook 'doom-switch-window-hook #'golden-ratio) )
+```
 
+## <span class="todo TODO">TODO</span> Ivy posframe
+
+``` emacs-lisp
 ;; (after! ivy-posframe
 ;;     (setq ivy-posframe-display-functions-alist
 ;;             '((swiper          . nil)
@@ -77,12 +138,22 @@
 ;; (setq ivy-posframe-parameters '((alpha . 85)))
 ;;     (setq ivy-posframe-height-alist '((t . 20))))
 ;; (ivy-posframe-mode)
+```
 
+# Magit
+
+``` emacs-lisp
 (setq magit-repository-directories '(("~/git" . 2))
       magit-save-repository-buffers nil
       ;; Don't restore the wconf after quitting magit
       magit-inhibit-save-previous-winconf t)
+```
 
+# Org
+
+## Directories:
+
+``` emacs-lisp
 (setq org-directory "~/git/org-notes/"
       org-image-actual-width nil
       +org-export-directory "~/git/org-notes/export/"
@@ -90,9 +161,21 @@
       org-default-notes-file "~/git/org-notes/inbox.org"
       org-id-locations-file "~/git/org-notes/.orgids"
       )
+```
 
+## Export
+
+Load `ox-ravel`:
+
+``` emacs-lisp
 (load! "modules/ox-ravel")
+```
 
+This allows to export from `.org` to `.Rmd`
+
+## Capture
+
+``` emacs-lisp
 (after! org
 
   (setq org-capture-templates
@@ -122,13 +205,27 @@
   (add-to-list 'org-capture-templates
       '("un" "New URL Entry" entry(file+function "~/git/org-notes/personal/dailies.org" org-reverse-datetree-goto-date-in-file)
             "* [[%^{URL}][%^{Description}]] %^g %?")))
+```
 
+## Prettify
+
+``` emacs-lisp
 (setq org-bullets-bullet-list '("✖" "✚")
       org-ellipsis "▼")
+```
 
+## Popups
+
+``` emacs-lisp
 (after! org (set-popup-rule! "^Capture.*\\.org$" :side 'right :size .40 :select t :vslot 2 :ttl 3))
 (after! org (set-popup-rule! "*org agenda*" :side 'right :size .40 :select t :vslot 2 :ttl 3))
+```
 
+## org-babel
+
+### Key bindings:
+
+``` emacs-lisp
 (map! :after org
 ;; (:when (featurep! +jupyter)
     :map evil-org-mode-map
@@ -143,13 +240,21 @@
     :desc "Merge code blocks" :n "m" #'jupyter-org-merge-blocks
     :desc "Split code block" :n "-" #'jupyter-org-split-src-block
     )
+```
 
+### <span class="todo TODO">TODO</span> Default header arguments for `jupyter-python`:
+
+``` emacs-lisp
 ;; (after! org
 ;;   (setq org-babel-default-header-args:jupyter-python '((:async . "yes")
 ;;                                                         (:session . "py")
 ;;                                                         (:pandoc t)
 ;;                                                         (:kernel . "python3"))))
+```
 
+### <span class="todo TODO">TODO</span> Company backend
+
+``` emacs-lisp
 ;; (after! org
 ;;   (set-company-backend! 'org-mode
 ;;     '(company-capf)))
@@ -158,9 +263,21 @@
 ;;   (add-hook 'completion-at-point-functions 'pcomplete-completions-at-point nil t))
 
 ;; (add-hook 'org-mode-hook #'add-pcomplete-to-capf)
+```
 
+## ox-ipynb
+
+``` emacs-lisp
 (require 'ox-ipynb)
+```
 
+# Python
+
+## iPython REPL
+
+### virtualenv executable
+
+``` emacs-lisp
 (defadvice! +python-poetry-open-repl-a (orig-fn &rest args)
   "Use the Python binary from the current virtual environment."
   :around #'+python/open-repl
@@ -168,22 +285,54 @@
       (let ((python-shell-interpreter (executable-find "ipython")))
         (apply orig-fn args))
     (apply orig-fn args)))
+```
 
+### Ignore popup rule
+
+``` emacs-lisp
 (set-popup-rule! "^\\*Python*" :ignore t)
+```
 
+### Set REPL handler
+
+On a scratch buffer, first run `jupyter-associate-buffer`. Then, hitting
+`SPC o r` allows use to hit the REPL buffer with the lines/regions of
+code we send with `g r`.
+
+``` emacs-lisp
 (after! python
   (set-repl-handler! 'python-mode #'+python/open-ipython-repl :persist t))
+```
 
+### Keybindings
+
+``` emacs-lisp
 (map!
  :map python-mode-map
  :localleader
  :desc "Eval region" :v "r" #'python-shell-send-region
 )
+```
 
+### Silence warnings when opening REPL
+
+``` emacs-lisp
 (setq python-shell-prompt-detect-failure-warning nil)
+```
 
+# R
+
+## Disable popup rule
+
+``` emacs-lisp
 (set-popup-rule! "^\\*R:" :ignore t)
+```
 
+# Shell
+
+## Async Shell command
+
+``` emacs-lisp
 (defun shell-command-print-separator ()
   (overlay-put (make-overlay (point-max) (point-max))
                'before-string
@@ -192,8 +341,13 @@
                                  'right-triangle))))
 
 (advice-add 'shell-command--save-pos-or-erase :after 'shell-command-print-separator)
+```
 
+## Eshell aliases
+
+``` emacs-lisp
 (after! eshell
   (set-eshell-alias!
    "fd" "+eshell/fd $1"
    "fo" "find-file-other-window $1"))
+```

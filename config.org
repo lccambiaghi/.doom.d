@@ -1,5 +1,4 @@
 #+EXPORT_FILE_NAME: README
-
 * Preamble
 This is my private DOOM emacs configuration. It is tangled by the ~config.org~
 and exported to markdown to produce this README.
@@ -43,12 +42,10 @@ We then remap some of the bindings (inspired by [[https://github.com/jsmestad/df
 #+BEGIN_SRC emacs-lisp
 (setq display-line-numbers-type nil)
 #+END_SRC
-
 ** Font and font size:
 #+BEGIN_SRC emacs-lisp
 (setq doom-font (font-spec :family "Menlo" :size 14))
 #+END_SRC
-
 ** Transparency
 #+BEGIN_SRC emacs-lisp
 ;transparent adjustment
@@ -59,13 +56,6 @@ We then remap some of the bindings (inspired by [[https://github.com/jsmestad/df
 #+BEGIN_SRC emacs-lisp
 (setq doom-theme 'doom-vibrant)
 #+END_SRC
-
-** Which-key delay
-#+BEGIN_SRC emacs-lisp
-(after! which-key
-  (setq which-key-idle-delay 0.8))
-#+END_SRC
-
 ** Centaur-tabs
 #+BEGIN_SRC emacs-lisp
 (after! centaur-tabs
@@ -97,7 +87,7 @@ We then remap some of the bindings (inspired by [[https://github.com/jsmestad/df
 #+END_SRC
 ** Pretty code
 #+BEGIN_SRC emacs-lisp
-(setq +pretty-code-enabled-modes '(emacs-lisp-mode org-mode))
+(setq +pretty-code-enabled-modes '(org-mode))
 #+END_SRC
 ** TODO Golden ratio
 #+BEGIN_SRC emacs-lisp
@@ -237,12 +227,6 @@ This allows to export from ~.org~ to ~.Rmd~
 (require 'ox-ipynb)
 #+END_SRC
 * Python
-** Jupyter REPL:
-*** Ignore popup rule, open REPL in a new window
-Start REPL in new buffer on the right:
-#+BEGIN_SRC emacs-lisp
-(set-popup-rule! "^\\*jupyter*" :ignore t)
-#+END_SRC
 ** iPython REPL
 *** virtualenv executable
 #+BEGIN_SRC emacs-lisp
@@ -254,261 +238,32 @@ Start REPL in new buffer on the right:
         (apply orig-fn args))
     (apply orig-fn args)))
 #+END_SRC
+*** Ignore popup rule
+#+BEGIN_SRC emacs-lisp
+(set-popup-rule! "^\\*Python*" :ignore t)
+#+END_SRC
 *** Set REPL handler
 On a scratch buffer, first run ~jupyter-associate-buffer~.
 Then, hitting ~SPC o r~ allows use to hit the REPL buffer with the lines/regions
 of code we send with ~g r~.
 #+BEGIN_SRC emacs-lisp
-(add-hook! python-mode
-  ;; (defun my/open-jupyter-repl ()
-  ;;   (interactive)
-  ;;   (jupyter-repl-associate-buffer)
-  ;;   (jupyter-repl-pop-to-buffer))
-
-  ;; (set-repl-handler! 'python-mode #'jupyter-repl-pop-to-buffer)
-  (set-repl-handler! 'python-mode #'+python/open-ipython-repl)
-  )
-;; (after! python-mode
-  ;; (defun my/open-ipython-repl ()
-  ;; "Open an IPython REPL."
-  ;; (interactive)
-  ;; (let ((python-shell-interpreter (or (+python-executable-find "ipython") "ipython"))
-  ;;       (python-shell-interpreter-args "-i --simple-prompt --no-color-info"))
-  ;;   (my/open-repl)))
-
-  ;; (defun my/open-repl ()
-  ;;   "Open the Python REPL."
-  ;;   (interactive)
-  ;;   (unless python-shell-interpreter
-  ;;       (user-error "`python-shell-interpreter' isn't set"))
-  ;;   (pop-to-buffer
-  ;;   (process-buffer
-  ;;       (if-let* ((poetry (+python-executable-find "poetry"))
-  ;;               (poetry-project (poetry-find-project-root)))
-  ;;           (let ((default-directory poetry-project)
-  ;;               (python-shell-interpreter-args
-  ;;               (format "run %s %s"
-  ;;                       python-shell-interpreter
-  ;;                       python-shell-interpreter-args))
-  ;;               (python-shell-interpreter poetry))
-  ;;           (run-python nil nil t))))))
-
-  ;; (set-repl-handler! 'python-mode #'my/open-ipython-repl :persist t)
-  ;; )
-
-;; (add-hook! 'inferior-python-mode-hook direnv-update-directory-environment)
-;; (let ((MYVAR (shell-command-to-string ". ~/.bashrc; echo -n $MYVAR"))) (setenv "MYVAR" MYVAR))
-
-;; (add-to-list 'direnv-non-file-modes 'inferior-python-mode)
-
+(after! python
+  (set-repl-handler! 'python-mode #'+python/open-ipython-repl :persist t))
+#+END_SRC
+*** Keybindings
+#+BEGIN_SRC emacs-lisp
+(map!
+ :map python-mode-map
+ :localleader
+ :desc "Eval region" :v "r" #'python-shell-send-region
+)
 #+END_SRC
 *** Silence warnings when opening REPL
 #+BEGIN_SRC emacs-lisp
 (setq python-shell-prompt-detect-failure-warning nil)
 #+END_SRC
-*** TODO iPython
-#+BEGIN_SRC emacs-lisp
-;; (setq python-shell-interpreter "ipython")
-#+END_SRC
-*** TODO PYTHONPATH
-#+BEGIN_SRC emacs-lisp
-;; (add-hook! python-mode
-;;     (add-to-list python-shell-extra-pythonpaths (list (getenv "PYTHONPATH"))))
-#+END_SRC
-** LSP
-*** lsp-ui
-#+BEGIN_SRC emacs-lisp
-(after! lsp-mode
-  (setq lsp-ui-sideline-enable nil
-      lsp-enable-indentation nil
-      lsp-enable-on-type-formatting nil
-      lsp-enable-symbol-highlighting nil
-      lsp-enable-file-watchers nil))
-#+END_SRC
-*** direnv
-#+BEGIN_SRC emacs-lisp
-(after! direnv
-  (add-hook! python-mode #'direnv-update-directory-environment ))
-#+END_SRC
-*** TODO remote python
-#+BEGIN_SRC emacs-lisp
-;; (after! lsp
-;;   (lsp-register-client
-;;    (make-lsp-client :new-connection (lsp-tramp-connection "~/.pyenv/shims/pyls")
-;;                     :major-modes '(python-mode)
-;;                     :remote? t
-;;                     :server-id 'pyls-remote)))
-#+END_SRC
-** Pytest
-#+BEGIN_SRC emacs-lisp
-(after! python-pytest
-  (setq python-pytest-arguments '("--color" "--failed-first")))
-#+END_SRC
-** dap-mode
-*** dap-ui windows
-#+BEGIN_SRC emacs-lisp
-(after! dap-mode
-  (setq dap-auto-show-output nil)
-  (set-popup-rule! "*dap-ui-locals*" :side 'right :size .50 :select t :vslot 1 :ttl 3)
-  (set-popup-rule! "*dap-debug-.*" :side 'bottom :size .20 :select t :vslot 1 :ttl 3)
-  (set-popup-rule! "*dap-ui-repl*" :side 'right :size .50 :select t :vslot 2 :ttl 3)
-
-  (defun my/window-visible (b-name)
-    "Return whether B-NAME is visible."
-    (-> (-compose 'buffer-name 'window-buffer)
-        (-map (window-list))
-        (-contains? b-name)))
-
-  (defun my/show-debug-windows (session)
-    "Show debug windows."
-    (let ((lsp--cur-workspace (dap--debug-session-workspace session)))
-        (save-excursion
-        (unless (my/window-visible dap-ui--locals-buffer)
-            (dap-ui-locals)))))
-
-    (add-hook 'dap-stopped-hook 'my/show-debug-windows)
-
-    (defun my/hide-debug-windows (session)
-    "Hide debug windows when all debug sessions are dead."
-    (unless (-filter 'dap--session-running (dap--get-sessions))
-        (and (get-buffer dap-ui--locals-buffer)
-            (kill-buffer dap-ui--locals-buffer))))
-
-    (add-hook 'dap-terminated-hook 'my/hide-debug-windows)
-  )
-#+END_SRC
-
-*** Bindings
-#+BEGIN_SRC emacs-lisp
-(map! :after org
-;; (:when (featurep! +jupyter)
-    :map python-mode-map
-    :localleader
-    :desc "Hydra" :n "dh" #'dap-hydra
-    :desc "Run debug configuration" :n "dd" #'dap-debug
-    :desc "dap-ui REPL" :n "dr" #'dap-ui-repl
-    )
-#+END_SRC
-*** Debug templates:
-#+BEGIN_SRC emacs-lisp
-(after! dap-python
-    (dap-register-debug-template "dap-debug-script"
-                            (list :type "python"
-                                :args "-i"
-                                :cwd (lsp-workspace-root)
-                                ;; :environment-variables '(("PYTHONPATH" . "src"))
-                                :env '(("PYTHONPATH" . "src"))
-                                :request "launch"
-                                :name "dap-debug-script"))
-
-    (dap-register-debug-template "dap-debug-test"
-                            (list :type "python"
-                                :cwd (lsp-workspace-root)
-                                :environment-variables '(("PYTHONPATH" . "src"))
-                                :module "pytest"
-                                :request "launch"
-                                :name "dap-debug-test")))
-#+END_SRC
-
-Custom debug provider which prepends ~PYTHONPATH~
-#+BEGIN_SRC emacs-lisp
-;; (after! dap-mode
-  ;; (defun my/dap-python--pyenv-executable-find (command)
-  ;;   (concat (getenv "VIRTUAL_ENV") "/bin/python"))
-
-    ;; (defun my/dap-python--populate-start-file-args (conf)
-    ;;     "Populate CONF with the required arguments."
-    ;;     (let* ((host "localhost")
-    ;;             (debug-port (dap--find-available-port))
-    ;;             (python-executable (my/dap-python--pyenv-executable-find dap-python-executable))
-    ;;             (python-args (or (plist-get conf :args) ""))
-    ;;             (program (or (plist-get conf :target-module)
-    ;;                         (plist-get conf :program)
-    ;;                         (buffer-file-name)))
-    ;;             (module (plist-get conf :module)))
-
-    ;;         (plist-put conf :program-to-start
-    ;;                 (format "%s %s%s -m ptvsd --wait --host %s --port %s %s %s %s"
-    ;;                         (concat "PYTHONPATH=" (getenv "PYTHONPATH"))
-    ;;                         (or dap-python-terminal "")
-    ;;                         (shell-quote-argument python-executable)
-    ;;                         host
-    ;;                         debug-port
-    ;;                         (if module (concat "-m " (shell-quote-argument module)) "")
-    ;;                         (shell-quote-argument program)
-    ;;                         python-args))
-    ;;         (plist-put conf :program program)
-    ;;         (plist-put conf :debugServer debug-port)
-    ;;         (plist-put conf :port debug-port)
-    ;;         (plist-put conf :hostName host)
-    ;;         (plist-put conf :host host)
-    ;;         conf))
-
-    ;; (dap-register-debug-provider "my/python" 'my/dap-python--populate-start-file-args)
-
-    ;; (dap-register-debug-template "my/python"
-    ;;                          (list :type "my/python"
-    ;;                                ;; :cwd "/Users/luca/git/emptiesforecast"
-    ;;                                :cwd (poetry-find-project-root)
-    ;;                                :request "launch"
-    ;;                                :name "Python :: Run Configuration")))
-#+END_SRC
-*** virtualenv executable
-#+BEGIN_SRC emacs-lisp
-(defadvice! +dap-python-poetry-executable-find-a (orig-fn &rest args)
-  "Use the Python binary from the current virtual environment."
-  :around #'dap-python--pyenv-executable-find
-  (if (getenv "VIRTUAL_ENV")
-      (executable-find (car args))
-    (apply orig-fn args)))
-;; (after! dap-python
-;;   (defun dap-python--pyenv-executable-find (command)
-;;     (concat (getenv "VIRTUAL_ENV") "/bin/python")))
-#+END_SRC
-*** completion
-#+BEGIN_SRC emacs-lisp
-(after! dap-mode
-  (set-company-backend! 'dap-ui-repl-mode 'company-dap-ui-repl)
-
-  (add-hook 'dap-ui-repl-mode-hook
-            (lambda ()
-              (setq-local company-minimum-prefix-length 1)))
-  )
-#+END_SRC
-
-** Jupyter Notebook
-*** Don't ignore ~ein~ buffers
-#+BEGIN_SRC emacs-lisp
-(after! ein
-  (set-popup-rule! "^\\*ein" :ignore t))
-#+END_SRC
-
-*** Bindings
-Bindings, inspired by[[https://github.com/millejoh/emacs-ipython-notebook/wiki/Spacemacs-Evil-Bindings][ this]].
-#+BEGIN_SRC emacs-lisp
-
-(map! (:when (featurep! :tools ein)
-        (:map ein:notebook-mode-map
-          :nmvo doom-localleader-key nil ;; remove binding to local-leader
-
-          ;; :desc "Execute" :ni "S-RET" #'ein:worksheet-execute-cell
-
-          :localleader
-          :desc "Show Hydra" :n "?" #'+ein/hydra/body
-          :desc "Execute and step" :n "RET" #'ein:worksheet-execute-cell-and-goto-next
-          :desc "Yank cell" :n "y" #'ein:worksheet-copy-cell
-          :desc "Paste cell" :n "p" #'ein:worksheet-yank-cell
-          :desc "Delete cell" :n "d" #'ein:worksheet-kill-cell
-          :desc "Insert cell below" :n "o" #'ein:worksheet-insert-cell-below
-          :desc "Insert cell above" :n "O" #'ein:worksheet-insert-cell-above
-          :desc "Next cell" :n "j" #'ein:worksheet-goto-next-input
-          :desc "Previous cell" :n "k" #'ein:worksheet-goto-prev-input
-          :desc "Save notebook" :n "fs" #'ein:notebook-save-notebook-command
-      )))
-#+END_SRC
 * R
-** R console in a buffer
-Disable popup for ESS:
+** Disable popup rule
 #+BEGIN_SRC emacs-lisp
 (set-popup-rule! "^\\*R:" :ignore t)
 #+END_SRC
