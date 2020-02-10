@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: jupyter header-args
+# key: <jh
+# --
+#+PROPERTY: header-args :session $0

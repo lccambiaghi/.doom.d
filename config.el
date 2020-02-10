@@ -86,7 +86,6 @@
 (setq org-directory "~/git/org-notes/"
       org-image-actual-width nil
       +org-export-directory "~/git/org-notes/export/"
-      org-archive-location "~/git/org-notes/inbox.org_archive"
       org-default-notes-file "~/git/org-notes/inbox.org"
       org-id-locations-file "~/git/org-notes/.orgids"
       )
@@ -129,8 +128,29 @@
 (after! org (set-popup-rule! "^Capture.*\\.org$" :side 'right :size .40 :select t :vslot 2 :ttl 3))
 (after! org (set-popup-rule! "*org agenda*" :side 'right :size .40 :select t :vslot 2 :ttl 3))
 
-(map! :after org
-;; (:when (featurep! +jupyter)
+(after! evil-org
+  (setq org-babel-default-header-args:jupyter-python '((:async . "yes")
+                                                        (:pandoc t)
+                                                        (:kernel . "python3"))))
+
+;; (add-hook! '+org-babel-load-functions
+  ;;   (λ! ()
+  ;;       (require 'ob-jupyter  "/Users/luca/.emacs.d/.local/straight/repos/emacs-jupyter/ob-jupyter.el" nil)
+  ;;       (org-babel-jupyter-override-src-block "python"))
+  ;; )
+;; (org-babel-jupyter-restore-src-block "python")
+
+;; (after! org
+;;   (set-company-backend! 'org-mode
+;;     '(company-capf)))
+
+;; (defun add-pcomplete-to-capf ()
+;;   (add-hook 'completion-at-point-functions 'pcomplete-completions-at-point nil t))
+
+;; (add-hook 'org-mode-hook #'add-pcomplete-to-capf)
+
+;;(:when (featurep! :tools +jupyter)
+(map! :after jupyter
     :map evil-org-mode-map
     :n "gR" #'jupyter-org-execute-subtree
     :localleader
@@ -144,20 +164,8 @@
     :desc "Split code block" :n "-" #'jupyter-org-split-src-block
     )
 
-;; (after! org
-;;   (setq org-babel-default-header-args:jupyter-python '((:async . "yes")
-;;                                                         (:session . "py")
-;;                                                         (:pandoc t)
-;;                                                         (:kernel . "python3"))))
-
-;; (after! org
-;;   (set-company-backend! 'org-mode
-;;     '(company-capf)))
-
-;; (defun add-pcomplete-to-capf ()
-;;   (add-hook 'completion-at-point-functions 'pcomplete-completions-at-point nil t))
-
-;; (add-hook 'org-mode-hook #'add-pcomplete-to-capf)
+(after! jupyter (set-popup-rule! "*jupyter-pager*" :side 'right :size .40 :select t :vslot 2 :ttl 3))
+(after! jupyter (set-popup-rule! "^\\*Org Src*" :side 'right :size .40 :select t :vslot 2 :ttl 3))
 
 (require 'ox-ipynb)
 
