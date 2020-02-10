@@ -5,7 +5,7 @@ This is my private DOOM emacs configuration. It is tangled by the
 
 Username and e-mail:
 
-``` commonlisp
+``` emacs-lisp
 (setq user-full-name "Luca Cambiaghi"
       user-mail-address "luca.cambiaghi@me.com")
 ```
@@ -157,7 +157,6 @@ We then remap some of the bindings (inspired by
 (setq org-directory "~/git/org-notes/"
       org-image-actual-width nil
       +org-export-directory "~/git/org-notes/export/"
-      org-archive-location "~/git/org-notes/inbox.org_archive"
       org-default-notes-file "~/git/org-notes/inbox.org"
       org-id-locations-file "~/git/org-notes/.orgids"
       )
@@ -214,7 +213,7 @@ This allows to export from `.org` to `.Rmd`
       org-ellipsis "▼")
 ```
 
-## Popups
+## Popups: capture and agenda
 
 ``` emacs-lisp
 (after! org (set-popup-rule! "^Capture.*\\.org$" :side 'right :size .40 :select t :vslot 2 :ttl 3))
@@ -223,11 +222,44 @@ This allows to export from `.org` to `.Rmd`
 
 ## org-babel
 
+### Default header arguments for `jupyter-python`:
+
+``` emacs-lisp
+(after! evil-org
+  (setq org-babel-default-header-args:jupyter-python '((:async . "yes")
+                                                        (:pandoc t)
+                                                        (:kernel . "python3"))))
+```
+
+### <span class="todo TODO">TODO</span> Override default python src block
+
+``` emacs-lisp
+  ;; (add-hook! '+org-babel-load-functions
+  ;;   (λ! ()
+  ;;       (require 'ob-jupyter  "/Users/luca/.emacs.d/.local/straight/repos/emacs-jupyter/ob-jupyter.el" nil)
+  ;;       (org-babel-jupyter-override-src-block "python"))
+  ;; )
+;; (org-babel-jupyter-restore-src-block "python")
+```
+
+### <span class="todo TODO">TODO</span> Company backend
+
+``` emacs-lisp
+;; (after! org
+;;   (set-company-backend! 'org-mode
+;;     '(company-capf)))
+
+;; (defun add-pcomplete-to-capf ()
+;;   (add-hook 'completion-at-point-functions 'pcomplete-completions-at-point nil t))
+
+;; (add-hook 'org-mode-hook #'add-pcomplete-to-capf)
+```
+
 ### Key bindings:
 
 ``` emacs-lisp
-(map! :after org
-;; (:when (featurep! +jupyter)
+ ;;(:when (featurep! :tools +jupyter)
+(map! :after jupyter
     :map evil-org-mode-map
     :n "gR" #'jupyter-org-execute-subtree
     :localleader
@@ -242,27 +274,11 @@ This allows to export from `.org` to `.Rmd`
     )
 ```
 
-### <span class="todo TODO">TODO</span> Default header arguments for `jupyter-python`:
+### Popups: pager and Org Src
 
 ``` emacs-lisp
-;; (after! org
-;;   (setq org-babel-default-header-args:jupyter-python '((:async . "yes")
-;;                                                         (:session . "py")
-;;                                                         (:pandoc t)
-;;                                                         (:kernel . "python3"))))
-```
-
-### <span class="todo TODO">TODO</span> Company backend
-
-``` emacs-lisp
-;; (after! org
-;;   (set-company-backend! 'org-mode
-;;     '(company-capf)))
-
-;; (defun add-pcomplete-to-capf ()
-;;   (add-hook 'completion-at-point-functions 'pcomplete-completions-at-point nil t))
-
-;; (add-hook 'org-mode-hook #'add-pcomplete-to-capf)
+(after! jupyter (set-popup-rule! "*jupyter-pager*" :side 'right :size .40 :select t :vslot 2 :ttl 3))
+(after! jupyter (set-popup-rule! "^\\*Org Src*" :side 'right :size .40 :select t :vslot 2 :ttl 3))
 ```
 
 ## ox-ipynb
