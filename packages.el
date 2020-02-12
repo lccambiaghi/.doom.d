@@ -60,3 +60,4 @@
 ;; (package! golden-ratio)
 (package! ox-ipynb :recipe (:host github :repo "jkitchin/ox-ipynb"))
 (package! powerline)
+(package! pfuture)

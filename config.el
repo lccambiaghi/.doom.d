@@ -189,6 +189,8 @@
 ;; (add-hook! python-mode
 ;;     (add-to-list python-shell-extra-pythonpaths (list (getenv "PYTHONPATH"))))
 
+(set-popup-rule! "^\\*Python*" :ignore t)
+
 (after! lsp-mode
   (setq lsp-ui-sideline-enable nil
       lsp-enable-indentation nil
@@ -211,9 +213,9 @@
 
 (after! dap-mode
   (setq dap-auto-show-output nil)
-  (set-popup-rule! "*dap-ui-locals*" :side 'right :size .50 :select t :vslot 1 :ttl 3)
-  (set-popup-rule! "*dap-debug-.*" :side 'bottom :size .20 :select t :vslot 1 :ttl 3)
-  (set-popup-rule! "*dap-ui-repl*" :side 'right :size .50 :select t :vslot 2 :ttl 3)
+  (set-popup-rule! "*dap-ui-locals*" :side 'right :width .50 :vslot 1)
+  (set-popup-rule! "*dap-debug-.*" :side 'bottom :size .30 :slot 1)
+  (set-popup-rule! "*dap-ui-repl*" :side 'bottom :size .30 :select t :slot 1)
 
   (defun my/window-visible (b-name)
     "Return whether B-NAME is visible."
@@ -239,22 +241,25 @@
     (add-hook 'dap-terminated-hook 'my/hide-debug-windows)
   )
 
-(map! :after org
-;; (:when (featurep! +jupyter)
+(map! :after dap-python
     :map python-mode-map
     :localleader
-    :desc "Hydra" :n "dh" #'dap-hydra
-    :desc "Run debug configuration" :n "dd" #'dap-debug
-    :desc "dap-ui REPL" :n "dr" #'dap-ui-repl
-    )
+    (:desc "debug" :prefix "d"
+      :desc "Hydra" :n "h" #'dap-hydra
+      :desc "Run debug configuration" :n "d" #'dap-debug
+      :desc "dap-ui REPL" :n "r" #'dap-ui-repl
+      :desc "Edit debug template" :n "t" #'dap-debug-edit-template
+      :desc "Run last debug configuration" :n "l" #'dap-debug-last
+      :desc "Toggle breakpoint" :n "b" #'dap-breakpoint-toggle
+    ))
 
 (after! dap-python
     (dap-register-debug-template "dap-debug-script"
                             (list :type "python"
                                 :args "-i"
                                 :cwd (lsp-workspace-root)
-                                ;; :environment-variables '(("PYTHONPATH" . "src"))
-                                :env '(("PYTHONPATH" . "src"))
+                                :program nil
+                                :environment-variables '(("PYTHONPATH" . "src"))
                                 :request "launch"
                                 :name "dap-debug-script"))
 
