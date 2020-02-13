@@ -11,7 +11,8 @@
       :desc "Toggle eshell"         :n "'"   #'+eshell/toggle
 
       (:desc "windows" :prefix "w"
-        :desc "Cycle focus to other window(s)" :n "TAB" #'other-window )
+        :desc "Cycle focus to other window(s)" :n "TAB" #'other-window
+        :desc "popup raise" :n "p" #'+popup/raise)
 
       (:desc "open" :prefix "o"
         :desc "Terminal"              :n  "t" #'+term/toggle
@@ -184,22 +185,37 @@
 
 (setq python-shell-prompt-detect-failure-warning nil)
 
+(set-popup-rule! "^\\*Python*" :ignore t)
+
 ;; (setq python-shell-interpreter "ipython")
 
 ;; (add-hook! python-mode
 ;;     (add-to-list python-shell-extra-pythonpaths (list (getenv "PYTHONPATH"))))
-
-(set-popup-rule! "^\\*Python*" :ignore t)
 
 (after! lsp-mode
   (setq lsp-ui-sideline-enable nil
       lsp-enable-indentation nil
       lsp-enable-on-type-formatting nil
       lsp-enable-symbol-highlighting nil
-      lsp-enable-file-watchers nil))
+      lsp-enable-file-watchers nil)
+  )
 
-(after! direnv
-  (add-hook! python-mode #'direnv-update-directory-environment ))
+(set-popup-rule! "*lsp-help*" :side 'right :size .50 :select t :vslot 1)
+
+(after! pyimport
+  (setq pyimport-pyflakes-path "~/git/experiments/.venv/bin/pyflakes"))
+
+(map! :after lsp
+      :map python-mode-map
+      :localleader
+      :desc "doc" :n "d" #'lsp-describe-thing-at-point
+      :desc "rename" :n "r" #'lsp-rename
+        )
+
+;; (after! direnv
+;;   (add-hook! python-mode #'direnv-update-directory-environment ))
+
+;; ((nil . ((ssh-deploy-root-remote . "/ssh:luca@ricko-ds.westeurope.cloudapp.azure.com:/mnt/data/luca/emptiesforecast"))))
 
 ;; (after! lsp
 ;;   (lsp-register-client
@@ -209,7 +225,8 @@
 ;;                     :server-id 'pyls-remote)))
 
 (after! python-pytest
-  (setq python-pytest-arguments '("--color" "--failed-first")))
+  (setq python-pytest-arguments '("--color" "--failed-first"))
+  (set-popup-rule! "^\\*pytest*" :side 'right :size .50))
 
 (after! dap-mode
   (setq dap-auto-show-output nil)
@@ -351,6 +368,8 @@
           :desc "Previous cell" :n "k" #'ein:worksheet-goto-prev-input
           :desc "Save notebook" :n "fs" #'ein:notebook-save-notebook-command
       )))
+
+(set-docsets! 'python-mode "Python 3" "NumPy" "Pandas")
 
 (set-popup-rule! "^\\*R:" :ignore t)
 

@@ -2,6 +2,9 @@
 * Preamble
 This is my private DOOM emacs configuration. It is tangled by the ~config.org~
 and exported to markdown to produce this README.
+#+BEGIN_SRC sh :tangle no
+git clone https://github.com/lccambiaghi/doom.d.git ~/.doom.d/
+#+END_SRC
 
 Username and e-mail:
 #+BEGIN_SRC emacs-lisp
@@ -28,7 +31,8 @@ We then remap some of the bindings (inspired by [[https://github.com/jsmestad/df
       :desc "Toggle eshell"         :n "'"   #'+eshell/toggle
 
       (:desc "windows" :prefix "w"
-        :desc "Cycle focus to other window(s)" :n "TAB" #'other-window )
+        :desc "Cycle focus to other window(s)" :n "TAB" #'other-window
+        :desc "popup raise" :n "p" #'+popup/raise)
 
       (:desc "open" :prefix "o"
         :desc "Terminal"              :n  "t" #'+term/toggle
@@ -263,6 +267,10 @@ of code we send with ~g r~.
 #+BEGIN_SRC emacs-lisp
 (setq python-shell-prompt-detect-failure-warning nil)
 #+END_SRC
+*** Ignore popup rule
+#+BEGIN_SRC emacs-lisp
+(set-popup-rule! "^\\*Python*" :ignore t)
+#+END_SRC
 *** TODO iPython
 #+BEGIN_SRC emacs-lisp
 ;; (setq python-shell-interpreter "ipython")
@@ -272,10 +280,6 @@ of code we send with ~g r~.
 ;; (add-hook! python-mode
 ;;     (add-to-list python-shell-extra-pythonpaths (list (getenv "PYTHONPATH"))))
 #+END_SRC
-** Ignore popup rule
-#+BEGIN_SRC emacs-lisp
-(set-popup-rule! "^\\*Python*" :ignore t)
-#+END_SRC
 ** LSP
 *** lsp-ui
 #+BEGIN_SRC emacs-lisp
@@ -284,14 +288,39 @@ of code we send with ~g r~.
       lsp-enable-indentation nil
       lsp-enable-on-type-formatting nil
       lsp-enable-symbol-highlighting nil
-      lsp-enable-file-watchers nil))
+      lsp-enable-file-watchers nil)
+  )
 #+END_SRC
-*** direnv
+*** lsp-describe help popup
 #+BEGIN_SRC emacs-lisp
-(after! direnv
-  (add-hook! python-mode #'direnv-update-directory-environment ))
+(set-popup-rule! "*lsp-help*" :side 'right :size .50 :select t :vslot 1)
+#+END_SRC
+*** Missing imports
+In python mode, use ~, i i~ to add missing imports
+#+BEGIN_SRC emacs-lisp
+(after! pyimport
+  (setq pyimport-pyflakes-path "~/git/experiments/.venv/bin/pyflakes"))
+#+END_SRC
+*** Bindings
+#+BEGIN_SRC emacs-lisp
+(map! :after lsp
+      :map python-mode-map
+      :localleader
+      :desc "doc" :n "d" #'lsp-describe-thing-at-point
+      :desc "rename" :n "r" #'lsp-rename
+        )
+#+END_SRC
+*** TODO direnv
+#+BEGIN_SRC emacs-lisp
+;; (after! direnv
+;;   (add-hook! python-mode #'direnv-update-directory-environment ))
 #+END_SRC
 *** TODO remote python
+Add in ~.dir-locals.el~:
+#+BEGIN_SRC emacs-lisp
+;; ((nil . ((ssh-deploy-root-remote . "/ssh:luca@ricko-ds.westeurope.cloudapp.azure.com:/mnt/data/luca/emptiesforecast"))))
+#+END_SRC
+
 #+BEGIN_SRC emacs-lisp
 ;; (after! lsp
 ;;   (lsp-register-client
@@ -303,7 +332,8 @@ of code we send with ~g r~.
 ** Pytest
 #+BEGIN_SRC emacs-lisp
 (after! python-pytest
-  (setq python-pytest-arguments '("--color" "--failed-first")))
+  (setq python-pytest-arguments '("--color" "--failed-first"))
+  (set-popup-rule! "^\\*pytest*" :side 'right :size .50))
 #+END_SRC
 ** dap-mode
 *** dap-ui windows
@@ -469,6 +499,10 @@ Bindings, inspired by[[https://github.com/millejoh/emacs-ipython-notebook/wiki/S
           :desc "Previous cell" :n "k" #'ein:worksheet-goto-prev-input
           :desc "Save notebook" :n "fs" #'ein:notebook-save-notebook-command
       )))
+#+END_SRC
+** docsets
+#+BEGIN_SRC emacs-lisp
+(set-docsets! 'python-mode "Python 3" "NumPy" "Pandas")
 #+END_SRC
 * R
 ** R console in a buffer
