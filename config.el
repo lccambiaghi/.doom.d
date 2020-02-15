@@ -7,18 +7,16 @@
 
 (map! :leader
       :desc "M-x"                   :n "SPC" #'counsel-M-x
+      :desc "ivy resume" :n ":" #'ivy-resume
       :desc "Async shell command"   :n "!"   #'async-shell-command
       :desc "Toggle eshell"         :n "'"   #'+eshell/toggle
 
       (:desc "windows" :prefix "w"
-        :desc "Cycle focus to other window(s)" :n "TAB" #'other-window
         :desc "popup raise" :n "p" #'+popup/raise)
 
-      (:desc "open" :prefix "o"
-        :desc "Terminal"              :n  "t" #'+term/toggle
-        :desc "Eshell"                :n  "e" #'+eshell/toggle )
       (:desc "project" :prefix "p"
-        :desc "Eshell"               :n "'" #'projectile-run-eshell )
+        :desc "Eshell"               :n "'" #'projectile-run-eshell
+        :desc "Terminal" :n "t" #'projectile-run-term )
 )
 
 (setq display-line-numbers-type nil)
@@ -83,6 +81,21 @@
       magit-save-repository-buffers nil
       ;; Don't restore the wconf after quitting magit
       magit-inhibit-save-previous-winconf t)
+
+(after! company
+  (setq company-idle-delay 0.1
+        company-minimum-prefix-length 2
+        company-quickhelp-delay 0.4)
+  (set-company-backend! 'org-mode
+    ;; '(company-math-symbols-latex
+    ;;   company-latex-commands)
+    '(company-files
+      company-yasnippet
+      company-keywords
+      company-capf)
+    '(company-abbrev
+      company-dabbrev))
+  )
 
 (setq org-directory "~/git/org-notes/"
       org-image-actual-width nil
@@ -150,20 +163,19 @@
 
 ;; (add-hook 'org-mode-hook #'add-pcomplete-to-capf)
 
-;;(:when (featurep! :tools +jupyter)
-(map! :after jupyter
-    :map evil-org-mode-map
-    :n "gR" #'jupyter-org-execute-subtree
-    :localleader
-    :desc "Hydra" :n "," #'jupyter-org-hydra/body
-    :desc "Inspect at point" :n "?" #'jupyter-inspect-at-point
-    :desc "Execute and step" :n "RET" #'jupyter-org-execute-and-next-block
-    :desc "Delete code block" :n "x" #'jupyter-org-kill-block-and-results
-    :desc "New code block above" :n "+" #'jupyter-org-insert-src-block
-    :desc "New code block below" :n "=" (λ! () (interactive) (jupyter-org-insert-src-block t nil))
-    :desc "Merge code blocks" :n "m" #'jupyter-org-merge-blocks
-    :desc "Split code block" :n "-" #'jupyter-org-split-src-block
-    )
+(map! (:when (featurep! :lang +jupyter)
+        :map evil-org-mode-map
+        :n "gR" #'jupyter-org-execute-subtree
+        :localleader
+        :desc "Hydra" :n "," #'jupyter-org-hydra/body
+        :desc "Inspect at point" :n "?" #'jupyter-inspect-at-point
+        :desc "Execute and step" :n "RET" #'jupyter-org-execute-and-next-block
+        :desc "Delete code block" :n "x" #'jupyter-org-kill-block-and-results
+        :desc "New code block above" :n "+" #'jupyter-org-insert-src-block
+        :desc "New code block below" :n "=" (λ! () (interactive) (jupyter-org-insert-src-block t nil))
+        :desc "Merge code blocks" :n "m" #'jupyter-org-merge-blocks
+        :desc "Split code block" :n "-" #'jupyter-org-split-src-block
+    ))
 
 (after! jupyter (set-popup-rule! "*jupyter-pager*" :side 'right :size .40 :select t :vslot 2 :ttl 3))
 (after! jupyter (set-popup-rule! "^\\*Org Src*" :side 'right :size .40 :select t :vslot 2 :ttl 3))
@@ -192,32 +204,32 @@
 ;; (add-hook! python-mode
 ;;     (add-to-list python-shell-extra-pythonpaths (list (getenv "PYTHONPATH"))))
 
-(after! lsp-mode
-  (setq lsp-ui-sideline-enable nil
-      lsp-enable-indentation nil
-      lsp-enable-on-type-formatting nil
-      lsp-enable-symbol-highlighting nil
-      lsp-enable-file-watchers nil)
-  )
+(after! direnv
+  (advice-add 'direnv-update-directory-environment :before '+lsp-init-a )
+  ;; (add-hook! python-mode #'direnv-update-directory-environment ))
 
-(set-popup-rule! "*lsp-help*" :side 'right :size .50 :select t :vslot 1)
+;; (after! lsp-ui
+;;   (setq lsp-ui-sideline-enable t)
+      ;; lsp-enable-indentation nil
+      ;; lsp-enable-on-type-formatting nil
+      ;; lsp-enable-symbol-highlighting nil
+      ;; lsp-enable-file-watchers nil
+
+(set-popup-rule! "^\\*lsp-help" :side 'right :size .50 :select t :vslot 1)
 
 (after! pyimport
   (setq pyimport-pyflakes-path "~/git/experiments/.venv/bin/pyflakes"))
 
-(map! :after lsp
-      :map python-mode-map
-      :localleader
-      :desc "doc" :n "d" #'lsp-describe-thing-at-point
-      :desc "rename" :n "r" #'lsp-rename
-        )
-
-;; (after! direnv
-;;   (add-hook! python-mode #'direnv-update-directory-environment ))
+;; (map! :after lsp-mode
+;;       :map python-mode-map
+;;       :localleader
+;;       :desc "doc" :n "?" #'lsp-describe-thing-at-point
+;;       :desc "rename" :n "r" #'lsp-rename
+;;         )
 
 ;; ((nil . ((ssh-deploy-root-remote . "/ssh:luca@ricko-ds.westeurope.cloudapp.azure.com:/mnt/data/luca/emptiesforecast"))))
 
-;; (after! lsp
+;; (after! lsp-mode
 ;;   (lsp-register-client
 ;;    (make-lsp-client :new-connection (lsp-tramp-connection "~/.pyenv/shims/pyls")
 ;;                     :major-modes '(python-mode)
@@ -369,7 +381,7 @@
           :desc "Save notebook" :n "fs" #'ein:notebook-save-notebook-command
       )))
 
-(set-docsets! 'python-mode "Python 3" "NumPy" "Pandas")
+(set-docsets! 'python-mode "NumPy" "Pandas")
 
 (set-popup-rule! "^\\*R:" :ignore t)
 

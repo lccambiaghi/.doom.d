@@ -1,22 +1,24 @@
 # Preamble
 
-This is my private DOOM emacs configuration. It is tangled by the
-`config.org` and exported to markdown to produce this README.
+This is my private DOOM emacs configuration. It is tangled from
+`config.org` and exported to `README.md`.
 
 ``` bash
-git clone https://github.com/lccambiaghi/doom.d.git ~/.doom.d/
+git clone https://github.com/lccambiaghi/doom.d ~/.doom.d
+git clone https://github.com/hlissner/doom-emacs ~/.emacs.d
+~/.emacs.d/bin/doom install
 ```
 
 Username and e-mail:
 
-``` commonlisp
+``` emacs-lisp
 (setq user-full-name "Luca Cambiaghi"
       user-mail-address "luca.cambiaghi@me.com")
 ```
 
 Scratch buffer major mode:
 
-``` commonlisp
+``` emacs-lisp
 (setq doom-scratch-buffer-major-mode 'emacs-lisp-mode)
 ```
 
@@ -24,28 +26,26 @@ Scratch buffer major mode:
 
 Let's have `general` auto-unbind keys:
 
-``` commonlisp
+``` emacs-lisp
 (general-auto-unbind-keys)
 ```
 
 We then remap some of the bindings (inspired by
 [bindings.el](https://github.com/jsmestad/dfiles/blob/master/.doom.d/%2Bbindings.el#L496-L854)).
 
-``` commonlisp
+``` emacs-lisp
 (map! :leader
       :desc "M-x"                   :n "SPC" #'counsel-M-x
+      :desc "ivy resume" :n ":" #'ivy-resume
       :desc "Async shell command"   :n "!"   #'async-shell-command
       :desc "Toggle eshell"         :n "'"   #'+eshell/toggle
 
       (:desc "windows" :prefix "w"
-        :desc "Cycle focus to other window(s)" :n "TAB" #'other-window
         :desc "popup raise" :n "p" #'+popup/raise)
 
-      (:desc "open" :prefix "o"
-        :desc "Terminal"              :n  "t" #'+term/toggle
-        :desc "Eshell"                :n  "e" #'+eshell/toggle )
       (:desc "project" :prefix "p"
-        :desc "Eshell"               :n "'" #'projectile-run-eshell )
+        :desc "Eshell"               :n "'" #'projectile-run-eshell
+        :desc "Terminal" :n "t" #'projectile-run-term )
 )
 ```
 
@@ -53,19 +53,19 @@ We then remap some of the bindings (inspired by
 
 ## Turn off line numbers
 
-``` commonlisp
+``` emacs-lisp
 (setq display-line-numbers-type nil)
 ```
 
 ## Font and font size:
 
-``` commonlisp
+``` emacs-lisp
 (setq doom-font (font-spec :family "Menlo" :size 14))
 ```
 
 ## Transparency
 
-``` commonlisp
+``` emacs-lisp
 ;transparent adjustment
 (set-frame-parameter (selected-frame)'alpha '(94 . 94))
 (add-to-list 'default-frame-alist'(alpha . (94 . 94)))
@@ -73,13 +73,13 @@ We then remap some of the bindings (inspired by
 
 ## Theme:
 
-``` commonlisp
+``` emacs-lisp
 (setq doom-theme 'doom-vibrant)
 ```
 
 ## Centaur-tabs
 
-``` commonlisp
+``` emacs-lisp
 (after! centaur-tabs
     (setq centaur-tabs-set-modified-marker t
         centaur-tabs-modified-marker "M"
@@ -94,7 +94,7 @@ We then remap some of the bindings (inspired by
 
 ## Winum
 
-``` commonlisp
+``` emacs-lisp
 (after! winum
   ;; (defun winum-assign-0-to-treemacs ()
   ;;   (when (string-match-p (buffer-name) "*Treemacs*") 10))
@@ -112,13 +112,13 @@ We then remap some of the bindings (inspired by
 
 ## Pretty code
 
-``` commonlisp
+``` emacs-lisp
 (setq +pretty-code-enabled-modes '(org-mode))
 ```
 
 ## <span class="todo TODO">TODO</span> Golden ratio
 
-``` commonlisp
+``` emacs-lisp
 ;; add to ~/.doom.d/config.el
 ;; (use-package! golden-ratio
 ;;   :after-call pre-command-hook
@@ -132,7 +132,7 @@ We then remap some of the bindings (inspired by
 
 ## <span class="todo TODO">TODO</span> Ivy posframe
 
-``` commonlisp
+``` emacs-lisp
 ;; (after! ivy-posframe
 ;;     (setq ivy-posframe-display-functions-alist
 ;;             '((swiper          . nil)
@@ -147,18 +147,37 @@ We then remap some of the bindings (inspired by
 
 # Magit
 
-``` commonlisp
+``` emacs-lisp
 (setq magit-repository-directories '(("~/git" . 2))
       magit-save-repository-buffers nil
       ;; Don't restore the wconf after quitting magit
       magit-inhibit-save-previous-winconf t)
 ```
 
+# Company
+
+``` emacs-lisp
+(after! company
+  (setq company-idle-delay 0.1
+        company-minimum-prefix-length 2
+        company-quickhelp-delay 0.4)
+  (set-company-backend! 'org-mode
+    ;; '(company-math-symbols-latex
+    ;;   company-latex-commands)
+    '(company-files
+      company-yasnippet
+      company-keywords
+      company-capf)
+    '(company-abbrev
+      company-dabbrev))
+  )
+```
+
 # Org
 
 ## Directories:
 
-``` commonlisp
+``` emacs-lisp
 (setq org-directory "~/git/org-notes/"
       org-image-actual-width nil
       +org-export-directory "~/git/org-notes/export/"
@@ -171,7 +190,7 @@ We then remap some of the bindings (inspired by
 
 Load `ox-ravel`:
 
-``` commonlisp
+``` emacs-lisp
 (load! "modules/ox-ravel")
 ```
 
@@ -179,7 +198,7 @@ This allows to export from `.org` to `.Rmd`
 
 ## Capture
 
-``` commonlisp
+``` emacs-lisp
 (after! org
 
   (setq org-capture-templates
@@ -213,14 +232,14 @@ This allows to export from `.org` to `.Rmd`
 
 ## Prettify
 
-``` commonlisp
+``` emacs-lisp
 (setq org-bullets-bullet-list '("✖" "✚")
       org-ellipsis "▼")
 ```
 
 ## Popups: capture and agenda
 
-``` commonlisp
+``` emacs-lisp
 (after! org (set-popup-rule! "^Capture.*\\.org$" :side 'right :size .40 :select t :vslot 2 :ttl 3))
 (after! org (set-popup-rule! "*org agenda*" :side 'right :size .40 :select t :vslot 2 :ttl 3))
 ```
@@ -229,7 +248,7 @@ This allows to export from `.org` to `.Rmd`
 
 ### Default header arguments for `jupyter-python`:
 
-``` commonlisp
+``` emacs-lisp
 (after! evil-org
   (setq org-babel-default-header-args:jupyter-python '((:async . "yes")
                                                         (:pandoc t)
@@ -238,7 +257,7 @@ This allows to export from `.org` to `.Rmd`
 
 ### <span class="todo TODO">TODO</span> Override default python src block
 
-``` commonlisp
+``` emacs-lisp
   ;; (add-hook! '+org-babel-load-functions
   ;;   (λ! ()
   ;;       (require 'ob-jupyter  "/Users/luca/.emacs.d/.local/straight/repos/emacs-jupyter/ob-jupyter.el" nil)
@@ -249,7 +268,7 @@ This allows to export from `.org` to `.Rmd`
 
 ### <span class="todo TODO">TODO</span> Company backend
 
-``` commonlisp
+``` emacs-lisp
 ;; (after! org
 ;;   (set-company-backend! 'org-mode
 ;;     '(company-capf)))
@@ -262,33 +281,32 @@ This allows to export from `.org` to `.Rmd`
 
 ### Key bindings:
 
-``` commonlisp
- ;;(:when (featurep! :tools +jupyter)
-(map! :after jupyter
-    :map evil-org-mode-map
-    :n "gR" #'jupyter-org-execute-subtree
-    :localleader
-    :desc "Hydra" :n "," #'jupyter-org-hydra/body
-    :desc "Inspect at point" :n "?" #'jupyter-inspect-at-point
-    :desc "Execute and step" :n "RET" #'jupyter-org-execute-and-next-block
-    :desc "Delete code block" :n "x" #'jupyter-org-kill-block-and-results
-    :desc "New code block above" :n "+" #'jupyter-org-insert-src-block
-    :desc "New code block below" :n "=" (λ! () (interactive) (jupyter-org-insert-src-block t nil))
-    :desc "Merge code blocks" :n "m" #'jupyter-org-merge-blocks
-    :desc "Split code block" :n "-" #'jupyter-org-split-src-block
-    )
+``` emacs-lisp
+(map! (:when (featurep! :lang +jupyter)
+        :map evil-org-mode-map
+        :n "gR" #'jupyter-org-execute-subtree
+        :localleader
+        :desc "Hydra" :n "," #'jupyter-org-hydra/body
+        :desc "Inspect at point" :n "?" #'jupyter-inspect-at-point
+        :desc "Execute and step" :n "RET" #'jupyter-org-execute-and-next-block
+        :desc "Delete code block" :n "x" #'jupyter-org-kill-block-and-results
+        :desc "New code block above" :n "+" #'jupyter-org-insert-src-block
+        :desc "New code block below" :n "=" (λ! () (interactive) (jupyter-org-insert-src-block t nil))
+        :desc "Merge code blocks" :n "m" #'jupyter-org-merge-blocks
+        :desc "Split code block" :n "-" #'jupyter-org-split-src-block
+    ))
 ```
 
 ### Popups: pager and Org Src
 
-``` commonlisp
+``` emacs-lisp
 (after! jupyter (set-popup-rule! "*jupyter-pager*" :side 'right :size .40 :select t :vslot 2 :ttl 3))
 (after! jupyter (set-popup-rule! "^\\*Org Src*" :side 'right :size .40 :select t :vslot 2 :ttl 3))
 ```
 
 ## ox-ipynb
 
-``` commonlisp
+``` emacs-lisp
 (require 'ox-ipynb)
 ```
 
@@ -298,7 +316,7 @@ This allows to export from `.org` to `.Rmd`
 
 ### virtualenv executable
 
-``` commonlisp
+``` emacs-lisp
 (defadvice! +python-poetry-open-repl-a (orig-fn &rest args)
   "Use the Python binary from the current virtual environment."
   :around #'+python/open-repl
@@ -314,7 +332,7 @@ On a scratch buffer, first run `jupyter-associate-buffer`. Then, hitting
 `SPC o r` allows use to hit the REPL buffer with the lines/regions of
 code we send with `g r`.
 
-``` commonlisp
+``` emacs-lisp
 (add-hook! python-mode
   ;; (set-repl-handler! 'python-mode #'jupyter-repl-pop-to-buffer)
   (set-repl-handler! 'python-mode #'+python/open-ipython-repl)
@@ -323,7 +341,7 @@ code we send with `g r`.
 
 ### Silence warnings when opening REPL
 
-``` commonlisp
+``` emacs-lisp
 (setq python-shell-prompt-detect-failure-warning nil)
 ```
 
@@ -348,22 +366,33 @@ code we send with `g r`.
 
 ## LSP
 
-### lsp-ui
+### direnv
+
+Make sure direnv is called before LSP starts
 
 ``` emacs-lisp
-(after! lsp-mode
-  (setq lsp-ui-sideline-enable nil
-      lsp-enable-indentation nil
-      lsp-enable-on-type-formatting nil
-      lsp-enable-symbol-highlighting nil
-      lsp-enable-file-watchers nil)
-  )
+(after! direnv
+  (advice-add 'direnv-update-directory-environment :before '+lsp-init-a )
+  ;; (add-hook! python-mode #'direnv-update-directory-environment ))
 ```
 
-### lsp-describe help popup
+### <span class="todo TODO">TODO</span> lsp-ui
 
 ``` emacs-lisp
-(set-popup-rule! "*lsp-help*" :side 'right :size .50 :select t :vslot 1)
+;; (after! lsp-ui
+;;   (setq lsp-ui-sideline-enable t)
+      ;; lsp-enable-indentation nil
+      ;; lsp-enable-on-type-formatting nil
+      ;; lsp-enable-symbol-highlighting nil
+      ;; lsp-enable-file-watchers nil
+```
+
+### lsp-help popup
+
+Lookup documentation with `SPC c k`
+
+``` emacs-lisp
+(set-popup-rule! "^\\*lsp-help" :side 'right :size .50 :select t :vslot 1)
 ```
 
 ### Missing imports
@@ -375,22 +404,17 @@ In python mode, use `, i i` to add missing imports
   (setq pyimport-pyflakes-path "~/git/experiments/.venv/bin/pyflakes"))
 ```
 
-### Bindings
+### <span class="todo TODO">TODO</span> Bindings
+
+Superseded by `SPC c r` to rename and `SPC c k` to lookup documentation
 
 ``` emacs-lisp
-(map! :after lsp
-      :map python-mode-map
-      :localleader
-      :desc "doc" :n "d" #'lsp-describe-thing-at-point
-      :desc "rename" :n "r" #'lsp-rename
-        )
-```
-
-### <span class="todo TODO">TODO</span> direnv
-
-``` emacs-lisp
-;; (after! direnv
-;;   (add-hook! python-mode #'direnv-update-directory-environment ))
+;; (map! :after lsp-mode
+;;       :map python-mode-map
+;;       :localleader
+;;       :desc "doc" :n "?" #'lsp-describe-thing-at-point
+;;       :desc "rename" :n "r" #'lsp-rename
+;;         )
 ```
 
 ### <span class="todo TODO">TODO</span> remote python
@@ -402,7 +426,7 @@ Add in `.dir-locals.el`:
 ```
 
 ``` emacs-lisp
-;; (after! lsp
+;; (after! lsp-mode
 ;;   (lsp-register-client
 ;;    (make-lsp-client :new-connection (lsp-tramp-connection "~/.pyenv/shims/pyls")
 ;;                     :major-modes '(python-mode)
@@ -601,10 +625,13 @@ this](https://github.com/millejoh/emacs-ipython-notebook/wiki/Spacemacs-Evil-Bin
       )))
 ```
 
-## docsets
+## Dash docsets
+
+When `SPC c k` fails, try searching in the docsets with `SPC s k`.
+Install docsets with `dash-docs-install-docset`.
 
 ``` emacs-lisp
-(set-docsets! 'python-mode "Python 3" "NumPy" "Pandas")
+(set-docsets! 'python-mode "NumPy" "Pandas")
 ```
 
 # R
