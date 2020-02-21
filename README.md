@@ -130,21 +130,6 @@ We then remap some of the bindings (inspired by
 ;;   (add-hook 'doom-switch-window-hook #'golden-ratio) )
 ```
 
-## <span class="todo TODO">TODO</span> Ivy posframe
-
-``` emacs-lisp
-;; (after! ivy-posframe
-;;     (setq ivy-posframe-display-functions-alist
-;;             '((swiper          . nil)
-;;             (complete-symbol . ivy-posframe-display-at-point)
-;;             (t               . ivy-posframe-display-at-frame-top-center)))
-;;     (setq ivy-posframe-min-width 110)
-;;     (setq ivy-posframe-width 110)
-;; (setq ivy-posframe-parameters '((alpha . 85)))
-;;     (setq ivy-posframe-height-alist '((t . 20))))
-;; (ivy-posframe-mode)
-```
-
 # Magit
 
 ``` emacs-lisp
@@ -158,18 +143,18 @@ We then remap some of the bindings (inspired by
 
 ``` emacs-lisp
 (after! company
-  (setq company-idle-delay 0.1
+  (setq company-idle-delay 0.4
         company-minimum-prefix-length 2
         company-quickhelp-delay 0.4)
   (set-company-backend! 'org-mode
     ;; '(company-math-symbols-latex
     ;;   company-latex-commands)
     '(company-files
-      company-yasnippet
-      company-keywords
-      company-capf)
-    '(company-abbrev
-      company-dabbrev))
+      ;; company-yasnippet
+      ;; company-keywords
+      company-capf))
+    ;; '(company-abbrev
+    ;;   company-dabbrev))
   )
 ```
 
@@ -244,64 +229,50 @@ This allows to export from `.org` to `.Rmd`
 (after! org (set-popup-rule! "*org agenda*" :side 'right :size .40 :select t :vslot 2 :ttl 3))
 ```
 
-## org-babel
+## emacs-jupyter
 
-### Default header arguments for `jupyter-python`:
+### Default header arguments:
 
 ``` emacs-lisp
 (after! evil-org
   (setq org-babel-default-header-args:jupyter-python '((:async . "yes")
-                                                        (:pandoc t)
-                                                        (:kernel . "python3"))))
-```
-
-### <span class="todo TODO">TODO</span> Override default python src block
-
-``` emacs-lisp
-  ;; (add-hook! '+org-babel-load-functions
-  ;;   (λ! ()
-  ;;       (require 'ob-jupyter  "/Users/luca/.emacs.d/.local/straight/repos/emacs-jupyter/ob-jupyter.el" nil)
-  ;;       (org-babel-jupyter-override-src-block "python"))
-  ;; )
-;; (org-babel-jupyter-restore-src-block "python")
-```
-
-### <span class="todo TODO">TODO</span> Company backend
-
-``` emacs-lisp
-;; (after! org
-;;   (set-company-backend! 'org-mode
-;;     '(company-capf)))
-
-;; (defun add-pcomplete-to-capf ()
-;;   (add-hook 'completion-at-point-functions 'pcomplete-completions-at-point nil t))
-
-;; (add-hook 'org-mode-hook #'add-pcomplete-to-capf)
+                                                       (:pandoc t)
+                                                       (:kernel . "python3")))
+  (setq org-babel-default-header-args:jupyter-R '((:pandoc t)
+                                                  (:kernel . "ir"))))
 ```
 
 ### Key bindings:
 
 ``` emacs-lisp
-(map! (:when (featurep! :lang +jupyter)
-        :map evil-org-mode-map
-        :n "gR" #'jupyter-org-execute-subtree
-        :localleader
-        :desc "Hydra" :n "," #'jupyter-org-hydra/body
-        :desc "Inspect at point" :n "?" #'jupyter-inspect-at-point
-        :desc "Execute and step" :n "RET" #'jupyter-org-execute-and-next-block
-        :desc "Delete code block" :n "x" #'jupyter-org-kill-block-and-results
-        :desc "New code block above" :n "+" #'jupyter-org-insert-src-block
-        :desc "New code block below" :n "=" (λ! () (interactive) (jupyter-org-insert-src-block t nil))
-        :desc "Merge code blocks" :n "m" #'jupyter-org-merge-blocks
-        :desc "Split code block" :n "-" #'jupyter-org-split-src-block
-    ))
+;; (:when (featurep! :lang +jupyter)
+(map! :after evil-org
+ :map evil-org-mode-map
+ :n "gR" #'jupyter-org-execute-subtree
+ :localleader
+ :desc "Hydra" :n "," #'jupyter-org-hydra/body
+ :desc "Inspect at point" :n "?" #'jupyter-inspect-at-point
+ :desc "Execute and step" :n "RET" #'jupyter-org-execute-and-next-block
+ :desc "Delete code block" :n "x" #'jupyter-org-kill-block-and-results
+ :desc "New code block above" :n "+" #'jupyter-org-insert-src-block
+ :desc "New code block below" :n "=" (λ! () (interactive) (jupyter-org-insert-src-block t nil))
+ :desc "Merge code blocks" :n "m" #'jupyter-org-merge-blocks
+ :desc "Split code block" :n "-" #'jupyter-org-split-src-block
+ :desc "Fold results" :n "z" #'org-babel-hide-result-toggle
+ )
 ```
 
-### Popups: pager and Org Src
+### Popups: pager and org src
 
 ``` emacs-lisp
 (after! jupyter (set-popup-rule! "*jupyter-pager*" :side 'right :size .40 :select t :vslot 2 :ttl 3))
 (after! jupyter (set-popup-rule! "^\\*Org Src*" :side 'right :size .40 :select t :vslot 2 :ttl 3))
+```
+
+### Bigger inline images
+
+``` emacs-lisp
+(setq org-image-actual-width t)
 ```
 
 ## ox-ipynb
@@ -312,7 +283,7 @@ This allows to export from `.org` to `.Rmd`
 
 # Python
 
-## iPython REPL
+## REPL
 
 ### virtualenv executable
 
@@ -351,28 +322,16 @@ code we send with `g r`.
 (set-popup-rule! "^\\*Python*" :ignore t)
 ```
 
-### <span class="todo TODO">TODO</span> iPython
-
-``` emacs-lisp
-;; (setq python-shell-interpreter "ipython")
-```
-
-### <span class="todo TODO">TODO</span> PYTHONPATH
-
-``` emacs-lisp
-;; (add-hook! python-mode
-;;     (add-to-list python-shell-extra-pythonpaths (list (getenv "PYTHONPATH"))))
-```
-
 ## LSP
 
-### direnv
+### <span class="todo TODO">TODO</span> direnv
 
 Make sure direnv is called before LSP starts
 
 ``` emacs-lisp
-(after! direnv
-  (advice-add 'direnv-update-directory-environment :before '+lsp-init-a )
+;; (after! lsp-mode
+;; (advice-add 'python-mode :before #'direnv-update-environment ))
+  ;; (advice-add 'direnv-update-directory-environment :before #'+lsp-init-a ))
   ;; (add-hook! python-mode #'direnv-update-directory-environment ))
 ```
 
@@ -385,6 +344,23 @@ Make sure direnv is called before LSP starts
       ;; lsp-enable-on-type-formatting nil
       ;; lsp-enable-symbol-highlighting nil
       ;; lsp-enable-file-watchers nil
+```
+
+### LSP idle delay
+
+This variable determines how often lsp-mode will refresh the highlights,
+lenses, links, etc while you type.
+
+``` emacs-lisp
+(after! lsp-mode
+(setq lsp-idle-delay 0.500))
+```
+
+### Prefer capf over company-lsp
+
+``` emacs-lisp
+(after! lsp-mode
+  (setq lsp-prefer-capf t))
 ```
 
 ### lsp-help popup
@@ -402,19 +378,6 @@ In python mode, use `, i i` to add missing imports
 ``` emacs-lisp
 (after! pyimport
   (setq pyimport-pyflakes-path "~/git/experiments/.venv/bin/pyflakes"))
-```
-
-### <span class="todo TODO">TODO</span> Bindings
-
-Superseded by `SPC c r` to rename and `SPC c k` to lookup documentation
-
-``` emacs-lisp
-;; (map! :after lsp-mode
-;;       :map python-mode-map
-;;       :localleader
-;;       :desc "doc" :n "?" #'lsp-describe-thing-at-point
-;;       :desc "rename" :n "r" #'lsp-rename
-;;         )
 ```
 
 ### <span class="todo TODO">TODO</span> remote python
@@ -449,32 +412,32 @@ Add in `.dir-locals.el`:
 ``` emacs-lisp
 (after! dap-mode
   (setq dap-auto-show-output nil)
-  (set-popup-rule! "*dap-ui-locals*" :side 'right :width .50 :vslot 1)
-  (set-popup-rule! "*dap-debug-.*" :side 'bottom :size .30 :slot 1)
-  (set-popup-rule! "*dap-ui-repl*" :side 'bottom :size .30 :select t :slot 1)
+  ;; (set-popup-rule! "*dap-ui-locals*" :side 'right :size .50 :vslot 1)
+  (set-popup-rule! "*dap-debug-.*" :side 'bottom :size .20 :slot 1)
+  (set-popup-rule! "*dap-ui-repl*" :side 'right :size .40 :select t :slot 1)
 
-  (defun my/window-visible (b-name)
-    "Return whether B-NAME is visible."
-    (-> (-compose 'buffer-name 'window-buffer)
-        (-map (window-list))
-        (-contains? b-name)))
+  ;; (defun my/window-visible (b-name)
+  ;;   "Return whether B-NAME is visible."
+  ;;   (-> (-compose 'buffer-name 'window-buffer)
+  ;;       (-map (window-list))
+  ;;       (-contains? b-name)))
 
-  (defun my/show-debug-windows (session)
-    "Show debug windows."
-    (let ((lsp--cur-workspace (dap--debug-session-workspace session)))
-        (save-excursion
-        (unless (my/window-visible dap-ui--locals-buffer)
-            (dap-ui-locals)))))
+  ;; (defun my/show-debug-windows (session)
+  ;;   "Show debug windows."
+  ;;   (let ((lsp--cur-workspace (dap--debug-session-workspace session)))
+  ;;       (save-excursion
+  ;;       (unless (my/window-visible dap-ui--locals-buffer)
+  ;;           (dap-ui-locals)))))
 
-    (add-hook 'dap-stopped-hook 'my/show-debug-windows)
+  ;;   (add-hook 'dap-stopped-hook 'my/show-debug-windows)
 
-    (defun my/hide-debug-windows (session)
-    "Hide debug windows when all debug sessions are dead."
-    (unless (-filter 'dap--session-running (dap--get-sessions))
-        (and (get-buffer dap-ui--locals-buffer)
-            (kill-buffer dap-ui--locals-buffer))))
+  ;;   (defun my/hide-debug-windows (session)
+  ;;   "Hide debug windows when all debug sessions are dead."
+  ;;   (unless (-filter 'dap--session-running (dap--get-sessions))
+  ;;       (and (get-buffer dap-ui--locals-buffer)
+  ;;           (kill-buffer dap-ui--locals-buffer))))
 
-    (add-hook 'dap-terminated-hook 'my/hide-debug-windows)
+  ;;   (add-hook 'dap-terminated-hook 'my/hide-debug-windows)
   )
 ```
 

@@ -66,35 +66,24 @@
 ;;   (remove-hook 'window-configuration-change-hook #'golden-ratio)
 ;;   (add-hook 'doom-switch-window-hook #'golden-ratio) )
 
-;; (after! ivy-posframe
-;;     (setq ivy-posframe-display-functions-alist
-;;             '((swiper          . nil)
-;;             (complete-symbol . ivy-posframe-display-at-point)
-;;             (t               . ivy-posframe-display-at-frame-top-center)))
-;;     (setq ivy-posframe-min-width 110)
-;;     (setq ivy-posframe-width 110)
-;; (setq ivy-posframe-parameters '((alpha . 85)))
-;;     (setq ivy-posframe-height-alist '((t . 20))))
-;; (ivy-posframe-mode)
-
 (setq magit-repository-directories '(("~/git" . 2))
       magit-save-repository-buffers nil
       ;; Don't restore the wconf after quitting magit
       magit-inhibit-save-previous-winconf t)
 
 (after! company
-  (setq company-idle-delay 0.1
+  (setq company-idle-delay 0.4
         company-minimum-prefix-length 2
         company-quickhelp-delay 0.4)
   (set-company-backend! 'org-mode
     ;; '(company-math-symbols-latex
     ;;   company-latex-commands)
     '(company-files
-      company-yasnippet
-      company-keywords
-      company-capf)
-    '(company-abbrev
-      company-dabbrev))
+      ;; company-yasnippet
+      ;; company-keywords
+      company-capf))
+    ;; '(company-abbrev
+    ;;   company-dabbrev))
   )
 
 (setq org-directory "~/git/org-notes/"
@@ -144,41 +133,31 @@
 
 (after! evil-org
   (setq org-babel-default-header-args:jupyter-python '((:async . "yes")
-                                                        (:pandoc t)
-                                                        (:kernel . "python3"))))
+                                                       (:pandoc t)
+                                                       (:kernel . "python3")))
+  (setq org-babel-default-header-args:jupyter-R '((:pandoc t)
+                                                  (:kernel . "ir"))))
 
-;; (add-hook! '+org-babel-load-functions
-  ;;   (λ! ()
-  ;;       (require 'ob-jupyter  "/Users/luca/.emacs.d/.local/straight/repos/emacs-jupyter/ob-jupyter.el" nil)
-  ;;       (org-babel-jupyter-override-src-block "python"))
-  ;; )
-;; (org-babel-jupyter-restore-src-block "python")
-
-;; (after! org
-;;   (set-company-backend! 'org-mode
-;;     '(company-capf)))
-
-;; (defun add-pcomplete-to-capf ()
-;;   (add-hook 'completion-at-point-functions 'pcomplete-completions-at-point nil t))
-
-;; (add-hook 'org-mode-hook #'add-pcomplete-to-capf)
-
-(map! (:when (featurep! :lang +jupyter)
-        :map evil-org-mode-map
-        :n "gR" #'jupyter-org-execute-subtree
-        :localleader
-        :desc "Hydra" :n "," #'jupyter-org-hydra/body
-        :desc "Inspect at point" :n "?" #'jupyter-inspect-at-point
-        :desc "Execute and step" :n "RET" #'jupyter-org-execute-and-next-block
-        :desc "Delete code block" :n "x" #'jupyter-org-kill-block-and-results
-        :desc "New code block above" :n "+" #'jupyter-org-insert-src-block
-        :desc "New code block below" :n "=" (λ! () (interactive) (jupyter-org-insert-src-block t nil))
-        :desc "Merge code blocks" :n "m" #'jupyter-org-merge-blocks
-        :desc "Split code block" :n "-" #'jupyter-org-split-src-block
-    ))
+;; (:when (featurep! :lang +jupyter)
+(map! :after evil-org
+ :map evil-org-mode-map
+ :n "gR" #'jupyter-org-execute-subtree
+ :localleader
+ :desc "Hydra" :n "," #'jupyter-org-hydra/body
+ :desc "Inspect at point" :n "?" #'jupyter-inspect-at-point
+ :desc "Execute and step" :n "RET" #'jupyter-org-execute-and-next-block
+ :desc "Delete code block" :n "x" #'jupyter-org-kill-block-and-results
+ :desc "New code block above" :n "+" #'jupyter-org-insert-src-block
+ :desc "New code block below" :n "=" (λ! () (interactive) (jupyter-org-insert-src-block t nil))
+ :desc "Merge code blocks" :n "m" #'jupyter-org-merge-blocks
+ :desc "Split code block" :n "-" #'jupyter-org-split-src-block
+ :desc "Fold results" :n "z" #'org-babel-hide-result-toggle
+ )
 
 (after! jupyter (set-popup-rule! "*jupyter-pager*" :side 'right :size .40 :select t :vslot 2 :ttl 3))
 (after! jupyter (set-popup-rule! "^\\*Org Src*" :side 'right :size .40 :select t :vslot 2 :ttl 3))
+
+(setq org-image-actual-width t)
 
 (require 'ox-ipynb)
 
@@ -199,13 +178,9 @@
 
 (set-popup-rule! "^\\*Python*" :ignore t)
 
-;; (setq python-shell-interpreter "ipython")
-
-;; (add-hook! python-mode
-;;     (add-to-list python-shell-extra-pythonpaths (list (getenv "PYTHONPATH"))))
-
-(after! direnv
-  (advice-add 'direnv-update-directory-environment :before '+lsp-init-a )
+;; (after! lsp-mode
+;; (advice-add 'python-mode :before #'direnv-update-environment ))
+  ;; (advice-add 'direnv-update-directory-environment :before #'+lsp-init-a ))
   ;; (add-hook! python-mode #'direnv-update-directory-environment ))
 
 ;; (after! lsp-ui
@@ -215,17 +190,16 @@
       ;; lsp-enable-symbol-highlighting nil
       ;; lsp-enable-file-watchers nil
 
+(after! lsp-mode
+(setq lsp-idle-delay 0.500))
+
+(after! lsp-mode
+  (setq lsp-prefer-capf t))
+
 (set-popup-rule! "^\\*lsp-help" :side 'right :size .50 :select t :vslot 1)
 
 (after! pyimport
   (setq pyimport-pyflakes-path "~/git/experiments/.venv/bin/pyflakes"))
-
-;; (map! :after lsp-mode
-;;       :map python-mode-map
-;;       :localleader
-;;       :desc "doc" :n "?" #'lsp-describe-thing-at-point
-;;       :desc "rename" :n "r" #'lsp-rename
-;;         )
 
 ;; ((nil . ((ssh-deploy-root-remote . "/ssh:luca@ricko-ds.westeurope.cloudapp.azure.com:/mnt/data/luca/emptiesforecast"))))
 
@@ -242,32 +216,32 @@
 
 (after! dap-mode
   (setq dap-auto-show-output nil)
-  (set-popup-rule! "*dap-ui-locals*" :side 'right :width .50 :vslot 1)
-  (set-popup-rule! "*dap-debug-.*" :side 'bottom :size .30 :slot 1)
-  (set-popup-rule! "*dap-ui-repl*" :side 'bottom :size .30 :select t :slot 1)
+  ;; (set-popup-rule! "*dap-ui-locals*" :side 'right :size .50 :vslot 1)
+  (set-popup-rule! "*dap-debug-.*" :side 'bottom :size .20 :slot 1)
+  (set-popup-rule! "*dap-ui-repl*" :side 'right :size .40 :select t :slot 1)
 
-  (defun my/window-visible (b-name)
-    "Return whether B-NAME is visible."
-    (-> (-compose 'buffer-name 'window-buffer)
-        (-map (window-list))
-        (-contains? b-name)))
+  ;; (defun my/window-visible (b-name)
+  ;;   "Return whether B-NAME is visible."
+  ;;   (-> (-compose 'buffer-name 'window-buffer)
+  ;;       (-map (window-list))
+  ;;       (-contains? b-name)))
 
-  (defun my/show-debug-windows (session)
-    "Show debug windows."
-    (let ((lsp--cur-workspace (dap--debug-session-workspace session)))
-        (save-excursion
-        (unless (my/window-visible dap-ui--locals-buffer)
-            (dap-ui-locals)))))
+  ;; (defun my/show-debug-windows (session)
+  ;;   "Show debug windows."
+  ;;   (let ((lsp--cur-workspace (dap--debug-session-workspace session)))
+  ;;       (save-excursion
+  ;;       (unless (my/window-visible dap-ui--locals-buffer)
+  ;;           (dap-ui-locals)))))
 
-    (add-hook 'dap-stopped-hook 'my/show-debug-windows)
+  ;;   (add-hook 'dap-stopped-hook 'my/show-debug-windows)
 
-    (defun my/hide-debug-windows (session)
-    "Hide debug windows when all debug sessions are dead."
-    (unless (-filter 'dap--session-running (dap--get-sessions))
-        (and (get-buffer dap-ui--locals-buffer)
-            (kill-buffer dap-ui--locals-buffer))))
+  ;;   (defun my/hide-debug-windows (session)
+  ;;   "Hide debug windows when all debug sessions are dead."
+  ;;   (unless (-filter 'dap--session-running (dap--get-sessions))
+  ;;       (and (get-buffer dap-ui--locals-buffer)
+  ;;           (kill-buffer dap-ui--locals-buffer))))
 
-    (add-hook 'dap-terminated-hook 'my/hide-debug-windows)
+  ;;   (add-hook 'dap-terminated-hook 'my/hide-debug-windows)
   )
 
 (map! :after dap-python

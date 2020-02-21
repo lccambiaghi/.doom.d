@@ -8,5 +8,5 @@
 ;; (package! px :recipe (:host github :repo "aaptel/preview-latex"))
 ;; (package! golden-ratio)
 (package! ox-ipynb :recipe (:host github :repo "jkitchin/ox-ipynb"))
-(package! powerline)
+;; (package! powerline)
 (package! pfuture)

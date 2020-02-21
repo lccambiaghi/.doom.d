@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
-# name: jupyter-block
-# key: <j
+# name: jupyter-python
+# key: <jp
 # --
 #+BEGIN_SRC jupyter-python
 $0
