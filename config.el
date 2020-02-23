@@ -16,8 +16,7 @@
 
       (:desc "project" :prefix "p"
         :desc "Eshell"               :n "'" #'projectile-run-eshell
-        :desc "Terminal" :n "t" #'projectile-run-term )
-)
+        :desc "Terminal" :n "t" #'projectile-run-vterm ))
 
 (setq display-line-numbers-type nil)
 
@@ -30,15 +29,12 @@
 (setq doom-theme 'doom-vibrant)
 
 (after! centaur-tabs
-    (setq centaur-tabs-set-modified-marker t
+  (setq centaur-tabs-set-modified-marker t
         centaur-tabs-modified-marker "M"
         centaur-tabs-cycle-scope 'tabs
         centaur-tabs-set-close-button nil)
-    (centaur-tabs-group-by-projectile-project)
-    (map! :n "g t" #'centaur-tabs-forward
-          :n "g T" #'centaur-tabs-backward)
-    (add-hook! dired-mode #'centaur-tabs-local-mode)
-)
+  (centaur-tabs-group-by-projectile-project)
+  (add-hook 'dired-mode-hook 'centaur-tabs-local-mode))
 
 (after! winum
   ;; (defun winum-assign-0-to-treemacs ()
@@ -56,15 +52,12 @@
 
 (setq +pretty-code-enabled-modes '(org-mode))
 
-;; add to ~/.doom.d/config.el
-;; (use-package! golden-ratio
-;;   :after-call pre-command-hook
-;;   :config
-;;   (golden-ratio-mode +1)
-;;   ;; Using this hook for resizing windows is less precise than
-;;   ;; `doom-switch-window-hook'.
-;;   (remove-hook 'window-configuration-change-hook #'golden-ratio)
-;;   (add-hook 'doom-switch-window-hook #'golden-ratio) )
+(after! doom-modeline
+  (setq doom-modeline-buffer-encoding nil)
+  (setq doom-modeline-env-enable-python nil))
+;; (setq doom-modeline-env-python-executable (executable-find "python"))
+
+;; (setq inhibit-compacting-font-caches t)
 
 (setq magit-repository-directories '(("~/git" . 2))
       magit-save-repository-buffers nil
@@ -86,11 +79,11 @@
     ;;   company-dabbrev))
   )
 
-(setq org-directory "~/git/org-notes/"
+(setq org-directory "~/git/org/"
       org-image-actual-width nil
-      +org-export-directory "~/git/org-notes/export/"
-      org-default-notes-file "~/git/org-notes/inbox.org"
-      org-id-locations-file "~/git/org-notes/.orgids"
+      +org-export-directory "~/git/org/export/"
+      org-default-notes-file "~/git/org/inbox.org"
+      org-id-locations-file "~/git/org/.orgids"
       )
 
 (load! "modules/ox-ravel")
@@ -102,7 +95,7 @@
                     ("u" "URL")))
 
   (add-to-list 'org-capture-templates
-             '("dn" "New Diary Entry" entry(file+olp+datetree"~/git/org-notes/personal/diary.org" "Daily Logs")
+             '("dn" "New Diary Entry" entry(file+olp+datetree"~/git/org/personal/diary.org" "Daily Logs")
 "* %^{thought for the day}
 :PROPERTIES:
 :CATEGORY: %^{category}
@@ -122,14 +115,14 @@
 - %?"))
 
   (add-to-list 'org-capture-templates
-      '("un" "New URL Entry" entry(file+function "~/git/org-notes/personal/dailies.org" org-reverse-datetree-goto-date-in-file)
+      '("un" "New URL Entry" entry(file+function "~/git/org/personal/dailies.org" org-reverse-datetree-goto-date-in-file)
             "* [[%^{URL}][%^{Description}]] %^g %?")))
 
 (setq org-bullets-bullet-list '("✖" "✚")
       org-ellipsis "▼")
 
-(after! org (set-popup-rule! "^Capture.*\\.org$" :side 'right :size .40 :select t :vslot 2 :ttl 3))
-(after! org (set-popup-rule! "*org agenda*" :side 'right :size .40 :select t :vslot 2 :ttl 3))
+;; (after! org (set-popup-rule! "^Capture.*\\.org$" :side 'right :size .40 :select t :vslot 2 :ttl 3))
+;; (after! org (set-popup-rule! "*org agenda*" :side 'right :size .40 :select t :vslot 2 :ttl 3))
 
 (after! evil-org
   (setq org-babel-default-header-args:jupyter-python '((:async . "yes")
@@ -157,7 +150,7 @@
 (after! jupyter (set-popup-rule! "*jupyter-pager*" :side 'right :size .40 :select t :vslot 2 :ttl 3))
 (after! jupyter (set-popup-rule! "^\\*Org Src*" :side 'right :size .40 :select t :vslot 2 :ttl 3))
 
-(setq org-image-actual-width t)
+;; (setq org-image-actual-width t)
 
 (require 'ox-ipynb)
 
@@ -178,11 +171,6 @@
 
 (set-popup-rule! "^\\*Python*" :ignore t)
 
-;; (after! lsp-mode
-;; (advice-add 'python-mode :before #'direnv-update-environment ))
-  ;; (advice-add 'direnv-update-directory-environment :before #'+lsp-init-a ))
-  ;; (add-hook! python-mode #'direnv-update-directory-environment ))
-
 ;; (after! lsp-ui
 ;;   (setq lsp-ui-sideline-enable t)
       ;; lsp-enable-indentation nil
@@ -192,6 +180,10 @@
 
 (after! lsp-mode
 (setq lsp-idle-delay 0.500))
+
+(remove-hook 'lsp-mode-hook #'+lsp-init-company-h)
+
+(setq +lsp-company-backend 'company-capf)
 
 (after! lsp-mode
   (setq lsp-prefer-capf t))
@@ -261,7 +253,7 @@
                             (list :type "python"
                                 :args "-i"
                                 :cwd (lsp-workspace-root)
-                                :program nil
+                                :program nil ; (expand-file-name "~/git/blabla")
                                 :environment-variables '(("PYTHONPATH" . "src"))
                                 :request "launch"
                                 :name "dap-debug-script"))
@@ -330,8 +322,15 @@
 
   (add-hook 'dap-ui-repl-mode-hook
             (lambda ()
-              (setq-local company-minimum-prefix-length 1)))
-  )
+              (setq-local company-minimum-prefix-length 1))))
+
+(after! dap-mode
+  (add-hook 'dap-stopped-hook
+            (lambda (arg) (call-interactively #'dap-hydra ))))
+
+(after! dap-mode
+  (dap-tooltip-mode 1)
+  (tooltip-mode 1))
 
 (after! ein
   (set-popup-rule! "^\\*ein" :ignore t))
@@ -368,7 +367,7 @@
 
 (advice-add 'shell-command--save-pos-or-erase :after 'shell-command-print-separator)
 
-(after! eshell
-  (set-eshell-alias!
-   "fd" "+eshell/fd $1"
-   "fo" "find-file-other-window $1"))
+;; (after! eshell
+;;   (set-eshell-alias!
+;;    "fd" "+eshell/fd $1"
+;;    "fo" "find-file-other-window $1"))

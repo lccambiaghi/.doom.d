@@ -38,8 +38,7 @@ We then remap some of the bindings (inspired by [[https://github.com/jsmestad/df
 
       (:desc "project" :prefix "p"
         :desc "Eshell"               :n "'" #'projectile-run-eshell
-        :desc "Terminal" :n "t" #'projectile-run-term )
-)
+        :desc "Terminal" :n "t" #'projectile-run-vterm ))
 #+END_SRC
 
 * User Interface
@@ -64,15 +63,12 @@ We then remap some of the bindings (inspired by [[https://github.com/jsmestad/df
 ** Centaur-tabs
 #+BEGIN_SRC emacs-lisp
 (after! centaur-tabs
-    (setq centaur-tabs-set-modified-marker t
+  (setq centaur-tabs-set-modified-marker t
         centaur-tabs-modified-marker "M"
         centaur-tabs-cycle-scope 'tabs
         centaur-tabs-set-close-button nil)
-    (centaur-tabs-group-by-projectile-project)
-    (map! :n "g t" #'centaur-tabs-forward
-          :n "g T" #'centaur-tabs-backward)
-    (add-hook! dired-mode #'centaur-tabs-local-mode)
-)
+  (centaur-tabs-group-by-projectile-project)
+  (add-hook 'dired-mode-hook 'centaur-tabs-local-mode))
 #+END_SRC
 ** Winum
 #+BEGIN_SRC emacs-lisp
@@ -94,17 +90,17 @@ We then remap some of the bindings (inspired by [[https://github.com/jsmestad/df
 #+BEGIN_SRC emacs-lisp
 (setq +pretty-code-enabled-modes '(org-mode))
 #+END_SRC
-** TODO Golden ratio
+** modeline
+*** Hide undesired info
 #+BEGIN_SRC emacs-lisp
-;; add to ~/.doom.d/config.el
-;; (use-package! golden-ratio
-;;   :after-call pre-command-hook
-;;   :config
-;;   (golden-ratio-mode +1)
-;;   ;; Using this hook for resizing windows is less precise than
-;;   ;; `doom-switch-window-hook'.
-;;   (remove-hook 'window-configuration-change-hook #'golden-ratio)
-;;   (add-hook 'doom-switch-window-hook #'golden-ratio) )
+(after! doom-modeline
+  (setq doom-modeline-buffer-encoding nil)
+  (setq doom-modeline-env-enable-python nil))
+;; (setq doom-modeline-env-python-executable (executable-find "python"))
+#+END_SRC
+*** TODO Flashing modelin
+#+BEGIN_SRC emacs-lisp
+;; (setq inhibit-compacting-font-caches t)
 #+END_SRC
 * Magit
 #+BEGIN_SRC emacs-lisp
@@ -135,11 +131,11 @@ We then remap some of the bindings (inspired by [[https://github.com/jsmestad/df
 * Org
 ** Directories:
 #+BEGIN_SRC emacs-lisp
-(setq org-directory "~/git/org-notes/"
+(setq org-directory "~/git/org/"
       org-image-actual-width nil
-      +org-export-directory "~/git/org-notes/export/"
-      org-default-notes-file "~/git/org-notes/inbox.org"
-      org-id-locations-file "~/git/org-notes/.orgids"
+      +org-export-directory "~/git/org/export/"
+      org-default-notes-file "~/git/org/inbox.org"
+      org-id-locations-file "~/git/org/.orgids"
       )
 #+END_SRC
 
@@ -158,7 +154,7 @@ This allows to export from ~.org~ to ~.Rmd~
                     ("u" "URL")))
 
   (add-to-list 'org-capture-templates
-             '("dn" "New Diary Entry" entry(file+olp+datetree"~/git/org-notes/personal/diary.org" "Daily Logs")
+             '("dn" "New Diary Entry" entry(file+olp+datetree"~/git/org/personal/diary.org" "Daily Logs")
 "* %^{thought for the day}
 :PROPERTIES:
 :CATEGORY: %^{category}
@@ -178,7 +174,7 @@ This allows to export from ~.org~ to ~.Rmd~
 - %?"))
 
   (add-to-list 'org-capture-templates
-      '("un" "New URL Entry" entry(file+function "~/git/org-notes/personal/dailies.org" org-reverse-datetree-goto-date-in-file)
+      '("un" "New URL Entry" entry(file+function "~/git/org/personal/dailies.org" org-reverse-datetree-goto-date-in-file)
             "* [[%^{URL}][%^{Description}]] %^g %?")))
 #+END_SRC
 
@@ -187,10 +183,10 @@ This allows to export from ~.org~ to ~.Rmd~
 (setq org-bullets-bullet-list '("✖" "✚")
       org-ellipsis "▼")
 #+END_SRC
-** Popups: capture and agenda
+** TODO Popups: capture and agenda
 #+BEGIN_SRC emacs-lisp
-(after! org (set-popup-rule! "^Capture.*\\.org$" :side 'right :size .40 :select t :vslot 2 :ttl 3))
-(after! org (set-popup-rule! "*org agenda*" :side 'right :size .40 :select t :vslot 2 :ttl 3))
+;; (after! org (set-popup-rule! "^Capture.*\\.org$" :side 'right :size .40 :select t :vslot 2 :ttl 3))
+;; (after! org (set-popup-rule! "*org agenda*" :side 'right :size .40 :select t :vslot 2 :ttl 3))
 #+END_SRC
 ** emacs-jupyter
 *** Default header arguments:
@@ -225,9 +221,9 @@ This allows to export from ~.org~ to ~.Rmd~
 (after! jupyter (set-popup-rule! "*jupyter-pager*" :side 'right :size .40 :select t :vslot 2 :ttl 3))
 (after! jupyter (set-popup-rule! "^\\*Org Src*" :side 'right :size .40 :select t :vslot 2 :ttl 3))
 #+END_SRC
-*** Bigger inline images
+*** TODO Bigger inline images
 #+BEGIN_SRC emacs-lisp
-(setq org-image-actual-width t)
+;; (setq org-image-actual-width t)
 #+END_SRC
 ** ox-ipynb
 #+BEGIN_SRC emacs-lisp
@@ -264,14 +260,6 @@ of code we send with ~g r~.
 (set-popup-rule! "^\\*Python*" :ignore t)
 #+END_SRC
 ** LSP
-*** TODO direnv
-Make sure direnv is called before LSP starts
-#+BEGIN_SRC emacs-lisp
-;; (after! lsp-mode
-;; (advice-add 'python-mode :before #'direnv-update-environment ))
-  ;; (advice-add 'direnv-update-directory-environment :before #'+lsp-init-a ))
-  ;; (add-hook! python-mode #'direnv-update-directory-environment ))
-#+END_SRC
 *** TODO lsp-ui
 #+BEGIN_SRC emacs-lisp
 ;; (after! lsp-ui
@@ -287,8 +275,12 @@ This variable determines how often lsp-mode will refresh the highlights, lenses,
 (after! lsp-mode
 (setq lsp-idle-delay 0.500))
 #+END_SRC
-*** Prefer capf over company-lsp
+*** Prefer company-capf over company-lsp
 #+BEGIN_SRC emacs-lisp
+(remove-hook 'lsp-mode-hook #'+lsp-init-company-h)
+
+(setq +lsp-company-backend 'company-capf)
+
 (after! lsp-mode
   (setq lsp-prefer-capf t))
 #+END_SRC
@@ -378,7 +370,7 @@ Add in ~.dir-locals.el~:
                             (list :type "python"
                                 :args "-i"
                                 :cwd (lsp-workspace-root)
-                                :program nil
+                                :program nil ; (expand-file-name "~/git/blabla")
                                 :environment-variables '(("PYTHONPATH" . "src"))
                                 :request "launch"
                                 :name "dap-debug-script"))
@@ -454,21 +446,30 @@ Custom debug provider which prepends ~PYTHONPATH~
 
   (add-hook 'dap-ui-repl-mode-hook
             (lambda ()
-              (setq-local company-minimum-prefix-length 1)))
-  )
+              (setq-local company-minimum-prefix-length 1))))
+#+END_SRC
+*** dap-hydra
+#+BEGIN_SRC emacs-lisp
+(after! dap-mode
+  (add-hook 'dap-stopped-hook
+            (lambda (arg) (call-interactively #'dap-hydra ))))
+#+END_SRC
+*** tooltip mode
+#+BEGIN_SRC emacs-lisp
+(after! dap-mode
+  (dap-tooltip-mode 1)
+  (tooltip-mode 1))
 #+END_SRC
 
-** Jupyter Notebook
+** emacs-ipython-notebook
 *** Don't ignore ~ein~ buffers
 #+BEGIN_SRC emacs-lisp
 (after! ein
   (set-popup-rule! "^\\*ein" :ignore t))
 #+END_SRC
-
 *** Bindings
 Bindings, inspired by[[https://github.com/millejoh/emacs-ipython-notebook/wiki/Spacemacs-Evil-Bindings][ this]].
 #+BEGIN_SRC emacs-lisp
-
 (map! (:when (featurep! :tools ein)
         (:map ein:notebook-mode-map
           :nmvo doom-localleader-key nil ;; remove binding to local-leader
@@ -512,10 +513,10 @@ Disable popup for ESS:
 
 (advice-add 'shell-command--save-pos-or-erase :after 'shell-command-print-separator)
 #+END_SRC
-** Eshell aliases
+** TODO Eshell aliases
 #+BEGIN_SRC emacs-lisp
-(after! eshell
-  (set-eshell-alias!
-   "fd" "+eshell/fd $1"
-   "fo" "find-file-other-window $1"))
+;; (after! eshell
+;;   (set-eshell-alias!
+;;    "fd" "+eshell/fd $1"
+;;    "fo" "find-file-other-window $1"))
 #+END_SRC
