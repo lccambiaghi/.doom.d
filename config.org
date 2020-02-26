@@ -1,4 +1,4 @@
-#+EXPORT_FILE_NAME: README
+#+EXPORT_FILE_NAME: readme
 * Preamble
 This is my private DOOM emacs configuration. It is tangled from ~config.org~
 and exported to ~README.md~.
@@ -32,6 +32,7 @@ We then remap some of the bindings (inspired by [[https://github.com/jsmestad/df
       :desc "ivy resume" :n ":" #'ivy-resume
       :desc "Async shell command"   :n "!"   #'async-shell-command
       :desc "Toggle eshell"         :n "'"   #'+eshell/toggle
+      :desc "Open dir in iTerm" :n "oi" #'+macos/open-in-iterm
 
       (:desc "windows" :prefix "w"
         :desc "popup raise" :n "p" #'+popup/raise)
@@ -39,6 +40,7 @@ We then remap some of the bindings (inspired by [[https://github.com/jsmestad/df
       (:desc "project" :prefix "p"
         :desc "Eshell"               :n "'" #'projectile-run-eshell
         :desc "Terminal" :n "t" #'projectile-run-vterm ))
+
 #+END_SRC
 
 * User Interface
@@ -71,6 +73,8 @@ We then remap some of the bindings (inspired by [[https://github.com/jsmestad/df
   (add-hook 'dired-mode-hook 'centaur-tabs-local-mode))
 #+END_SRC
 ** Winum
+note: insteadf of using =SPC 0=, use =SPC w h= to access its window. In general,
+use those keys!
 #+BEGIN_SRC emacs-lisp
 (after! winum
   ;; (defun winum-assign-0-to-treemacs ()
@@ -80,7 +84,6 @@ We then remap some of the bindings (inspired by [[https://github.com/jsmestad/df
 
     (map! (:when (featurep! :ui window-select)
             :leader
-            :n "0" #'treemacs-select-windows
             :n "1" #'winum-select-window-1
             :n "2" #'winum-select-window-2
             :n "3" #'winum-select-window-3
@@ -183,10 +186,9 @@ This allows to export from ~.org~ to ~.Rmd~
 (setq org-bullets-bullet-list '("✖" "✚")
       org-ellipsis "▼")
 #+END_SRC
-** TODO Popups: capture and agenda
+** Org agenda popup
 #+BEGIN_SRC emacs-lisp
-;; (after! org (set-popup-rule! "^Capture.*\\.org$" :side 'right :size .40 :select t :vslot 2 :ttl 3))
-;; (after! org (set-popup-rule! "*org agenda*" :side 'right :size .40 :select t :vslot 2 :ttl 3))
+(set-popup-rule! "*org agenda*" :side 'right :size .40 :select t :vslot 2 :ttl 3)
 #+END_SRC
 ** emacs-jupyter
 *** Default header arguments:
@@ -218,13 +220,20 @@ This allows to export from ~.org~ to ~.Rmd~
 #+END_SRC
 *** Popups: pager and org src
 #+BEGIN_SRC emacs-lisp
-(after! jupyter (set-popup-rule! "*jupyter-pager*" :side 'right :size .40 :select t :vslot 2 :ttl 3))
-(after! jupyter (set-popup-rule! "^\\*Org Src*" :side 'right :size .40 :select t :vslot 2 :ttl 3))
+(set-popup-rule! "*jupyter-pager*" :side 'right :size .40 :select t :vslot 2 :ttl 3)
+;; (after! jupyter (set-popup-rule! "^\\*Org Src*" :side 'right :size .40 :select t :vslot 2 :ttl 3))
+(set-popup-rule! "^\\*Org Src*" :ignore t)
 #+END_SRC
 *** TODO Bigger inline images
 #+BEGIN_SRC emacs-lisp
 ;; (setq org-image-actual-width t)
 #+END_SRC
+*** TODO Load ob-jupyter
+#+BEGIN_SRC emacs-lisp
+;; (after! jupyter
+;;   (load! ".local/straight/repos/emacs-jupyter/ob-jupyter.el" doom-emacs-dir)
+#+END_SRC
+
 ** ox-ipynb
 #+BEGIN_SRC emacs-lisp
 (require 'ox-ipynb)
@@ -259,21 +268,23 @@ of code we send with ~g r~.
 #+BEGIN_SRC emacs-lisp
 (set-popup-rule! "^\\*Python*" :ignore t)
 #+END_SRC
-** LSP
-*** TODO lsp-ui
+*** Disable native completion
 #+BEGIN_SRC emacs-lisp
-;; (after! lsp-ui
-;;   (setq lsp-ui-sideline-enable t)
-      ;; lsp-enable-indentation nil
-      ;; lsp-enable-on-type-formatting nil
-      ;; lsp-enable-symbol-highlighting nil
-      ;; lsp-enable-file-watchers nil
+(after! python
+  (setq python-shell-completion-native-enable nil))
+#+END_SRC
+
+** LSP
+*** Don't guess project root
+#+BEGIN_SRC emacs-lisp
+(after! lsp-mode
+  (setq lsp-auto-guess-root nil))
 #+END_SRC
 *** LSP idle delay
 This variable determines how often lsp-mode will refresh the highlights, lenses, links, etc while you type.
 #+BEGIN_SRC emacs-lisp
 (after! lsp-mode
-(setq lsp-idle-delay 0.500))
+  (setq lsp-idle-delay 0.500))
 #+END_SRC
 *** Prefer company-capf over company-lsp
 #+BEGIN_SRC emacs-lisp
@@ -294,6 +305,25 @@ In python mode, use ~, i i~ to add missing imports
 #+BEGIN_SRC emacs-lisp
 (after! pyimport
   (setq pyimport-pyflakes-path "~/git/experiments/.venv/bin/pyflakes"))
+#+END_SRC
+*** lsp-ui
+#+BEGIN_SRC emacs-lisp
+(after! lsp-ui
+  (setq lsp-eldoc-enable-hover nil ; Disable eldoc displays in minibuffer
+        lsp-ui-doc-enable nil
+        ;; lsp-ui-doc-delay 0.2
+        ;; lsp-ui-doc-include-signature t
+        ;; lsp-ui-doc-border (face-foreground 'default)
+
+        ;; lsp-ui-sideline-show-diagnostics nil
+        lsp-ui-imenu-colors `(,(face-foreground 'font-lock-keyword-face)
+                              ,(face-foreground 'font-lock-string-face)
+                              ,(face-foreground 'font-lock-constant-face)
+                              ,(face-foreground 'font-lock-variable-name-face))
+
+        lsp-enable-on-type-formatting nil
+        lsp-enable-symbol-highlighting nil
+        lsp-enable-file-watchers nil))
 #+END_SRC
 *** TODO remote python
 Add in ~.dir-locals.el~:
@@ -361,7 +391,10 @@ Add in ~.dir-locals.el~:
       :desc "Edit debug template" :n "t" #'dap-debug-edit-template
       :desc "Run last debug configuration" :n "l" #'dap-debug-last
       :desc "Toggle breakpoint" :n "b" #'dap-breakpoint-toggle
-    ))
+      :desc "dap continue" :n "c" #'dap-continue
+      :desc "dap next" :n "n" #'dap-next
+      :desc "dap step in" :n "s" #'dap-step-in
+      :desc "Disconnect" :n "q" #'dap-disconnect ))
 #+END_SRC
 *** Debug templates:
 #+BEGIN_SRC emacs-lisp
@@ -383,6 +416,34 @@ Add in ~.dir-locals.el~:
                                 :request "launch"
                                 :name "dap-debug-test")))
 #+END_SRC
+*** virtualenv executable
+#+BEGIN_SRC emacs-lisp
+(defadvice! +dap-python-poetry-executable-find-a (orig-fn &rest args)
+  "Use the Python binary from the current virtual environment."
+  :around #'dap-python--pyenv-executable-find
+  (if (getenv "VIRTUAL_ENV")
+      (executable-find (car args))
+    (apply orig-fn args)))
+;; (after! dap-python
+;;   (defun dap-python--pyenv-executable-find (command)
+;;     (concat (getenv "VIRTUAL_ENV") "/bin/python")))
+#+END_SRC
+*** completion
+#+BEGIN_SRC emacs-lisp
+(after! dap-mode
+  (set-company-backend! 'dap-ui-repl-mode 'company-dap-ui-repl)
+
+  (add-hook 'dap-ui-repl-mode-hook
+            (lambda ()
+              (setq-local company-minimum-prefix-length 1))))
+#+END_SRC
+*** tooltip mode
+#+BEGIN_SRC emacs-lisp
+(after! dap-mode
+  (dap-tooltip-mode 1)
+  (tooltip-mode 1))
+#+END_SRC
+
 *** TODO debug provider
 Custom debug provider which prepends ~PYTHONPATH~
 #+BEGIN_SRC emacs-lisp
@@ -427,40 +488,12 @@ Custom debug provider which prepends ~PYTHONPATH~
     ;;                                :request "launch"
     ;;                                :name "Python :: Run Configuration")))
 #+END_SRC
-*** virtualenv executable
+*** TODO dap-hydra on dap-stopped-hook
 #+BEGIN_SRC emacs-lisp
-(defadvice! +dap-python-poetry-executable-find-a (orig-fn &rest args)
-  "Use the Python binary from the current virtual environment."
-  :around #'dap-python--pyenv-executable-find
-  (if (getenv "VIRTUAL_ENV")
-      (executable-find (car args))
-    (apply orig-fn args)))
-;; (after! dap-python
-;;   (defun dap-python--pyenv-executable-find (command)
-;;     (concat (getenv "VIRTUAL_ENV") "/bin/python")))
+;; (after! dap-mode
+;;   (add-hook 'dap-stopped-hook
+;;             (lambda (arg) (call-interactively #'dap-hydra ))))
 #+END_SRC
-*** completion
-#+BEGIN_SRC emacs-lisp
-(after! dap-mode
-  (set-company-backend! 'dap-ui-repl-mode 'company-dap-ui-repl)
-
-  (add-hook 'dap-ui-repl-mode-hook
-            (lambda ()
-              (setq-local company-minimum-prefix-length 1))))
-#+END_SRC
-*** dap-hydra
-#+BEGIN_SRC emacs-lisp
-(after! dap-mode
-  (add-hook 'dap-stopped-hook
-            (lambda (arg) (call-interactively #'dap-hydra ))))
-#+END_SRC
-*** tooltip mode
-#+BEGIN_SRC emacs-lisp
-(after! dap-mode
-  (dap-tooltip-mode 1)
-  (tooltip-mode 1))
-#+END_SRC
-
 ** emacs-ipython-notebook
 *** Don't ignore ~ein~ buffers
 #+BEGIN_SRC emacs-lisp
@@ -495,6 +528,11 @@ Install docsets with ~dash-docs-install-docset~.
 #+BEGIN_SRC emacs-lisp
 (set-docsets! 'python-mode "NumPy" "Pandas")
 #+END_SRC
+** Compilation popup
+#+BEGIN_SRC emacs-lisp
+(set-popup-rule! "*compilation*" :ignore t :ttl 3)
+#+END_SRC
+
 * R
 ** R console in a buffer
 Disable popup for ESS:

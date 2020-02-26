@@ -10,6 +10,7 @@
       :desc "ivy resume" :n ":" #'ivy-resume
       :desc "Async shell command"   :n "!"   #'async-shell-command
       :desc "Toggle eshell"         :n "'"   #'+eshell/toggle
+      :desc "Open dir in iTerm" :n "oi" #'+macos/open-in-iterm
 
       (:desc "windows" :prefix "w"
         :desc "popup raise" :n "p" #'+popup/raise)
@@ -44,7 +45,6 @@
 
     (map! (:when (featurep! :ui window-select)
             :leader
-            :n "0" #'treemacs-select-windows
             :n "1" #'winum-select-window-1
             :n "2" #'winum-select-window-2
             :n "3" #'winum-select-window-3
@@ -121,8 +121,7 @@
 (setq org-bullets-bullet-list '("✖" "✚")
       org-ellipsis "▼")
 
-;; (after! org (set-popup-rule! "^Capture.*\\.org$" :side 'right :size .40 :select t :vslot 2 :ttl 3))
-;; (after! org (set-popup-rule! "*org agenda*" :side 'right :size .40 :select t :vslot 2 :ttl 3))
+(set-popup-rule! "*org agenda*" :side 'right :size .40 :select t :vslot 2 :ttl 3)
 
 (after! evil-org
   (setq org-babel-default-header-args:jupyter-python '((:async . "yes")
@@ -147,10 +146,14 @@
  :desc "Fold results" :n "z" #'org-babel-hide-result-toggle
  )
 
-(after! jupyter (set-popup-rule! "*jupyter-pager*" :side 'right :size .40 :select t :vslot 2 :ttl 3))
-(after! jupyter (set-popup-rule! "^\\*Org Src*" :side 'right :size .40 :select t :vslot 2 :ttl 3))
+(set-popup-rule! "*jupyter-pager*" :side 'right :size .40 :select t :vslot 2 :ttl 3)
+;; (after! jupyter (set-popup-rule! "^\\*Org Src*" :side 'right :size .40 :select t :vslot 2 :ttl 3))
+(set-popup-rule! "^\\*Org Src*" :ignore t)
 
 ;; (setq org-image-actual-width t)
+
+;; (after! jupyter
+;;   (load! ".local/straight/repos/emacs-jupyter/ob-jupyter.el" doom-emacs-dir)
 
 (require 'ox-ipynb)
 
@@ -171,15 +174,14 @@
 
 (set-popup-rule! "^\\*Python*" :ignore t)
 
-;; (after! lsp-ui
-;;   (setq lsp-ui-sideline-enable t)
-      ;; lsp-enable-indentation nil
-      ;; lsp-enable-on-type-formatting nil
-      ;; lsp-enable-symbol-highlighting nil
-      ;; lsp-enable-file-watchers nil
+(after! python
+  (setq python-shell-completion-native-enable nil))
 
 (after! lsp-mode
-(setq lsp-idle-delay 0.500))
+  (setq lsp-auto-guess-root nil))
+
+(after! lsp-mode
+  (setq lsp-idle-delay 0.500))
 
 (remove-hook 'lsp-mode-hook #'+lsp-init-company-h)
 
@@ -192,6 +194,23 @@
 
 (after! pyimport
   (setq pyimport-pyflakes-path "~/git/experiments/.venv/bin/pyflakes"))
+
+(after! lsp-ui
+  (setq lsp-eldoc-enable-hover nil ; Disable eldoc displays in minibuffer
+        lsp-ui-doc-enable nil
+        ;; lsp-ui-doc-delay 0.2
+        ;; lsp-ui-doc-include-signature t
+        ;; lsp-ui-doc-border (face-foreground 'default)
+
+        ;; lsp-ui-sideline-show-diagnostics nil
+        lsp-ui-imenu-colors `(,(face-foreground 'font-lock-keyword-face)
+                              ,(face-foreground 'font-lock-string-face)
+                              ,(face-foreground 'font-lock-constant-face)
+                              ,(face-foreground 'font-lock-variable-name-face))
+
+        lsp-enable-on-type-formatting nil
+        lsp-enable-symbol-highlighting nil
+        lsp-enable-file-watchers nil))
 
 ;; ((nil . ((ssh-deploy-root-remote . "/ssh:luca@ricko-ds.westeurope.cloudapp.azure.com:/mnt/data/luca/emptiesforecast"))))
 
@@ -246,7 +265,10 @@
       :desc "Edit debug template" :n "t" #'dap-debug-edit-template
       :desc "Run last debug configuration" :n "l" #'dap-debug-last
       :desc "Toggle breakpoint" :n "b" #'dap-breakpoint-toggle
-    ))
+      :desc "dap continue" :n "c" #'dap-continue
+      :desc "dap next" :n "n" #'dap-next
+      :desc "dap step in" :n "s" #'dap-step-in
+      :desc "Disconnect" :n "q" #'dap-disconnect ))
 
 (after! dap-python
     (dap-register-debug-template "dap-debug-script"
@@ -265,6 +287,27 @@
                                 :module "pytest"
                                 :request "launch"
                                 :name "dap-debug-test")))
+
+(defadvice! +dap-python-poetry-executable-find-a (orig-fn &rest args)
+  "Use the Python binary from the current virtual environment."
+  :around #'dap-python--pyenv-executable-find
+  (if (getenv "VIRTUAL_ENV")
+      (executable-find (car args))
+    (apply orig-fn args)))
+;; (after! dap-python
+;;   (defun dap-python--pyenv-executable-find (command)
+;;     (concat (getenv "VIRTUAL_ENV") "/bin/python")))
+
+(after! dap-mode
+  (set-company-backend! 'dap-ui-repl-mode 'company-dap-ui-repl)
+
+  (add-hook 'dap-ui-repl-mode-hook
+            (lambda ()
+              (setq-local company-minimum-prefix-length 1))))
+
+(after! dap-mode
+  (dap-tooltip-mode 1)
+  (tooltip-mode 1))
 
 ;; (after! dap-mode
   ;; (defun my/dap-python--pyenv-executable-find (command)
@@ -307,30 +350,9 @@
     ;;                                :request "launch"
     ;;                                :name "Python :: Run Configuration")))
 
-(defadvice! +dap-python-poetry-executable-find-a (orig-fn &rest args)
-  "Use the Python binary from the current virtual environment."
-  :around #'dap-python--pyenv-executable-find
-  (if (getenv "VIRTUAL_ENV")
-      (executable-find (car args))
-    (apply orig-fn args)))
-;; (after! dap-python
-;;   (defun dap-python--pyenv-executable-find (command)
-;;     (concat (getenv "VIRTUAL_ENV") "/bin/python")))
-
-(after! dap-mode
-  (set-company-backend! 'dap-ui-repl-mode 'company-dap-ui-repl)
-
-  (add-hook 'dap-ui-repl-mode-hook
-            (lambda ()
-              (setq-local company-minimum-prefix-length 1))))
-
-(after! dap-mode
-  (add-hook 'dap-stopped-hook
-            (lambda (arg) (call-interactively #'dap-hydra ))))
-
-(after! dap-mode
-  (dap-tooltip-mode 1)
-  (tooltip-mode 1))
+;; (after! dap-mode
+;;   (add-hook 'dap-stopped-hook
+;;             (lambda (arg) (call-interactively #'dap-hydra ))))
 
 (after! ein
   (set-popup-rule! "^\\*ein" :ignore t))
@@ -355,6 +377,8 @@
       )))
 
 (set-docsets! 'python-mode "NumPy" "Pandas")
+
+(set-popup-rule! "*compilation*" :ignore t :ttl 3)
 
 (set-popup-rule! "^\\*R:" :ignore t)
 
