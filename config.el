@@ -1,8 +1,6 @@
 (setq user-full-name "Luca Cambiaghi"
       user-mail-address "luca.cambiaghi@me.com")
 
-(setq doom-scratch-buffer-major-mode 'emacs-lisp-mode)
-
 (general-auto-unbind-keys)
 
 (map! :leader
@@ -65,19 +63,12 @@
       magit-inhibit-save-previous-winconf t)
 
 (after! company
-  (setq company-idle-delay 0.4
+  (setq company-idle-delay 0
         company-minimum-prefix-length 2
         company-quickhelp-delay 0.4)
   (set-company-backend! 'org-mode
-    ;; '(company-math-symbols-latex
-    ;;   company-latex-commands)
     '(company-files
-      ;; company-yasnippet
-      ;; company-keywords
-      company-capf))
-    ;; '(company-abbrev
-    ;;   company-dabbrev))
-  )
+      company-capf)))
 
 (setq org-directory "~/git/org/"
       org-image-actual-width nil
@@ -152,9 +143,6 @@
 
 ;; (setq org-image-actual-width t)
 
-;; (after! jupyter
-;;   (load! ".local/straight/repos/emacs-jupyter/ob-jupyter.el" doom-emacs-dir)
-
 (require 'ox-ipynb)
 
 (defadvice! +python-poetry-open-repl-a (orig-fn &rest args)
@@ -183,7 +171,7 @@
 (after! lsp-mode
   (setq lsp-idle-delay 0.500))
 
-(remove-hook 'lsp-mode-hook #'+lsp-init-company-h)
+;; (remove-hook 'lsp-mode-hook #'+lsp-init-company-h)
 
 (setq +lsp-company-backend 'company-capf)
 
@@ -197,12 +185,6 @@
 
 (after! lsp-ui
   (setq lsp-eldoc-enable-hover nil ; Disable eldoc displays in minibuffer
-        lsp-ui-doc-enable nil
-        ;; lsp-ui-doc-delay 0.2
-        ;; lsp-ui-doc-include-signature t
-        ;; lsp-ui-doc-border (face-foreground 'default)
-
-        ;; lsp-ui-sideline-show-diagnostics nil
         lsp-ui-imenu-colors `(,(face-foreground 'font-lock-keyword-face)
                               ,(face-foreground 'font-lock-string-face)
                               ,(face-foreground 'font-lock-constant-face)
@@ -211,15 +193,6 @@
         lsp-enable-on-type-formatting nil
         lsp-enable-symbol-highlighting nil
         lsp-enable-file-watchers nil))
-
-;; ((nil . ((ssh-deploy-root-remote . "/ssh:luca@ricko-ds.westeurope.cloudapp.azure.com:/mnt/data/luca/emptiesforecast"))))
-
-;; (after! lsp-mode
-;;   (lsp-register-client
-;;    (make-lsp-client :new-connection (lsp-tramp-connection "~/.pyenv/shims/pyls")
-;;                     :major-modes '(python-mode)
-;;                     :remote? t
-;;                     :server-id 'pyls-remote)))
 
 (after! python-pytest
   (setq python-pytest-arguments '("--color" "--failed-first"))
@@ -309,51 +282,6 @@
   (dap-tooltip-mode 1)
   (tooltip-mode 1))
 
-;; (after! dap-mode
-  ;; (defun my/dap-python--pyenv-executable-find (command)
-  ;;   (concat (getenv "VIRTUAL_ENV") "/bin/python"))
-
-    ;; (defun my/dap-python--populate-start-file-args (conf)
-    ;;     "Populate CONF with the required arguments."
-    ;;     (let* ((host "localhost")
-    ;;             (debug-port (dap--find-available-port))
-    ;;             (python-executable (my/dap-python--pyenv-executable-find dap-python-executable))
-    ;;             (python-args (or (plist-get conf :args) ""))
-    ;;             (program (or (plist-get conf :target-module)
-    ;;                         (plist-get conf :program)
-    ;;                         (buffer-file-name)))
-    ;;             (module (plist-get conf :module)))
-
-    ;;         (plist-put conf :program-to-start
-    ;;                 (format "%s %s%s -m ptvsd --wait --host %s --port %s %s %s %s"
-    ;;                         (concat "PYTHONPATH=" (getenv "PYTHONPATH"))
-    ;;                         (or dap-python-terminal "")
-    ;;                         (shell-quote-argument python-executable)
-    ;;                         host
-    ;;                         debug-port
-    ;;                         (if module (concat "-m " (shell-quote-argument module)) "")
-    ;;                         (shell-quote-argument program)
-    ;;                         python-args))
-    ;;         (plist-put conf :program program)
-    ;;         (plist-put conf :debugServer debug-port)
-    ;;         (plist-put conf :port debug-port)
-    ;;         (plist-put conf :hostName host)
-    ;;         (plist-put conf :host host)
-    ;;         conf))
-
-    ;; (dap-register-debug-provider "my/python" 'my/dap-python--populate-start-file-args)
-
-    ;; (dap-register-debug-template "my/python"
-    ;;                          (list :type "my/python"
-    ;;                                ;; :cwd "/Users/luca/git/emptiesforecast"
-    ;;                                :cwd (poetry-find-project-root)
-    ;;                                :request "launch"
-    ;;                                :name "Python :: Run Configuration")))
-
-;; (after! dap-mode
-;;   (add-hook 'dap-stopped-hook
-;;             (lambda (arg) (call-interactively #'dap-hydra ))))
-
 (after! ein
   (set-popup-rule! "^\\*ein" :ignore t))
 
@@ -376,9 +304,17 @@
           :desc "Save notebook" :n "fs" #'ein:notebook-save-notebook-command
       )))
 
-(set-docsets! 'python-mode "NumPy" "Pandas")
+(set-popup-rule! "*eww*" :side 'right :size .50 :select t :vslot 2 :ttl 3)
 
-(set-popup-rule! "*compilation*" :ignore t :ttl 3)
+(after! dash-docs
+  ;; (setq dash-docs-docsets-path "/Users/luca/Library/Application Support/Dash/DocSets")
+  ;; (setq counsel-dash-docsets-path "/Users/luca/Library/Application Support/Dash/DocSets")
+  ;; (expand-file-name "~/Library/Application Support/Dash/DocSets")
+  ;; (set-docsets! 'python-mode "NumPy" "Pandas" "scikit-learn"))
+  (setq counsel-dash-docsets '("Pandas" "scikit-learn"))
+  (setq dash-docs-docsets '("Pandas" "scikit-learn")))
+
+(set-popup-rule! "*compilation*" :side 'right :size .50 :select t :vslot 2 :ttl 3)
 
 (set-popup-rule! "^\\*R:" :ignore t)
 
@@ -391,7 +327,5 @@
 
 (advice-add 'shell-command--save-pos-or-erase :after 'shell-command-print-separator)
 
-;; (after! eshell
-;;   (set-eshell-alias!
-;;    "fd" "+eshell/fd $1"
-;;    "fo" "find-file-other-window $1"))
+(set-popup-rule! "*Async Shell Command*" :side 'bottom :size .40 :ttl 3)
+(set-popup-rule! "vterm" :side 'right :size .40 :ttl 3)

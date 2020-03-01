@@ -1,27 +1,16 @@
-# Created 2020-02-26 Wed 21:34
+# Created 2020-03-01 Sun 13:49
 #+TITLE: 
 #+AUTHOR: Luca Cambiaghi
 #+export_file_name: readme
 * Preamble
 This is my private DOOM emacs configuration. It is tangled from ~config.org~
-and exported to ~README.md~.
-#+begin_src sh
-git clone https://github.com/lccambiaghi/doom.d ~/.doom.d
-git clone https://github.com/hlissner/doom-emacs ~/.emacs.d
-~/.emacs.d/bin/doom install
-#+end_src
+and exported to ~readme.org~ to render in the githup repo.
 
 Username and e-mail:
 #+begin_src emacs-lisp
 (setq user-full-name "Luca Cambiaghi"
       user-mail-address "luca.cambiaghi@me.com")
 #+end_src
-
-Scratch buffer major mode:
-#+begin_src emacs-lisp
-(setq doom-scratch-buffer-major-mode 'emacs-lisp-mode)
-#+end_src
-
 * Keybindings
 Let's have ~general~ auto-unbind keys:
 #+begin_src emacs-lisp
@@ -103,7 +92,7 @@ use those keys!
   (setq doom-modeline-env-enable-python nil))
 ;; (setq doom-modeline-env-python-executable (executable-find "python"))
 #+end_src
-*** TODO Flashing modelin
+*** TODO Flashing modelinennn
 #+begin_src emacs-lisp
 ;; (setq inhibit-compacting-font-caches t)
 #+end_src
@@ -114,25 +103,16 @@ use those keys!
       ;; Don't restore the wconf after quitting magit
       magit-inhibit-save-previous-winconf t)
 #+end_src
-
 * Company
 #+begin_src emacs-lisp
 (after! company
-  (setq company-idle-delay 0.4
+  (setq company-idle-delay 0
         company-minimum-prefix-length 2
         company-quickhelp-delay 0.4)
   (set-company-backend! 'org-mode
-    ;; '(company-math-symbols-latex
-    ;;   company-latex-commands)
     '(company-files
-      ;; company-yasnippet
-      ;; company-keywords
-      company-capf))
-    ;; '(company-abbrev
-    ;;   company-dabbrev))
-  )
+      company-capf)))
 #+end_src
-
 * Org
 ** Directories:
 #+begin_src emacs-lisp
@@ -230,12 +210,6 @@ This allows to export from ~.org~ to ~.Rmd~
 #+begin_src emacs-lisp
 ;; (setq org-image-actual-width t)
 #+end_src
-*** TODO Load ob-jupyter
-#+begin_src emacs-lisp
-;; (after! jupyter
-;;   (load! ".local/straight/repos/emacs-jupyter/ob-jupyter.el" doom-emacs-dir)
-#+end_src
-
 ** ox-ipynb
 #+begin_src emacs-lisp
 (require 'ox-ipynb)
@@ -290,7 +264,7 @@ This variable determines how often lsp-mode will refresh the highlights, lenses,
 #+end_src
 *** Prefer company-capf over company-lsp
 #+begin_src emacs-lisp
-(remove-hook 'lsp-mode-hook #'+lsp-init-company-h)
+;; (remove-hook 'lsp-mode-hook #'+lsp-init-company-h)
 
 (setq +lsp-company-backend 'company-capf)
 
@@ -312,12 +286,6 @@ In python mode, use ~, i i~ to add missing imports
 #+begin_src emacs-lisp
 (after! lsp-ui
   (setq lsp-eldoc-enable-hover nil ; Disable eldoc displays in minibuffer
-        lsp-ui-doc-enable nil
-        ;; lsp-ui-doc-delay 0.2
-        ;; lsp-ui-doc-include-signature t
-        ;; lsp-ui-doc-border (face-foreground 'default)
-
-        ;; lsp-ui-sideline-show-diagnostics nil
         lsp-ui-imenu-colors `(,(face-foreground 'font-lock-keyword-face)
                               ,(face-foreground 'font-lock-string-face)
                               ,(face-foreground 'font-lock-constant-face)
@@ -326,20 +294,6 @@ In python mode, use ~, i i~ to add missing imports
         lsp-enable-on-type-formatting nil
         lsp-enable-symbol-highlighting nil
         lsp-enable-file-watchers nil))
-#+end_src
-*** TODO remote python
-Add in ~.dir-locals.el~:
-#+begin_src emacs-lisp
-;; ((nil . ((ssh-deploy-root-remote . "/ssh:luca@ricko-ds.westeurope.cloudapp.azure.com:/mnt/data/luca/emptiesforecast"))))
-#+end_src
-
-#+begin_src emacs-lisp
-;; (after! lsp-mode
-;;   (lsp-register-client
-;;    (make-lsp-client :new-connection (lsp-tramp-connection "~/.pyenv/shims/pyls")
-;;                     :major-modes '(python-mode)
-;;                     :remote? t
-;;                     :server-id 'pyls-remote)))
 #+end_src
 ** Pytest
 #+begin_src emacs-lisp
@@ -446,56 +400,6 @@ Add in ~.dir-locals.el~:
   (tooltip-mode 1))
 #+end_src
 
-*** TODO debug provider
-Custom debug provider which prepends ~PYTHONPATH~
-#+begin_src emacs-lisp
-;; (after! dap-mode
-  ;; (defun my/dap-python--pyenv-executable-find (command)
-  ;;   (concat (getenv "VIRTUAL_ENV") "/bin/python"))
-
-    ;; (defun my/dap-python--populate-start-file-args (conf)
-    ;;     "Populate CONF with the required arguments."
-    ;;     (let* ((host "localhost")
-    ;;             (debug-port (dap--find-available-port))
-    ;;             (python-executable (my/dap-python--pyenv-executable-find dap-python-executable))
-    ;;             (python-args (or (plist-get conf :args) ""))
-    ;;             (program (or (plist-get conf :target-module)
-    ;;                         (plist-get conf :program)
-    ;;                         (buffer-file-name)))
-    ;;             (module (plist-get conf :module)))
-
-    ;;         (plist-put conf :program-to-start
-    ;;                 (format "%s %s%s -m ptvsd --wait --host %s --port %s %s %s %s"
-    ;;                         (concat "PYTHONPATH=" (getenv "PYTHONPATH"))
-    ;;                         (or dap-python-terminal "")
-    ;;                         (shell-quote-argument python-executable)
-    ;;                         host
-    ;;                         debug-port
-    ;;                         (if module (concat "-m " (shell-quote-argument module)) "")
-    ;;                         (shell-quote-argument program)
-    ;;                         python-args))
-    ;;         (plist-put conf :program program)
-    ;;         (plist-put conf :debugServer debug-port)
-    ;;         (plist-put conf :port debug-port)
-    ;;         (plist-put conf :hostName host)
-    ;;         (plist-put conf :host host)
-    ;;         conf))
-
-    ;; (dap-register-debug-provider "my/python" 'my/dap-python--populate-start-file-args)
-
-    ;; (dap-register-debug-template "my/python"
-    ;;                          (list :type "my/python"
-    ;;                                ;; :cwd "/Users/luca/git/emptiesforecast"
-    ;;                                :cwd (poetry-find-project-root)
-    ;;                                :request "launch"
-    ;;                                :name "Python :: Run Configuration")))
-#+end_src
-*** TODO dap-hydra on dap-stopped-hook
-#+begin_src emacs-lisp
-;; (after! dap-mode
-;;   (add-hook 'dap-stopped-hook
-;;             (lambda (arg) (call-interactively #'dap-hydra ))))
-#+end_src
 ** emacs-ipython-notebook
 *** Don't ignore ~ein~ buffers
 #+begin_src emacs-lisp
@@ -528,15 +432,22 @@ Bindings, inspired by[[https://github.com/millejoh/emacs-ipython-notebook/wiki/S
 When ~SPC c k~ fails, try searching in the docsets with ~SPC s k~.
 Install docsets with ~dash-docs-install-docset~.
 #+begin_src emacs-lisp
-(set-docsets! 'python-mode "NumPy" "Pandas")
+(set-popup-rule! "*eww*" :side 'right :size .50 :select t :vslot 2 :ttl 3)
+
+(after! dash-docs
+  ;; (setq dash-docs-docsets-path "/Users/luca/Library/Application Support/Dash/DocSets")
+  ;; (setq counsel-dash-docsets-path "/Users/luca/Library/Application Support/Dash/DocSets")
+  ;; (expand-file-name "~/Library/Application Support/Dash/DocSets")
+  ;; (set-docsets! 'python-mode "NumPy" "Pandas" "scikit-learn"))
+  (setq counsel-dash-docsets '("Pandas" "scikit-learn"))
+  (setq dash-docs-docsets '("Pandas" "scikit-learn")))
 #+end_src
 ** Compilation popup
 #+begin_src emacs-lisp
-(set-popup-rule! "*compilation*" :ignore t :ttl 3)
+(set-popup-rule! "*compilation*" :side 'right :size .50 :select t :vslot 2 :ttl 3)
 #+end_src
-
 * R
-** R console in a buffer
+** ESS console popup
 Disable popup for ESS:
 #+begin_src emacs-lisp
 (set-popup-rule! "^\\*R:" :ignore t)
@@ -553,10 +464,8 @@ Disable popup for ESS:
 
 (advice-add 'shell-command--save-pos-or-erase :after 'shell-command-print-separator)
 #+end_src
-** TODO Eshell aliases
+** Async command and vterm popups
 #+begin_src emacs-lisp
-;; (after! eshell
-;;   (set-eshell-alias!
-;;    "fd" "+eshell/fd $1"
-;;    "fo" "find-file-other-window $1"))
+  (set-popup-rule! "*Async Shell Command*" :side 'bottom :size .40 :ttl 3)
+  (set-popup-rule! "vterm" :side 'right :size .40 :ttl 3)
 #+end_src
