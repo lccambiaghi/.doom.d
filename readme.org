@@ -1,10 +1,10 @@
-# Created 2020-03-01 Sun 13:49
+# Created 2020-04-08 Wed 14:01
 #+TITLE: 
 #+AUTHOR: Luca Cambiaghi
 #+export_file_name: readme
 * Preamble
-This is my private DOOM emacs configuration. It is tangled from ~config.org~
-and exported to ~readme.org~ to render in the githup repo.
+This is my private DOOM emacs configuration. It is tangled from ~config.org~ to ~config.el~
+and is exported to ~readme.org~ with =, e O o= to render in the githup repo.
 
 Username and e-mail:
 #+begin_src emacs-lisp
@@ -43,15 +43,15 @@ We then remap some of the bindings (inspired by [[https://github.com/jsmestad/df
 #+begin_src emacs-lisp
 (setq doom-font (font-spec :family "Menlo" :size 14))
 #+end_src
-** Transparency
+** TODO Transparency
 #+begin_src emacs-lisp
 ;transparent adjustment
-(set-frame-parameter (selected-frame)'alpha '(94 . 94))
-(add-to-list 'default-frame-alist'(alpha . (94 . 94)))
+;; (set-frame-parameter (selected-frame)'alpha '(94 . 94))
+;; (add-to-list 'default-frame-alist'(alpha . (94 . 94)))
 #+end_src
 ** Theme:
 #+begin_src emacs-lisp
-(setq doom-theme 'doom-vibrant)
+(setq doom-theme 'doom-one)
 #+end_src
 ** Centaur-tabs
 #+begin_src emacs-lisp
@@ -109,9 +109,12 @@ use those keys!
   (setq company-idle-delay 0
         company-minimum-prefix-length 2
         company-quickhelp-delay 0.4)
-  (set-company-backend! 'org-mode
-    '(company-files
-      company-capf)))
+    (add-hook 'after-init-hook 'company-statistics-mode))
+
+(set-company-backend! 'org-mode
+  'company-capf
+  'company-files
+  'company-dabbrev-code)
 #+end_src
 * Org
 ** Directories:
@@ -167,6 +170,9 @@ This allows to export from ~.org~ to ~.Rmd~
 #+begin_src emacs-lisp
 (setq org-bullets-bullet-list '("✖" "✚")
       org-ellipsis "▼")
+(set-pretty-symbols! 'org-mode
+  :src_block "#+begin_src"
+  :src_block_end "#+end_src")
 #+end_src
 ** Org agenda popup
 #+begin_src emacs-lisp
@@ -252,24 +258,27 @@ of code we send with ~g r~.
 
 ** LSP
 *** Don't guess project root
+In case we get a wrong workspace root, we can delete it with ~lsp-workspace-folders-remove~
 #+begin_src emacs-lisp
 (after! lsp-mode
   (setq lsp-auto-guess-root nil))
 #+end_src
-*** LSP idle delay
+*** Increase bytes read from subprocess
+#+begin_src emacs-lisp
+(setq read-process-output-max (* 1024 1024))
+#+end_src
+*** TODO LSP idle delay
 This variable determines how often lsp-mode will refresh the highlights, lenses, links, etc while you type.
 #+begin_src emacs-lisp
-(after! lsp-mode
-  (setq lsp-idle-delay 0.500))
+;; (after! lsp-mode
+;;   (setq lsp-idle-delay 0.500))
 #+end_src
 *** Prefer company-capf over company-lsp
 #+begin_src emacs-lisp
-;; (remove-hook 'lsp-mode-hook #'+lsp-init-company-h)
-
 (setq +lsp-company-backend 'company-capf)
 
-(after! lsp-mode
-  (setq lsp-prefer-capf t))
+;; (after! lsp-mode
+;;   (setq lsp-prefer-capf t))
 #+end_src
 *** lsp-help popup
 Lookup documentation with ~SPC c k~
@@ -282,18 +291,22 @@ In python mode, use ~, i i~ to add missing imports
 (after! pyimport
   (setq pyimport-pyflakes-path "~/git/experiments/.venv/bin/pyflakes"))
 #+end_src
-*** lsp-ui
+*** Flymake as syntax checker
 #+begin_src emacs-lisp
-(after! lsp-ui
-  (setq lsp-eldoc-enable-hover nil ; Disable eldoc displays in minibuffer
-        lsp-ui-imenu-colors `(,(face-foreground 'font-lock-keyword-face)
-                              ,(face-foreground 'font-lock-string-face)
-                              ,(face-foreground 'font-lock-constant-face)
-                              ,(face-foreground 'font-lock-variable-name-face))
+(after! lsp-mode
+  (setq lsp-diagnostic-package :flymake))
 
-        lsp-enable-on-type-formatting nil
-        lsp-enable-symbol-highlighting nil
-        lsp-enable-file-watchers nil))
+(after! python
+  (setq python-flymake-command  "~/git/experiments/.venv/bin/pyflakes"))
+#+end_src
+*** UI
+#+begin_src emacs-lisp
+(after! lsp-mode
+  (setq lsp-eldoc-enable-hover nil
+        lsp-signature-auto-activate nil
+        ;; lsp-enable-on-type-formatting nil
+        lsp-enable-symbol-highlighting nil))
+        ;; lsp-enable-file-watchers nil))
 #+end_src
 ** Pytest
 #+begin_src emacs-lisp
@@ -350,6 +363,7 @@ In python mode, use ~, i i~ to add missing imports
       :desc "dap continue" :n "c" #'dap-continue
       :desc "dap next" :n "n" #'dap-next
       :desc "dap step in" :n "s" #'dap-step-in
+      :desc "dap eval at point" :n "e" #'dap-eval-thing-at-point
       :desc "Disconnect" :n "q" #'dap-disconnect ))
 #+end_src
 *** Debug templates:

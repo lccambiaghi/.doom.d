@@ -22,10 +22,10 @@
 (setq doom-font (font-spec :family "Menlo" :size 14))
 
 ;transparent adjustment
-(set-frame-parameter (selected-frame)'alpha '(94 . 94))
-(add-to-list 'default-frame-alist'(alpha . (94 . 94)))
+;; (set-frame-parameter (selected-frame)'alpha '(94 . 94))
+;; (add-to-list 'default-frame-alist'(alpha . (94 . 94)))
 
-(setq doom-theme 'doom-vibrant)
+(setq doom-theme 'doom-one)
 
 (after! centaur-tabs
   (setq centaur-tabs-set-modified-marker t
@@ -66,9 +66,12 @@
   (setq company-idle-delay 0
         company-minimum-prefix-length 2
         company-quickhelp-delay 0.4)
-  (set-company-backend! 'org-mode
-    '(company-files
-      company-capf)))
+    (add-hook 'after-init-hook 'company-statistics-mode))
+
+(set-company-backend! 'org-mode
+  'company-capf
+  'company-files
+  'company-dabbrev-code)
 
 (setq org-directory "~/git/org/"
       org-image-actual-width nil
@@ -111,6 +114,9 @@
 
 (setq org-bullets-bullet-list '("✖" "✚")
       org-ellipsis "▼")
+(set-pretty-symbols! 'org-mode
+  :src_block "#+begin_src"
+  :src_block_end "#+end_src")
 
 (set-popup-rule! "*org agenda*" :side 'right :size .40 :select t :vslot 2 :ttl 3)
 
@@ -168,31 +174,33 @@
 (after! lsp-mode
   (setq lsp-auto-guess-root nil))
 
-(after! lsp-mode
-  (setq lsp-idle-delay 0.500))
+(setq read-process-output-max (* 1024 1024))
 
-;; (remove-hook 'lsp-mode-hook #'+lsp-init-company-h)
+;; (after! lsp-mode
+;;   (setq lsp-idle-delay 0.500))
 
 (setq +lsp-company-backend 'company-capf)
 
-(after! lsp-mode
-  (setq lsp-prefer-capf t))
+;; (after! lsp-mode
+;;   (setq lsp-prefer-capf t))
 
 (set-popup-rule! "^\\*lsp-help" :side 'right :size .50 :select t :vslot 1)
 
 (after! pyimport
   (setq pyimport-pyflakes-path "~/git/experiments/.venv/bin/pyflakes"))
 
-(after! lsp-ui
-  (setq lsp-eldoc-enable-hover nil ; Disable eldoc displays in minibuffer
-        lsp-ui-imenu-colors `(,(face-foreground 'font-lock-keyword-face)
-                              ,(face-foreground 'font-lock-string-face)
-                              ,(face-foreground 'font-lock-constant-face)
-                              ,(face-foreground 'font-lock-variable-name-face))
+(after! lsp-mode
+  (setq lsp-diagnostic-package :flymake))
 
-        lsp-enable-on-type-formatting nil
-        lsp-enable-symbol-highlighting nil
-        lsp-enable-file-watchers nil))
+(after! python
+  (setq python-flymake-command  "~/git/experiments/.venv/bin/pyflakes"))
+
+(after! lsp-mode
+  (setq lsp-eldoc-enable-hover nil
+        lsp-signature-auto-activate nil
+        ;; lsp-enable-on-type-formatting nil
+        lsp-enable-symbol-highlighting nil))
+        ;; lsp-enable-file-watchers nil))
 
 (after! python-pytest
   (setq python-pytest-arguments '("--color" "--failed-first"))
@@ -241,6 +249,7 @@
       :desc "dap continue" :n "c" #'dap-continue
       :desc "dap next" :n "n" #'dap-next
       :desc "dap step in" :n "s" #'dap-step-in
+      :desc "dap eval at point" :n "e" #'dap-eval-thing-at-point
       :desc "Disconnect" :n "q" #'dap-disconnect ))
 
 (after! dap-python

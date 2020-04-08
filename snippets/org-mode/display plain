@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: display plain
+# key: :dp
+# --
+:display plain
