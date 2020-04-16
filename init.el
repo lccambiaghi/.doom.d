@@ -27,7 +27,9 @@
       
        ;;helm              ; the *other* search engine for love and life
        ;;ido               ; the other *other* search engine...
-       (ivy +childframe +icons)               ; a search engine for love and life
+       (ivy                ; a search engine for love and life
+        ;; +childframe
+        +icons)
 
        :ui
        ;;deft              ; notational velocity for Emacs
@@ -51,7 +53,8 @@
        ;;unicode           ; extended unicode support for various languages
        vc-gutter         ; vcs diff in the fringe
        vi-tilde-fringe   ; fringe tildes to mark beyond EOB
-       window-select                                ; visually switch windows
+       (window-select                                ; visually switch windows
+        +numbers)
        workspaces        ; tab emulation, persistence & separate workspaces
        ;;zen               ; distraction-free coding or writing
 
@@ -74,6 +77,7 @@
        electric          ; smarter, keyword-based electric-indent
        ibuffer           ; interactive buffer management
        vc                ; version-control and Emacs, sitting in a tree
+       undo
 
        :term
        eshell            ; a consistent, cross-platform shell (WIP)

@@ -65,7 +65,9 @@
 (after! company
   (setq company-idle-delay 0
         company-minimum-prefix-length 2
-        company-quickhelp-delay 0.4)
+  company-dabbrev-code-everywhere t
+  company-dabbrev-code-other-buffers 'all)
+        ;; company-quickhelp-delay 0.4)
     (add-hook 'after-init-hook 'company-statistics-mode))
 
 (set-company-backend! 'org-mode
@@ -112,11 +114,9 @@
       '("un" "New URL Entry" entry(file+function "~/git/org/personal/dailies.org" org-reverse-datetree-goto-date-in-file)
             "* [[%^{URL}][%^{Description}]] %^g %?")))
 
-(setq org-bullets-bullet-list '("✖" "✚")
-      org-ellipsis "▼")
-(set-pretty-symbols! 'org-mode
-  :src_block "#+begin_src"
-  :src_block_end "#+end_src")
+(after! org-superstar
+    (setq org-superstar-headline-bullets-list '("✖" "✚")
+        org-ellipsis "▼"))
 
 (set-popup-rule! "*org agenda*" :side 'right :size .40 :select t :vslot 2 :ttl 3)
 
@@ -129,23 +129,28 @@
 
 ;; (:when (featurep! :lang +jupyter)
 (map! :after evil-org
- :map evil-org-mode-map
- :n "gR" #'jupyter-org-execute-subtree
- :localleader
- :desc "Hydra" :n "," #'jupyter-org-hydra/body
- :desc "Inspect at point" :n "?" #'jupyter-inspect-at-point
- :desc "Execute and step" :n "RET" #'jupyter-org-execute-and-next-block
- :desc "Delete code block" :n "x" #'jupyter-org-kill-block-and-results
- :desc "New code block above" :n "+" #'jupyter-org-insert-src-block
- :desc "New code block below" :n "=" (λ! () (interactive) (jupyter-org-insert-src-block t nil))
- :desc "Merge code blocks" :n "m" #'jupyter-org-merge-blocks
- :desc "Split code block" :n "-" #'jupyter-org-split-src-block
- :desc "Fold results" :n "z" #'org-babel-hide-result-toggle
- )
+      :map evil-org-mode-map
+      :n "gR" #'jupyter-org-execute-subtree
+      :leader
+      :desc "tangle" :n "ct" #'org-babel-tangle
+      :localleader
+      :desc "Hydra" :n "," #'jupyter-org-hydra/body
+      :desc "Inspect at point" :n "?" #'jupyter-inspect-at-point
+      :desc "Execute and step" :n "RET" #'jupyter-org-execute-and-next-block
+      :desc "Delete code block" :n "x" #'jupyter-org-kill-block-and-results
+      :desc "New code block above" :n "+" #'jupyter-org-insert-src-block
+      :desc "New code block below" :n "=" (λ! () (interactive) (jupyter-org-insert-src-block t nil))
+      :desc "Merge code blocks" :n "m" #'jupyter-org-merge-blocks
+      :desc "Split code block" :n "-" #'jupyter-org-split-src-block
+      :desc "Fold results" :n "z" #'org-babel-hide-result-toggle
+      )
 
 (set-popup-rule! "*jupyter-pager*" :side 'right :size .40 :select t :vslot 2 :ttl 3)
 ;; (after! jupyter (set-popup-rule! "^\\*Org Src*" :side 'right :size .40 :select t :vslot 2 :ttl 3))
 (set-popup-rule! "^\\*Org Src*" :ignore t)
+
+(after! evil-org
+  (org-babel-lob-ingest "/Users/luca/git/experiments/literate/ml/rpy2.org"))
 
 ;; (setq org-image-actual-width t)
 
@@ -192,8 +197,11 @@
 (after! lsp-mode
   (setq lsp-diagnostic-package :flymake))
 
-(after! python
-  (setq python-flymake-command  "~/git/experiments/.venv/bin/pyflakes"))
+;; (after! python
+;;   (setq python-flymake-command  "~/git/experiments/.venv/bin/pyflakes"))
+
+;; (after! flycheck
+;;   (setq-default flycheck-disabled-checkers '(python-flake8)))
 
 (after! lsp-mode
   (setq lsp-eldoc-enable-hover nil
@@ -204,36 +212,47 @@
 
 (after! python-pytest
   (setq python-pytest-arguments '("--color" "--failed-first"))
-  (set-popup-rule! "^\\*pytest*" :side 'right :size .50))
+  (evil-set-initial-state 'python-pytest-mode 'normal))
+
+(set-popup-rule! "^\\*pytest*" :side 'right :size .50)
 
 (after! dap-mode
   (setq dap-auto-show-output nil)
-  ;; (set-popup-rule! "*dap-ui-locals*" :side 'right :size .50 :vslot 1)
-  (set-popup-rule! "*dap-debug-.*" :side 'bottom :size .20 :slot 1)
-  (set-popup-rule! "*dap-ui-repl*" :side 'right :size .40 :select t :slot 1)
 
-  ;; (defun my/window-visible (b-name)
-  ;;   "Return whether B-NAME is visible."
-  ;;   (-> (-compose 'buffer-name 'window-buffer)
-  ;;       (-map (window-list))
-  ;;       (-contains? b-name)))
+  (setq dap-ui-buffer-configurations
+        `((,"*dap-ui-locals*"  . ((side . right) (slot . 1) (window-width . 0.50))) ;; changed this to 0.50
+          (,"*dap-ui-repl*" . ((side . bottom) (slot . 2) (window-width . 0.50)))
+          (,"*dap-ui-expressions*" . ((side . right) (slot . 2) (window-width . 0.20)))
+          (,"*dap-ui-sessions*" . ((side . right) (slot . 3) (window-width . 0.20)))
+          (,"*dap-ui-breakpoints*" . ((side . left) (slot . 2) (window-width . , 0.20)))
+          (,"*debug-window*" . ((side . bottom) (slot . 3) (window-width . 0.20)))))
 
-  ;; (defun my/show-debug-windows (session)
-  ;;   "Show debug windows."
-  ;;   (let ((lsp--cur-workspace (dap--debug-session-workspace session)))
-  ;;       (save-excursion
-  ;;       (unless (my/window-visible dap-ui--locals-buffer)
-  ;;           (dap-ui-locals)))))
+  ;; (set-popup-rule! "*dap-debug-.*" :side 'bottom :size .20 :slot 1)
+  ;; (set-popup-rule! "*dap-ui-repl*" :side 'right :size .50 :select t :vslot 2)
+  ;; (set-popup-rule! "*dap-ui-locals*" :side 'right :size .50)
 
-  ;;   (add-hook 'dap-stopped-hook 'my/show-debug-windows)
+  (defun my/window-visible (b-name)
+    "Return whether B-NAME is visible."
+    (-> (-compose 'buffer-name 'window-buffer)
+        (-map (window-list))
+        (-contains? b-name)))
 
-  ;;   (defun my/hide-debug-windows (session)
-  ;;   "Hide debug windows when all debug sessions are dead."
-  ;;   (unless (-filter 'dap--session-running (dap--get-sessions))
-  ;;       (and (get-buffer dap-ui--locals-buffer)
-  ;;           (kill-buffer dap-ui--locals-buffer))))
+  (defun my/show-debug-windows (session)
+    "Show debug windows."
+    (let ((lsp--cur-workspace (dap--debug-session-workspace session)))
+      (save-excursion
+        (unless (my/window-visible dap-ui--locals-buffer)
+          (dap-ui-locals)))))
 
-  ;;   (add-hook 'dap-terminated-hook 'my/hide-debug-windows)
+  (add-hook 'dap-stopped-hook 'my/show-debug-windows)
+
+  (defun my/hide-debug-windows (session)
+    "Hide debug windows when all debug sessions are dead."
+    (unless (-filter 'dap--session-running (dap--get-sessions))
+      (and (get-buffer dap-ui--locals-buffer)
+           (kill-buffer dap-ui--locals-buffer))))
+
+  (add-hook 'dap-terminated-hook 'my/hide-debug-windows)
   )
 
 (map! :after dap-python
@@ -281,11 +300,11 @@
 ;;     (concat (getenv "VIRTUAL_ENV") "/bin/python")))
 
 (after! dap-mode
-  (set-company-backend! 'dap-ui-repl-mode 'company-dap-ui-repl)
+  ;; (set-company-backend! 'dap-ui-repl-mode 'company-capf)
 
   (add-hook 'dap-ui-repl-mode-hook
             (lambda ()
-              (setq-local company-minimum-prefix-length 1))))
+              (setq-local company-minimum-prefix-length 0))))
 
 (after! dap-mode
   (dap-tooltip-mode 1)
@@ -338,3 +357,9 @@
 
 (set-popup-rule! "*Async Shell Command*" :side 'bottom :size .40 :ttl 3)
 (set-popup-rule! "vterm" :side 'right :size .40 :ttl 3)
+
+(after! counsel
+  ;; :config
+  ;; Thanks to https://github.com/kaushalmodi/.emacs.d/blob/master/setup-files/setup-counsel.el
+  ;; (setq counsel-rg-base-command "rg --with-filename --no-heading --line-number --hidden --color never %s"))
+  (setq counsel-rg-base-command (concat counsel-rg-base-command " --hidden")))
