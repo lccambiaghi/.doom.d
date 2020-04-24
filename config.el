@@ -238,7 +238,7 @@
       +org-export-directory "~/git/org/export/"
       org-default-notes-file "~/git/org/inbox.org"
       org-id-locations-file "~/git/org/.orgids"
-      org-export-in-background t
+      ;; org-export-in-background t
       org-catch-invisible-edits 'smart)
 
 (load! "modules/ox-ravel")
