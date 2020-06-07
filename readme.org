@@ -6,7 +6,8 @@
 
 * Preamble
 This is my private DOOM emacs configuration. It is tangled from ~config.org~ to ~config.el~
-and is exported to ~readme.org~ with =, e O o= to render in the githup repo.
+and is exported to ~readme.org~ with =,eOo= to render in the githup repo.
+You can find an export HTML version of it here: https://lccambiaghi.github.io/.doom.d/readme.html
 
 ** Username and e-mail:
 #+begin_src emacs-lisp
