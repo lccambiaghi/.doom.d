@@ -1,5 +1,5 @@
 #+EXPORT_FILE_NAME: readme
-#+SETUPFILE: theme-readtheorg-local.setup
+#+SETUPFILE: https://fniessen.github.io/org-html-themes/setup/theme-readtheorg.setup
 
 * Preamble
 This is my private DOOM emacs configuration. It is tangled from ~config.org~ to ~config.el~
