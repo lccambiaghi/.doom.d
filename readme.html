@@ -1,0 +1,1834 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2020-06-07 Sun 22:41 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>&lrm;</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="Luca Cambiaghi" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<link rel="stylesheet" type="text/css" href="styles/readtheorg/css/htmlize.css"/>
+<link rel="stylesheet" type="text/css" href="styles/readtheorg/css/readtheorg.css"/>
+<script type="text/javascript" src="styles/lib/js/jquery.min.js"></script>
+<script type="text/javascript" src="styles/lib/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="styles/lib/js/jquery.stickytableheaders.min.js"></script>
+<script type="text/javascript" src="styles/readtheorg/js/readtheorg.js"></script>
+<script type="text/javascript">
+// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
+<!--/*--><![CDATA[/*><!--*/
+     function CodeHighlightOn(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.cacheClassElem = elem.className;
+         elem.cacheClassTarget = target.className;
+         target.className = "code-highlighted";
+         elem.className   = "code-highlighted";
+       }
+     }
+     function CodeHighlightOff(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(elem.cacheClassElem)
+         elem.className = elem.cacheClassElem;
+       if(elem.cacheClassTarget)
+         target.className = elem.cacheClassTarget;
+     }
+    /*]]>*///-->
+// @license-end
+</script>
+</head>
+<body>
+<div id="content">
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org5fd4134">1. Preamble</a>
+<ul>
+<li><a href="#org7200318">1.1. Username and e-mail:</a></li>
+<li><a href="#org73b5902">1.2. Better defaults</a></li>
+</ul>
+</li>
+<li><a href="#org685f0cc">2. Keybindings</a></li>
+<li><a href="#orgfbf2fc0">3. User Interface</a>
+<ul>
+<li><a href="#orgf6a3075">3.1. Turn off line numbers</a></li>
+<li><a href="#org35fc978">3.2. Font and font size:</a></li>
+<li><a href="#org6b7e0da">3.3. which-key delay</a></li>
+<li><a href="#org031b4d8">3.4. <span class="todo TODO">TODO</span> Transparency</a></li>
+<li><a href="#orgbdc3972">3.5. Theme:</a></li>
+<li><a href="#org96356d5">3.6. Fancy splash image</a></li>
+<li><a href="#org179f3d6">3.7. Centaur-tabs</a></li>
+<li><a href="#orgc1e4bb2">3.8. Winum</a></li>
+<li><a href="#org82e25ac">3.9. Pretty code</a></li>
+<li><a href="#org45f065b">3.10. modeline</a>
+<ul>
+<li><a href="#org74f1249">3.10.1. Hide undesired info</a></li>
+<li><a href="#orga312ef9">3.10.2. Show battery and time</a></li>
+</ul>
+</li>
+<li><a href="#org912b0c6">3.11. Split window and move to it</a></li>
+</ul>
+</li>
+<li><a href="#orgc597089">4. Magit</a></li>
+<li><a href="#org3f001fb">5. Company</a>
+<ul>
+<li><a href="#orgbac3204">5.1. Delay, prefix length</a></li>
+<li><a href="#orgad96c94">5.2. Backends</a></li>
+<li><a href="#orge94722c">5.3. <span class="todo TODO">TODO</span> Interference with yasnippet</a></li>
+</ul>
+</li>
+<li><a href="#orgd1a9474">6. Org</a>
+<ul>
+<li><a href="#orgb075a03">6.1. Better defaults</a></li>
+<li><a href="#org46c6b64">6.2. <span class="todo TODO">TODO</span> Export</a></li>
+<li><a href="#orga578959">6.3. Capture</a>
+<ul>
+<li><a href="#org3ae18a9">6.3.1. Templates</a></li>
+</ul>
+</li>
+<li><a href="#orgc84cca8">6.4. Prettify</a>
+<ul>
+<li><a href="#org53c5c45">6.4.1. Bullets</a></li>
+<li><a href="#org58306db">6.4.2. <span class="todo TODO">TODO</span> Tables</a></li>
+<li><a href="#org499ca64">6.4.3. <span class="todo TODO">TODO</span> Pretty mode</a></li>
+</ul>
+</li>
+<li><a href="#org1414660">6.5. Org agenda popup</a></li>
+<li><a href="#orgb2a3ef1">6.6. ox-ipynb</a></li>
+<li><a href="#orge47ec06">6.7. Org babel clojure</a></li>
+</ul>
+</li>
+<li><a href="#orgc11dec1">7. emacs-jupyter</a>
+<ul>
+<li><a href="#org0ab4f9c">7.1. Org default header arguments:</a></li>
+<li><a href="#org2ee53b7">7.2. Key bindings:</a></li>
+<li><a href="#orgf4f95bb">7.3. Popups</a></li>
+<li><a href="#org7d1541e">7.4. Library of babel</a></li>
+<li><a href="#org89eb631">7.5. Eval handler</a></li>
+<li><a href="#orge6dcac4">7.6. Set REPL handler</a></li>
+<li><a href="#org5637100">7.7. Use overlays</a></li>
+<li><a href="#orgb9c635e">7.8. <span class="todo TODO">TODO</span> Long outputs</a></li>
+<li><a href="#org1ee1bff">7.9. <span class="todo TODO">TODO</span> Bigger inline images</a></li>
+</ul>
+</li>
+<li><a href="#org8345fb3">8. Python</a>
+<ul>
+<li><a href="#orgf1126ae">8.1. REPL</a>
+<ul>
+<li><a href="#orgbef0154">8.1.1. virtualenv executable</a></li>
+<li><a href="#orgc9c9d50">8.1.2. Silence warnings when opening REPL</a></li>
+<li><a href="#orgc6ca6ec">8.1.3. Ignore popup rule</a></li>
+<li><a href="#orge83e1cc">8.1.4. Disable native completion</a></li>
+</ul>
+</li>
+<li><a href="#org2605a42">8.2. LSP</a>
+<ul>
+<li><a href="#orgd32e865">8.2.1. Use lsp-python-ms</a></li>
+<li><a href="#orge466da9">8.2.2. Don&rsquo;t guess project root</a></li>
+<li><a href="#orgac83160">8.2.3. Increase bytes read from subprocess</a></li>
+<li><a href="#org8b2fae5">8.2.4. <span class="todo TODO">TODO</span> LSP idle delay</a></li>
+<li><a href="#org15ebcb0">8.2.5. Prefer company-capf over company-lsp</a></li>
+<li><a href="#orgc920221">8.2.6. lsp-help popup</a></li>
+<li><a href="#orgf591a5c">8.2.7. Missing imports</a></li>
+<li><a href="#org61a99a1">8.2.8. Use flymake instead of flycheck</a></li>
+<li><a href="#org5c15422">8.2.9. UI</a></li>
+</ul>
+</li>
+<li><a href="#org021cddc">8.3. Pytest</a></li>
+<li><a href="#orgf9f61c8">8.4. dap-mode</a>
+<ul>
+<li><a href="#orga22bc1c">8.4.1. dap-ui windows</a></li>
+<li><a href="#orga2b769e">8.4.2. Debug templates:</a></li>
+<li><a href="#org204f826">8.4.3. Debug script:</a></li>
+<li><a href="#org8a4047f">8.4.4. Debug test at point</a></li>
+<li><a href="#org4397a0e">8.4.5. virtualenv executable</a></li>
+<li><a href="#orgc7dd067">8.4.6. completion</a></li>
+<li><a href="#orgf2e2353">8.4.7. Bindings</a></li>
+</ul>
+</li>
+<li><a href="#org34ffeec">8.5. emacs-ipython-notebook</a>
+<ul>
+<li><a href="#orge374354">8.5.1. Don&rsquo;t ignore <code>ein</code> buffers</a></li>
+<li><a href="#orge756724">8.5.2. Bindings</a></li>
+</ul>
+</li>
+<li><a href="#org4dc3016">8.6. Dash docsets</a></li>
+<li><a href="#orgd15abfa">8.7. Compilation popup</a></li>
+</ul>
+</li>
+<li><a href="#org7a7a33f">9. R</a>
+<ul>
+<li><a href="#orgd45e633">9.1. ESS console popup</a></li>
+<li><a href="#orgfda722a">9.2. Async eval</a></li>
+<li><a href="#orgc27518d">9.3. Syntax highlighting</a></li>
+<li><a href="#orgfe52cfe">9.4. Pretty symbols</a></li>
+</ul>
+</li>
+<li><a href="#org793134a">10. Clojure</a>
+<ul>
+<li><a href="#orgd74bfe2">10.1. Use flycheck</a></li>
+<li><a href="#org17f457a">10.2. Company keybingins</a></li>
+<li><a href="#orge2cdbc6">10.3. REPL keybindings</a></li>
+<li><a href="#orgf3cbb40">10.4. <span class="todo TODO">TODO</span> Cleverparens</a></li>
+<li><a href="#org1c3c735">10.5. Aggressive indent</a></li>
+<li><a href="#orgea8396b">10.6. <span class="todo TODO">TODO</span> Cleverparens keybindings</a></li>
+<li><a href="#orgd6d3509">10.7. Lispyville</a></li>
+<li><a href="#orgc5f1359">10.8. Vega view</a></li>
+<li><a href="#orgb085b0c">10.9. nREPL timeout</a></li>
+<li><a href="#orgdbc7912">10.10. Align vertically automatically</a></li>
+<li><a href="#orgca87668">10.11. <span class="todo TODO">TODO</span> Sayid debugger</a></li>
+</ul>
+</li>
+<li><a href="#orge8bae4b">11. Shell</a>
+<ul>
+<li><a href="#org4f2af09">11.1. Async Shell command</a></li>
+<li><a href="#orga5d28f1">11.2. Async command and vterm popups</a></li>
+<li><a href="#org74d2427">11.3. Counsel rg base command</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org5fd4134" class="outline-2">
+<h2 id="org5fd4134"><span class="section-number-2">1</span> Preamble</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+This is my private DOOM emacs configuration. It is tangled from <code>config.org</code> to <code>config.el</code>
+and is exported to <code>readme.org</code> with <code>, e O o</code> to render in the githup repo.
+</p>
+</div>
+
+<div id="outline-container-org7200318" class="outline-3">
+<h3 id="org7200318"><span class="section-number-3">1.1</span> Username and e-mail:</h3>
+<div class="outline-text-3" id="text-1-1">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">user-full-name</span> <span style="color: #98be65;">"Luca Cambiaghi"</span>
+      <span style="color: #dcaeea;">user-mail-address</span> <span style="color: #98be65;">"luca.cambiaghi@me.com"</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org73b5902" class="outline-3">
+<h3 id="org73b5902"><span class="section-number-3">1.2</span> Better defaults</h3>
+<div class="outline-text-3" id="text-1-2">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">setq-default</span>
+ <span style="color: #dcaeea;">uniquify-buffer-name-style</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">forward</span>              <span style="color: #5B6268;">; </span><span style="color: #5B6268;">Uniquify buffer names</span>
+ <span style="color: #dcaeea;">window-combination-resize</span> t                      <span style="color: #5B6268;">; </span><span style="color: #5B6268;">take new window space from all other windows (not just current)</span>
+ <span style="color: #dcaeea;">x-stretch-cursor</span> t<span style="color: #51afef;">)</span>                              <span style="color: #5B6268;">; </span><span style="color: #5B6268;">Stretch cursor to the glyph width</span>
+
+<span style="color: #51afef;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">undo-limit</span> <span style="color: #da8548; font-weight: bold;">80000000</span>                         <span style="color: #5B6268;">; </span><span style="color: #5B6268;">Raise undo-limit to 80Mb</span>
+      <span style="color: #dcaeea;">evil-want-fine-undo</span> t                       <span style="color: #5B6268;">; </span><span style="color: #5B6268;">By default while in insert all changes are one big blob. Be more granular</span>
+      <span style="color: #5B6268;">;; </span><span style="color: #5B6268;">auto-save-default t                         ; Nobody likes to loose work, I certainly don't</span>
+      <span style="color: #dcaeea;">inhibit-compacting-font-caches</span> t<span style="color: #51afef;">)</span>           <span style="color: #5B6268;">; </span><span style="color: #5B6268;">When there are lots of glyphs, keep them in memory</span>
+
+<span style="color: #51afef;">(</span><span style="color: #dcaeea;">delete-selection-mode</span> <span style="color: #da8548; font-weight: bold;">1</span><span style="color: #51afef;">)</span>                         <span style="color: #5B6268;">; </span><span style="color: #5B6268;">Replace selection when inserting text</span>
+<span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(global-subword-mode 1)                           ; Iterate through CamelCase words</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org685f0cc" class="outline-2">
+<h2 id="org685f0cc"><span class="section-number-2">2</span> Keybindings</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+Let&rsquo;s have <code>general</code> auto-unbind keys:
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #c678dd;">general-auto-unbind-keys</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+
+<p>
+We then remap some of the bindings (inspired by <a href="https://github.com/jsmestad/dfiles/blob/master/.doom.d/%2Bbindings.el#L496-L854">bindings.el</a>).
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">map!</span> <span style="color: #c678dd;">:leader</span>
+      <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"M-x"</span>                   <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"SPC"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">counsel-M-x</span>
+      <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"ivy resume"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">":"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">ivy-resume</span>
+      <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"Async shell command"</span>   <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"!"</span>   <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">async-shell-command</span>
+      <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"Toggle eshell"</span>         <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"'"</span>   <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">+eshell/toggle</span>
+      <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"Open dir in iTerm"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"oi"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">+macos/open-in-iterm</span>
+
+      <span style="color: #c678dd;">(</span><span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"windows"</span> <span style="color: #c678dd;">:prefix</span> <span style="color: #98be65;">"w"</span>
+        <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"popup raise"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"p"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">+popup/raise</span><span style="color: #c678dd;">)</span>
+
+      <span style="color: #c678dd;">(</span><span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"project"</span> <span style="color: #c678dd;">:prefix</span> <span style="color: #98be65;">"p"</span>
+        <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"Eshell"</span>               <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"'"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">projectile-run-eshell</span>
+        <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"Terminal"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"t"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">projectile-run-vterm</span> <span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgfbf2fc0" class="outline-2">
+<h2 id="orgfbf2fc0"><span class="section-number-2">3</span> User Interface</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-orgf6a3075" class="outline-3">
+<h3 id="orgf6a3075"><span class="section-number-3">3.1</span> Turn off line numbers</h3>
+<div class="outline-text-3" id="text-3-1">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">display-line-numbers-type</span> nil<span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org35fc978" class="outline-3">
+<h3 id="org35fc978"><span class="section-number-3">3.2</span> Font and font size:</h3>
+<div class="outline-text-3" id="text-3-2">
+<p>
+Toggle <code>big mode</code> with <code>SPC t b</code>
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">doom-font</span> <span style="color: #c678dd;">(</span><span style="color: #a9a1e1;">font-spec</span> <span style="color: #c678dd;">:family</span> <span style="color: #98be65;">"Menlo"</span> <span style="color: #c678dd;">:size</span> <span style="color: #da8548; font-weight: bold;">16</span><span style="color: #c678dd;">)</span>
+      <span style="color: #dcaeea;">doom-big-font</span> <span style="color: #c678dd;">(</span><span style="color: #a9a1e1;">font-spec</span> <span style="color: #c678dd;">:family</span> <span style="color: #98be65;">"Menlo"</span> <span style="color: #c678dd;">:size</span> <span style="color: #da8548; font-weight: bold;">20</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+<span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(setq doom-font (font-spec :family "Fira Code" :size 14)</span>
+<span style="color: #5B6268;">;;       </span><span style="color: #5B6268;">doom-big-font (font-spec :family "Fira Code" :size 22)</span>
+<span style="color: #5B6268;">;; </span><span style="color: #5B6268;">doom-variable-pitch-font (font-spec :family "Overpass" :size 16))</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org6b7e0da" class="outline-3">
+<h3 id="org6b7e0da"><span class="section-number-3">3.3</span> which-key delay</h3>
+<div class="outline-text-3" id="text-3-3">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> which-key
+    <span style="color: #c678dd;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">which-key-idle-delay</span> <span style="color: #da8548; font-weight: bold;">0.5</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org031b4d8" class="outline-3">
+<h3 id="org031b4d8"><span class="section-number-3">3.4</span> <span class="todo TODO">TODO</span> Transparency</h3>
+<div class="outline-text-3" id="text-3-4">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(set-frame-parameter (selected-frame)'alpha '(98 . 98))</span>
+<span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(add-to-list 'default-frame-alist'(alpha . (98 . 98)))</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgbdc3972" class="outline-3">
+<h3 id="orgbdc3972"><span class="section-number-3">3.5</span> Theme:</h3>
+<div class="outline-text-3" id="text-3-5">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">doom-theme</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">doom-one</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org96356d5" class="outline-3">
+<h3 id="org96356d5"><span class="section-number-3">3.6</span> Fancy splash image</h3>
+<div class="outline-text-3" id="text-3-6">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">+doom-dashboard-banner-file</span>
+      <span style="color: #c678dd;">(</span><span style="color: #a9a1e1;">expand-file-name</span> <span style="color: #98be65;">"splash-images/black-hole2.png"</span> <span style="color: #dcaeea;">doom-private-dir</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org179f3d6" class="outline-3">
+<h3 id="org179f3d6"><span class="section-number-3">3.7</span> Centaur-tabs</h3>
+<div class="outline-text-3" id="text-3-7">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> centaur-tabs
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">centaur-tabs-set-modified-marker</span> t
+        <span style="color: #dcaeea;">centaur-tabs-modified-marker</span> <span style="color: #98be65;">"M"</span>
+        <span style="color: #dcaeea;">centaur-tabs-cycle-scope</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">tabs</span>
+        <span style="color: #dcaeea;">centaur-tabs-set-close-button</span> nil<span style="color: #c678dd;">)</span>
+  <span style="color: #c678dd;">(</span><span style="color: #c678dd;">centaur-tabs-group-by-projectile-project</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc1e4bb2" class="outline-3">
+<h3 id="orgc1e4bb2"><span class="section-number-3">3.8</span> Winum</h3>
+<div class="outline-text-3" id="text-3-8">
+<p>
+note: insteadf of using <code>SPC 0</code>, use <code>SPC w h</code> to access its window. In general,
+use those keys!
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> winum
+  <span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(defun winum-assign-0-to-treemacs ()</span>
+  <span style="color: #5B6268;">;;   </span><span style="color: #5B6268;">(when (string-match-p (buffer-name) "*Treemacs*") 10))</span>
+
+  <span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(add-to-list 'winum-assign-functions #'winum-assign-0-to-treemacs)</span>
+
+    <span style="color: #c678dd;">(</span><span style="color: #51afef;">map!</span> <span style="color: #98be65;">(</span><span style="color: #c678dd;">:when</span> <span style="color: #51afef;">(</span><span style="color: #51afef;">featurep!</span> <span style="color: #c678dd;">:ui</span> window-select<span style="color: #51afef;">)</span>
+            <span style="color: #c678dd;">:leader</span>
+            <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"1"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">winum-select-window-1</span>
+            <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"2"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">winum-select-window-2</span>
+            <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"3"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">winum-select-window-3</span>
+        <span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org82e25ac" class="outline-3">
+<h3 id="org82e25ac"><span class="section-number-3">3.9</span> Pretty code</h3>
+<div class="outline-text-3" id="text-3-9">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">+pretty-code-enabled-modes</span> <span style="color: #51afef;">'</span><span style="color: #c678dd;">(</span>org-mode<span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org45f065b" class="outline-3">
+<h3 id="org45f065b"><span class="section-number-3">3.10</span> modeline</h3>
+<div class="outline-text-3" id="text-3-10">
+</div>
+<div id="outline-container-org74f1249" class="outline-4">
+<h4 id="org74f1249"><span class="section-number-4">3.10.1</span> Hide undesired info</h4>
+<div class="outline-text-4" id="text-3-10-1">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> doom-modeline
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">doom-modeline-buffer-encoding</span> nil<span style="color: #c678dd;">)</span>
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">doom-modeline-env-enable-python</span> nil<span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+<span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(setq doom-modeline-env-python-executable (executable-find "python"))</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orga312ef9" class="outline-4">
+<h4 id="orga312ef9"><span class="section-number-4">3.10.2</span> Show battery and time</h4>
+<div class="outline-text-4" id="text-3-10-2">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> doom-modeline
+    <span style="color: #c678dd;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">display-time-default-load-average</span> nil<span style="color: #c678dd;">)</span>      <span style="color: #5B6268;">; </span><span style="color: #5B6268;">don't show load average</span>
+    <span style="color: #c678dd;">(</span><span style="color: #dcaeea;">display-time-mode</span> <span style="color: #da8548; font-weight: bold;">1</span><span style="color: #c678dd;">)</span>                             <span style="color: #5B6268;">; </span><span style="color: #5B6268;">Enable time in the mode-line</span>
+    <span style="color: #c678dd;">(</span><span style="color: #dcaeea;">display-battery-mode</span> <span style="color: #da8548; font-weight: bold;">1</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>                          <span style="color: #5B6268;">; </span><span style="color: #5B6268;">On laptops it's nice to know how much power you have</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org912b0c6" class="outline-3">
+<h3 id="org912b0c6"><span class="section-number-3">3.11</span> Split window and move to it</h3>
+<div class="outline-text-3" id="text-3-11">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">evil-split-window-below</span> t
+      <span style="color: #dcaeea;">evil-vsplit-window-right</span> t<span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgc597089" class="outline-2">
+<h2 id="orgc597089"><span class="section-number-2">4</span> Magit</h2>
+<div class="outline-text-2" id="text-4">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> magit
+  <span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(magit-wip-mode)</span>
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">magit-repository-directories</span> <span style="color: #51afef;">'</span><span style="color: #98be65;">(</span><span style="color: #51afef;">(</span><span style="color: #98be65;">"~/git"</span> . <span style="color: #da8548; font-weight: bold;">2</span><span style="color: #51afef;">)</span><span style="color: #98be65;">)</span>
+        <span style="color: #dcaeea;">magit-save-repository-buffers</span> nil
+        <span style="color: #5B6268;">;; </span><span style="color: #5B6268;">Don't restore the wconf after quitting magit</span>
+        <span style="color: #dcaeea;">magit-inhibit-save-previous-winconf</span> t
+        magit-log-arguments <span style="color: #51afef;">'</span><span style="color: #98be65;">(</span><span style="color: #98be65;">"--graph"</span> <span style="color: #98be65;">"--decorate"</span> <span style="color: #98be65;">"--color"</span><span style="color: #98be65;">)</span>
+        <span style="color: #5B6268;">;; </span><span style="color: #5B6268;">magit-delete-by-moving-to-trash nil</span>
+        <span style="color: #dcaeea;">git-commit-summary-max-length</span> <span style="color: #da8548; font-weight: bold;">120</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org3f001fb" class="outline-2">
+<h2 id="org3f001fb"><span class="section-number-2">5</span> Company</h2>
+<div class="outline-text-2" id="text-5">
+</div>
+<div id="outline-container-orgbac3204" class="outline-3">
+<h3 id="orgbac3204"><span class="section-number-3">5.1</span> Delay, prefix length</h3>
+<div class="outline-text-3" id="text-5-1">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> company
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">company-idle-delay</span> <span style="color: #da8548; font-weight: bold;">0.3</span>
+        <span style="color: #dcaeea;">company-minimum-prefix-length</span> <span style="color: #da8548; font-weight: bold;">1</span>
+  company-dabbrev-code-everywhere t
+  company-dabbrev-code-other-buffers <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">all</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+        <span style="color: #5B6268;">;; </span><span style="color: #5B6268;">company-quickhelp-delay 0.4)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgad96c94" class="outline-3">
+<h3 id="orgad96c94"><span class="section-number-3">5.2</span> Backends</h3>
+<div class="outline-text-3" id="text-5-2">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> prescient
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">setq-default</span> <span style="color: #dcaeea;">history-length</span> <span style="color: #da8548; font-weight: bold;">1000</span><span style="color: #c678dd;">)</span>
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">setq-default</span> <span style="color: #dcaeea;">prescient-history-length</span> <span style="color: #da8548; font-weight: bold;">1000</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+
+<span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(add-hook 'after-init-hook 'company-statistics-mode))</span>
+
+<span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(set-company-backend! 'org-mode</span>
+<span style="color: #5B6268;">;;   </span><span style="color: #5B6268;">'(company-capf company-files company-dabbrev-code))</span>
+<span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> company
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">use-package</span> company-tabnine <span style="color: #c678dd;">:ensure</span> t<span style="color: #c678dd;">)</span>
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">company-backends</span> <span style="color: #51afef;">'</span><span style="color: #98be65;">(</span>company-tabnine company-capf<span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+
+<span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(after! company</span>
+<span style="color: #5B6268;">;;   </span><span style="color: #5B6268;">(add-to-list 'company-backends 'company-tabnine))</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orge94722c" class="outline-3">
+<h3 id="orge94722c"><span class="section-number-3">5.3</span> <span class="todo TODO">TODO</span> Interference with yasnippet</h3>
+<div class="outline-text-3" id="text-5-3">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(after! company</span>
+<span style="color: #5B6268;">;;   </span><span style="color: #5B6268;">(defun company-yasnippet-or-completion ()</span>
+<span style="color: #5B6268;">;;     </span><span style="color: #5B6268;">(interactive)</span>
+<span style="color: #5B6268;">;;     </span><span style="color: #5B6268;">(let ((yas-fallback-behavior nil))</span>
+<span style="color: #5B6268;">;;       </span><span style="color: #5B6268;">(unless (yas-expand)</span>
+<span style="color: #5B6268;">;;         </span><span style="color: #5B6268;">(call-interactively #'company-complete-common))))</span>
+
+<span style="color: #5B6268;">;;   </span><span style="color: #5B6268;">(add-hook 'company-mode-hook (lambda ()</span>
+<span style="color: #5B6268;">;;                                  </span><span style="color: #5B6268;">(substitute-key-definition 'company-complete-common</span>
+<span style="color: #5B6268;">;;                                                             </span><span style="color: #5B6268;">'company-yasnippet-or-completion</span>
+<span style="color: #5B6268;">;;                                                             </span><span style="color: #5B6268;">company-active-map))))</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgd1a9474" class="outline-2">
+<h2 id="orgd1a9474"><span class="section-number-2">6</span> Org</h2>
+<div class="outline-text-2" id="text-6">
+</div>
+<div id="outline-container-orgb075a03" class="outline-3">
+<h3 id="orgb075a03"><span class="section-number-3">6.1</span> Better defaults</h3>
+<div class="outline-text-3" id="text-6-1">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">org-directory</span> <span style="color: #98be65;">"~/git/org/"</span>
+      <span style="color: #dcaeea;">org-image-actual-width</span> nil
+      +org-export-directory <span style="color: #98be65;">"~/git/org/export/"</span>
+      <span style="color: #dcaeea;">org-default-notes-file</span> <span style="color: #98be65;">"~/git/org/personal/inbox.org"</span>
+      <span style="color: #dcaeea;">org-id-locations-file</span> <span style="color: #98be65;">"~/git/org/.orgids"</span>
+      <span style="color: #5B6268;">;; </span><span style="color: #5B6268;">org-export-in-background t</span>
+      <span style="color: #dcaeea;">org-catch-invisible-edits</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">smart</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org46c6b64" class="outline-3">
+<h3 id="org46c6b64"><span class="section-number-3">6.2</span> <span class="todo TODO">TODO</span> Export</h3>
+<div class="outline-text-3" id="text-6-2">
+<p>
+Load <code>ox-ravel</code>:
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(load! "modules/ox-ravel")</span>
+</pre>
+</div>
+<p>
+This allows to export from <code>.org</code> to <code>.Rmd</code>
+</p>
+</div>
+</div>
+<div id="outline-container-orga578959" class="outline-3">
+<h3 id="orga578959"><span class="section-number-3">6.3</span> Capture</h3>
+<div class="outline-text-3" id="text-6-3">
+</div>
+<div id="outline-container-org3ae18a9" class="outline-4">
+<h4 id="org3ae18a9"><span class="section-number-4">6.3.1</span> Templates</h4>
+<div class="outline-text-4" id="text-6-3-1">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> org
+
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">org-capture-templates</span>
+                  <span style="color: #51afef;">'</span><span style="color: #98be65;">(</span><span style="color: #51afef;">(</span><span style="color: #98be65;">"d"</span> <span style="color: #98be65;">"Diary"</span><span style="color: #51afef;">)</span>
+                    <span style="color: #51afef;">(</span><span style="color: #98be65;">"u"</span> <span style="color: #98be65;">"URL"</span><span style="color: #51afef;">)</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span>
+
+  <span style="color: #c678dd;">(</span><span style="color: #c678dd;">add-to-list</span> <span style="color: #51afef;">'</span><span style="color: #dcaeea;">org-capture-templates</span>
+             <span style="color: #51afef;">'</span><span style="color: #98be65;">(</span><span style="color: #98be65;">"dn"</span> <span style="color: #98be65;">"New Diary Entry"</span> entry<span style="color: #51afef;">(</span>file+olp+datetree<span style="color: #98be65;">"~/git/org/personal/diary.org"</span> <span style="color: #98be65;">"Daily Logs"</span><span style="color: #51afef;">)</span>
+<span style="color: #98be65;">"* %^{thought for the day}</span>
+<span style="color: #98be65;">:PROPERTIES:</span>
+<span style="color: #98be65;">:CATEGORY: %^{category}</span>
+<span style="color: #98be65;">:SUBJECT:  %^{subject}</span>
+<span style="color: #98be65;">:MOOD:     %^{mood}</span>
+<span style="color: #98be65;">:END:</span>
+<span style="color: #98be65;">:RESOURCES:</span>
+<span style="color: #98be65;">:END:</span>
+
+<span style="color: #98be65;">\*What was one good thing you learned today?*:</span>
+<span style="color: #98be65;">- %^{whatilearnedtoday}</span>
+
+<span style="color: #98be65;">\*List one thing you could have done better*:</span>
+<span style="color: #98be65;">- %^{onethingdobetter}</span>
+
+<span style="color: #98be65;">\*Describe in your own words how your day was*:</span>
+<span style="color: #98be65;">- %?"</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span>
+
+  <span style="color: #c678dd;">(</span><span style="color: #c678dd;">add-to-list</span> <span style="color: #51afef;">'</span><span style="color: #dcaeea;">org-capture-templates</span>
+      <span style="color: #51afef;">'</span><span style="color: #98be65;">(</span><span style="color: #98be65;">"un"</span> <span style="color: #98be65;">"New URL Entry"</span> entry<span style="color: #51afef;">(</span>file+function <span style="color: #98be65;">"~/git/org/personal/dailies.org"</span> org-reverse-datetree-goto-date-in-file<span style="color: #51afef;">)</span>
+            <span style="color: #98be65;">"* [[%^{URL}][%^{Description}]] %^g %?"</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc84cca8" class="outline-3">
+<h3 id="orgc84cca8"><span class="section-number-3">6.4</span> Prettify</h3>
+<div class="outline-text-3" id="text-6-4">
+</div>
+<div id="outline-container-org53c5c45" class="outline-4">
+<h4 id="org53c5c45"><span class="section-number-4">6.4.1</span> Bullets</h4>
+<div class="outline-text-4" id="text-6-4-1">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> org-superstar
+    <span style="color: #c678dd;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">org-superstar-headline-bullets-list</span> <span style="color: #51afef;">'</span><span style="color: #98be65;">(</span><span style="color: #98be65;">"&#10006;"</span> <span style="color: #98be65;">"&#10010;"</span> <span style="color: #98be65;">"&#9670;"</span> <span style="color: #98be65;">"&#9654;"</span> <span style="color: #98be65;">"&#9675;"</span><span style="color: #98be65;">)</span>
+        <span style="color: #dcaeea;">org-ellipsis</span> <span style="color: #98be65;">"&#9660;"</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org58306db" class="outline-4">
+<h4 id="org58306db"><span class="section-number-4">6.4.2</span> <span class="todo TODO">TODO</span> Tables</h4>
+<div class="outline-text-4" id="text-6-4-2">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(setq global-org-pretty-table-mode t)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org499ca64" class="outline-4">
+<h4 id="org499ca64"><span class="section-number-4">6.4.3</span> <span class="todo TODO">TODO</span> Pretty mode</h4>
+<div class="outline-text-4" id="text-6-4-3">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(add-hook! 'org-mode-hook #'+org-pretty-mode)</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org1414660" class="outline-3">
+<h3 id="org1414660"><span class="section-number-3">6.5</span> Org agenda popup</h3>
+<div class="outline-text-3" id="text-6-5">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #c678dd;">set-popup-rule!</span> <span style="color: #98be65;">"*org agenda*"</span> <span style="color: #c678dd;">:side</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">right</span> <span style="color: #c678dd;">:size</span> <span style="color: #da8548; font-weight: bold;">.40</span> <span style="color: #c678dd;">:select</span> t <span style="color: #c678dd;">:vslot</span> <span style="color: #da8548; font-weight: bold;">2</span> <span style="color: #c678dd;">:ttl</span> <span style="color: #da8548; font-weight: bold;">3</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgb2a3ef1" class="outline-3">
+<h3 id="orgb2a3ef1"><span class="section-number-3">6.6</span> ox-ipynb</h3>
+<div class="outline-text-3" id="text-6-6">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #a9a1e1;">require</span> <span style="color: #51afef;">'</span><span style="color: #a9a1e1;">ox-ipynb</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orge47ec06" class="outline-3">
+<h3 id="orge47ec06"><span class="section-number-3">6.7</span> Org babel clojure</h3>
+<div class="outline-text-3" id="text-6-7">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> evil-org
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">org-babel-clojure-backend</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">cider</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgc11dec1" class="outline-2">
+<h2 id="orgc11dec1"><span class="section-number-2">7</span> emacs-jupyter</h2>
+<div class="outline-text-2" id="text-7">
+</div>
+<div id="outline-container-org0ab4f9c" class="outline-3">
+<h3 id="org0ab4f9c"><span class="section-number-3">7.1</span> Org default header arguments:</h3>
+<div class="outline-text-3" id="text-7-1">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> evil-org
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">setq</span> org-babel-default-header-args:jupyter-python <span style="color: #51afef;">'</span><span style="color: #98be65;">(</span><span style="color: #51afef;">(</span><span style="color: #c678dd;">:async</span> . <span style="color: #98be65;">"yes"</span><span style="color: #51afef;">)</span>
+                                                       <span style="color: #51afef;">(</span><span style="color: #c678dd;">:pandoc</span> t<span style="color: #51afef;">)</span>
+                                                       <span style="color: #51afef;">(</span><span style="color: #c678dd;">:kernel</span> . <span style="color: #98be65;">"python3"</span><span style="color: #51afef;">)</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span>
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">setq</span> org-babel-default-header-args:jupyter-R <span style="color: #51afef;">'</span><span style="color: #98be65;">(</span><span style="color: #51afef;">(</span><span style="color: #c678dd;">:pandoc</span> t<span style="color: #51afef;">)</span>
+                                                  <span style="color: #51afef;">(</span><span style="color: #c678dd;">:kernel</span> . <span style="color: #98be65;">"ir"</span><span style="color: #51afef;">)</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org2ee53b7" class="outline-3">
+<h3 id="org2ee53b7"><span class="section-number-3">7.2</span> Key bindings:</h3>
+<div class="outline-text-3" id="text-7-2">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(:when (featurep! :lang +jupyter)</span>
+<span style="color: #51afef;">(</span><span style="color: #51afef;">map!</span> <span style="color: #c678dd;">:after</span> evil-org
+      <span style="color: #c678dd;">:map</span> <span style="color: #dcaeea;">evil-org-mode-map</span>
+      <span style="color: #c678dd;">:leader</span>
+      <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"tangle"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"ct"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">org-babel-tangle</span>
+      <span style="color: #c678dd;">:localleader</span>
+      <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"Hydra"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">","</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">jupyter-org-hydra/body</span>
+      <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"Inspect at point"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"?"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">jupyter-inspect-at-point</span>
+      <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"Execute and step"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"RET"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">jupyter-org-execute-and-next-block</span>
+      <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"Delete code block"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"x"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">jupyter-org-kill-block-and-results</span>
+      <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"New code block above"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"+"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">jupyter-org-insert-src-block</span>
+      <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"New code block below"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"="</span> <span style="color: #c678dd;">(</span><span style="color: #51afef;">&#955;!</span> <span style="color: #98be65;">()</span> <span style="color: #98be65;">(</span><span style="color: #51afef;">interactive</span><span style="color: #98be65;">)</span> <span style="color: #98be65;">(</span><span style="color: #c678dd;">jupyter-org-insert-src-block</span> t nil<span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span>
+      <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"Merge code blocks"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"m"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">jupyter-org-merge-blocks</span>
+      <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"Split code block"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"-"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">jupyter-org-split-src-block</span>
+      <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"Fold results"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"z"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">org-babel-hide-result-toggle</span>
+
+      <span style="color: #c678dd;">:map</span> <span style="color: #dcaeea;">org-src-mode-map</span>
+      <span style="color: #c678dd;">:localleader</span>
+      <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"Exit edit"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"'"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">org-edit-src-exit</span><span style="color: #51afef;">)</span>
+
+<span style="color: #51afef;">(</span><span style="color: #51afef;">map!</span> <span style="color: #c678dd;">:after</span> python
+      <span style="color: #c678dd;">:map</span> <span style="color: #dcaeea;">python-mode-map</span>
+      <span style="color: #c678dd;">:localleader</span>
+      <span style="color: #c678dd;">(</span><span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"eval"</span> <span style="color: #c678dd;">:prefix</span> <span style="color: #98be65;">"e"</span>
+       <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"line or region"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"e"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">jupyter-eval-line-or-region</span>
+        <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"defun"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"d"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">jupyter-eval-defun</span>
+       <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"buffer"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"b"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">jupyter-eval-buffer</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf4f95bb" class="outline-3">
+<h3 id="orgf4f95bb"><span class="section-number-3">7.3</span> Popups</h3>
+<div class="outline-text-3" id="text-7-3">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #c678dd;">set-popup-rule!</span> <span style="color: #98be65;">"*jupyter-pager*"</span> <span style="color: #c678dd;">:side</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">right</span> <span style="color: #c678dd;">:size</span> <span style="color: #da8548; font-weight: bold;">.40</span> <span style="color: #c678dd;">:select</span> t <span style="color: #c678dd;">:vslot</span> <span style="color: #da8548; font-weight: bold;">2</span> <span style="color: #c678dd;">:ttl</span> <span style="color: #da8548; font-weight: bold;">3</span><span style="color: #51afef;">)</span>
+<span style="color: #51afef;">(</span><span style="color: #c678dd;">set-popup-rule!</span> <span style="color: #98be65;">"^\\*Org Src*"</span> <span style="color: #c678dd;">:side</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">right</span> <span style="color: #c678dd;">:size</span> <span style="color: #da8548; font-weight: bold;">.60</span> <span style="color: #c678dd;">:select</span> t <span style="color: #c678dd;">:vslot</span> <span style="color: #da8548; font-weight: bold;">2</span> <span style="color: #c678dd;">:ttl</span> <span style="color: #da8548; font-weight: bold;">3</span><span style="color: #51afef;">)</span>
+<span style="color: #51afef;">(</span><span style="color: #c678dd;">set-popup-rule!</span> <span style="color: #98be65;">"*jupyter-repl*"</span> <span style="color: #c678dd;">:side</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">bottom</span> <span style="color: #c678dd;">:size</span> <span style="color: #da8548; font-weight: bold;">.30</span> <span style="color: #c678dd;">:vslot</span> <span style="color: #da8548; font-weight: bold;">2</span> <span style="color: #c678dd;">:ttl</span> <span style="color: #da8548; font-weight: bold;">3</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org7d1541e" class="outline-3">
+<h3 id="org7d1541e"><span class="section-number-3">7.4</span> Library of babel</h3>
+<div class="outline-text-3" id="text-7-4">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> evil-org
+  <span style="color: #c678dd;">(</span><span style="color: #c678dd;">org-babel-lob-ingest</span> <span style="color: #98be65;">"/Users/luca/git/experiments/literate/ml/rpy2.org"</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org89eb631" class="outline-3">
+<h3 id="org89eb631"><span class="section-number-3">7.5</span> Eval handler</h3>
+<div class="outline-text-3" id="text-7-5">
+<p>
+With <code>g r</code> we can send code to the Jupyter REPL:
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> jupyter
+  <span style="color: #c678dd;">(</span><span style="color: #c678dd;">set-eval-handler!</span> <span style="color: #51afef;">'</span><span style="color: #dcaeea;">jupyter-repl-interaction-mode</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">jupyter-eval-line-or-region</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orge6dcac4" class="outline-3">
+<h3 id="orge6dcac4"><span class="section-number-3">7.6</span> Set REPL handler</h3>
+<div class="outline-text-3" id="text-7-6">
+<p>
+On a scratch buffer, first run <code>jupyter-associate-buffer</code>.
+Then, hitting <code>SPC o r</code> allows use to hit the REPL buffer with the lines/regions
+of code we send with <code>g r</code>.
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">add-hook!</span> python-mode
+  <span style="color: #c678dd;">(</span><span style="color: #c678dd;">set-repl-handler!</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">python-mode</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">jupyter-repl-pop-to-buffer</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org5637100" class="outline-3">
+<h3 id="org5637100"><span class="section-number-3">7.7</span> Use overlays</h3>
+<div class="outline-text-3" id="text-7-7">
+<p>
+Evaluate simple expressions to the right of the symbol with <code>, e e</code>
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> jupyter
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">jupyter-eval-use-overlays</span> t<span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgb9c635e" class="outline-3">
+<h3 id="orgb9c635e"><span class="section-number-3">7.8</span> <span class="todo TODO">TODO</span> Long outputs</h3>
+<div class="outline-text-3" id="text-7-8">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> jupyter
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">cl-defmethod</span> <span style="color: #c678dd;">jupyter-org--insert-result</span> <span style="color: #98be65;">(</span>_req context result<span style="color: #98be65;">)</span>
+    <span style="color: #98be65;">(</span><span style="color: #51afef;">let</span> <span style="color: #51afef;">(</span><span style="color: #c678dd;">(</span>str
+           <span style="color: #98be65;">(</span><span style="color: #c678dd;">org-element-interpret-data</span>
+            <span style="color: #51afef;">(</span><span style="color: #c678dd;">jupyter-org--wrap-result-maybe</span>
+             context <span style="color: #c678dd;">(</span><span style="color: #51afef;">if</span> <span style="color: #98be65;">(</span><span style="color: #c678dd;">jupyter-org--stream-result-p</span> result<span style="color: #98be65;">)</span>
+                         <span style="color: #98be65;">(</span><span style="color: #51afef;">thread-last</span> result
+                           jupyter-org-strip-last-newline
+                           jupyter-org-scalar<span style="color: #98be65;">)</span>
+                       result<span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+      <span style="color: #51afef;">(</span><span style="color: #51afef;">if</span> <span style="color: #c678dd;">(</span><span style="color: #a9a1e1;">&lt;</span> <span style="color: #98be65;">(</span><span style="color: #a9a1e1;">length</span> str<span style="color: #98be65;">)</span> <span style="color: #da8548; font-weight: bold;">4000</span><span style="color: #c678dd;">)</span>
+          <span style="color: #c678dd;">(</span><span style="color: #a9a1e1;">insert</span> str<span style="color: #c678dd;">)</span>
+        <span style="color: #c678dd;">(</span><span style="color: #a9a1e1;">insert</span> <span style="color: #98be65;">(</span><span style="color: #a9a1e1;">format</span> <span style="color: #98be65;">": Result was too long! Length was %d"</span> <span style="color: #51afef;">(</span><span style="color: #a9a1e1;">length</span> str<span style="color: #51afef;">)</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span><span style="color: #98be65;">)</span>
+    <span style="color: #98be65;">(</span><span style="color: #51afef;">when</span> <span style="color: #51afef;">(</span><span style="color: #a9a1e1;">/=</span> <span style="color: #c678dd;">(</span><span style="color: #a9a1e1;">point</span><span style="color: #c678dd;">)</span> <span style="color: #c678dd;">(</span><span style="color: #a9a1e1;">line-beginning-position</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+      <span style="color: #5B6268;">;; </span><span style="color: #5B6268;">Org objects such as file links do not have a newline added when</span>
+      <span style="color: #5B6268;">;; </span><span style="color: #5B6268;">converting to their string representation by</span>
+      <span style="color: #5B6268;">;; </span><span style="color: #5B6268;">`</span><span style="color: #a9a1e1;">org-element-interpret-data</span><span style="color: #5B6268;">' so insert one in these cases.</span>
+      <span style="color: #51afef;">(</span><span style="color: #a9a1e1;">insert</span> <span style="color: #98be65;">"\n"</span><span style="color: #51afef;">)</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org1ee1bff" class="outline-3">
+<h3 id="org1ee1bff"><span class="section-number-3">7.9</span> <span class="todo TODO">TODO</span> Bigger inline images</h3>
+<div class="outline-text-3" id="text-7-9">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(setq org-image-actual-width t)</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org8345fb3" class="outline-2">
+<h2 id="org8345fb3"><span class="section-number-2">8</span> Python</h2>
+<div class="outline-text-2" id="text-8">
+</div>
+<div id="outline-container-orgf1126ae" class="outline-3">
+<h3 id="orgf1126ae"><span class="section-number-3">8.1</span> REPL</h3>
+<div class="outline-text-3" id="text-8-1">
+</div>
+<div id="outline-container-orgbef0154" class="outline-4">
+<h4 id="orgbef0154"><span class="section-number-4">8.1.1</span> virtualenv executable</h4>
+<div class="outline-text-4" id="text-8-1-1">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">defadvice!</span> +python-poetry-open-repl-a <span style="color: #c678dd;">(</span>orig-fn <span style="color: #ECBE7B;">&amp;rest</span> args<span style="color: #c678dd;">)</span>
+  <span style="color: #83898d;">"Use the Python binary from the current virtual environment."</span>
+  <span style="color: #c678dd;">:around</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">+python/open-repl</span>
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">if</span> <span style="color: #98be65;">(</span><span style="color: #c678dd;">getenv</span> <span style="color: #98be65;">"VIRTUAL_ENV"</span><span style="color: #98be65;">)</span>
+      <span style="color: #98be65;">(</span><span style="color: #51afef;">let</span> <span style="color: #51afef;">(</span><span style="color: #c678dd;">(</span><span style="color: #dcaeea;">python-shell-interpreter</span> <span style="color: #98be65;">(</span><span style="color: #c678dd;">executable-find</span> <span style="color: #98be65;">"ipython"</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+        <span style="color: #51afef;">(</span><span style="color: #a9a1e1;">apply</span> orig-fn args<span style="color: #51afef;">)</span><span style="color: #98be65;">)</span>
+    <span style="color: #98be65;">(</span><span style="color: #a9a1e1;">apply</span> orig-fn args<span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc9c9d50" class="outline-4">
+<h4 id="orgc9c9d50"><span class="section-number-4">8.1.2</span> Silence warnings when opening REPL</h4>
+<div class="outline-text-4" id="text-8-1-2">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">python-shell-prompt-detect-failure-warning</span> nil<span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc6ca6ec" class="outline-4">
+<h4 id="orgc6ca6ec"><span class="section-number-4">8.1.3</span> Ignore popup rule</h4>
+<div class="outline-text-4" id="text-8-1-3">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #c678dd;">set-popup-rule!</span> <span style="color: #98be65;">"^\\*Python*"</span> <span style="color: #c678dd;">:ignore</span> t<span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orge83e1cc" class="outline-4">
+<h4 id="orge83e1cc"><span class="section-number-4">8.1.4</span> Disable native completion</h4>
+<div class="outline-text-4" id="text-8-1-4">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> python
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">python-shell-completion-native-enable</span> nil<span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org2605a42" class="outline-3">
+<h3 id="org2605a42"><span class="section-number-3">8.2</span> LSP</h3>
+<div class="outline-text-3" id="text-8-2">
+</div>
+<div id="outline-container-orgd32e865" class="outline-4">
+<h4 id="orgd32e865"><span class="section-number-4">8.2.1</span> Use lsp-python-ms</h4>
+<div class="outline-text-4" id="text-8-2-1">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> lsp-python-ms
+  <span style="color: #c678dd;">(</span><span style="color: #c678dd;">set-lsp-priority!</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">mspyls</span> <span style="color: #da8548; font-weight: bold;">1</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orge466da9" class="outline-4">
+<h4 id="orge466da9"><span class="section-number-4">8.2.2</span> Don&rsquo;t guess project root</h4>
+<div class="outline-text-4" id="text-8-2-2">
+<p>
+In case we get a wrong workspace root, we can delete it with <code>lsp-workspace-folders-remove</code>
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> <span style="color: #dcaeea;">lsp-mode</span>
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">lsp-auto-guess-root</span> nil<span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> projectile
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">projectile-project-root-files</span> <span style="color: #51afef;">'</span><span style="color: #98be65;">(</span><span style="color: #98be65;">"Dockerfile"</span> <span style="color: #98be65;">"pyproject.toml"</span> <span style="color: #98be65;">"project.clj"</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgac83160" class="outline-4">
+<h4 id="orgac83160"><span class="section-number-4">8.2.3</span> Increase bytes read from subprocess</h4>
+<div class="outline-text-4" id="text-8-2-3">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">read-process-output-max</span> <span style="color: #c678dd;">(</span><span style="color: #a9a1e1;">*</span> <span style="color: #da8548; font-weight: bold;">1024</span> <span style="color: #da8548; font-weight: bold;">1024</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org8b2fae5" class="outline-4">
+<h4 id="org8b2fae5"><span class="section-number-4">8.2.4</span> <span class="todo TODO">TODO</span> LSP idle delay</h4>
+<div class="outline-text-4" id="text-8-2-4">
+<p>
+This variable determines how often lsp-mode will refresh the highlights, lenses, links, etc while you type.
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(after! lsp-mode</span>
+<span style="color: #5B6268;">;;   </span><span style="color: #5B6268;">(setq lsp-idle-delay 0.500))</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org15ebcb0" class="outline-4">
+<h4 id="org15ebcb0"><span class="section-number-4">8.2.5</span> Prefer company-capf over company-lsp</h4>
+<div class="outline-text-4" id="text-8-2-5">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">setq</span> +lsp-company-backend <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">company-capf</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc920221" class="outline-4">
+<h4 id="orgc920221"><span class="section-number-4">8.2.6</span> lsp-help popup</h4>
+<div class="outline-text-4" id="text-8-2-6">
+<p>
+Lookup documentation with <code>SPC c k</code>
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #c678dd;">set-popup-rule!</span> <span style="color: #98be65;">"^\\*lsp-help"</span> <span style="color: #c678dd;">:side</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">right</span> <span style="color: #c678dd;">:size</span> <span style="color: #da8548; font-weight: bold;">.50</span> <span style="color: #c678dd;">:select</span> t <span style="color: #c678dd;">:vslot</span> <span style="color: #da8548; font-weight: bold;">1</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf591a5c" class="outline-4">
+<h4 id="orgf591a5c"><span class="section-number-4">8.2.7</span> Missing imports</h4>
+<div class="outline-text-4" id="text-8-2-7">
+<p>
+In python mode, use <code>, i i</code> to add missing imports
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> pyimport
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">setq</span> pyimport-pyflakes-path <span style="color: #98be65;">"~/git/experiments/.venv/bin/pyflakes"</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org61a99a1" class="outline-4">
+<h4 id="org61a99a1"><span class="section-number-4">8.2.8</span> Use flymake instead of flycheck</h4>
+<div class="outline-text-4" id="text-8-2-8">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(after! lsp-mode</span>
+<span style="color: #5B6268;">;;   </span><span style="color: #5B6268;">(setq lsp-diagnostic-package :flymake))</span>
+
+<span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> <span style="color: #dcaeea;">lsp-mode</span>
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">add-hook!</span> python-mode <span style="color: #98be65;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">lsp-diagnostic-package</span> <span style="color: #c678dd;">:flymake</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+
+<span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(after! python</span>
+<span style="color: #5B6268;">;;   </span><span style="color: #5B6268;">(setq python-flymake-command  "~/git/experiments/.venv/bin/pyflakes"))</span>
+
+<span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(after! flycheck</span>
+<span style="color: #5B6268;">;;   </span><span style="color: #5B6268;">(setq-default flycheck-checker 'python-pylint))</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org5c15422" class="outline-4">
+<h4 id="org5c15422"><span class="section-number-4">8.2.9</span> UI</h4>
+<div class="outline-text-4" id="text-8-2-9">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> <span style="color: #dcaeea;">lsp-mode</span>
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">lsp-eldoc-enable-hover</span> nil
+        <span style="color: #dcaeea;">lsp-signature-auto-activate</span> nil
+        <span style="color: #5B6268;">;; </span><span style="color: #5B6268;">lsp-enable-on-type-formatting nil</span>
+        <span style="color: #dcaeea;">lsp-enable-symbol-highlighting</span> nil<span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+        <span style="color: #5B6268;">;; </span><span style="color: #5B6268;">lsp-enable-file-watchers nil))</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org021cddc" class="outline-3">
+<h3 id="org021cddc"><span class="section-number-3">8.3</span> Pytest</h3>
+<div class="outline-text-3" id="text-8-3">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> python-pytest
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">python-pytest-arguments</span> <span style="color: #51afef;">'</span><span style="color: #98be65;">(</span><span style="color: #98be65;">"--color"</span> <span style="color: #98be65;">"--failed-first"</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span>
+  <span style="color: #c678dd;">(</span><span style="color: #c678dd;">evil-set-initial-state</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">python-pytest-mode</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">normal</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+
+<span style="color: #51afef;">(</span><span style="color: #c678dd;">set-popup-rule!</span> <span style="color: #98be65;">"^\\*pytest*"</span> <span style="color: #c678dd;">:side</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">right</span> <span style="color: #c678dd;">:size</span> <span style="color: #da8548; font-weight: bold;">.50</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf9f61c8" class="outline-3">
+<h3 id="orgf9f61c8"><span class="section-number-3">8.4</span> dap-mode</h3>
+<div class="outline-text-3" id="text-8-4">
+</div>
+<div id="outline-container-orga22bc1c" class="outline-4">
+<h4 id="orga22bc1c"><span class="section-number-4">8.4.1</span> dap-ui windows</h4>
+<div class="outline-text-4" id="text-8-4-1">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> <span style="color: #dcaeea;">dap-mode</span>
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">dap-auto-show-output</span> nil<span style="color: #c678dd;">)</span>
+
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">dap-ui-buffer-configurations</span>
+        <span style="color: #51afef;">`</span><span style="color: #98be65;">(</span><span style="color: #51afef;">(</span>,<span style="color: #98be65;">"*dap-ui-locals*"</span>  . <span style="color: #c678dd;">(</span><span style="color: #98be65;">(</span>side . right<span style="color: #98be65;">)</span> <span style="color: #98be65;">(</span>slot . <span style="color: #da8548; font-weight: bold;">1</span><span style="color: #98be65;">)</span> <span style="color: #98be65;">(</span><span style="color: #a9a1e1;">window-width</span> . <span style="color: #da8548; font-weight: bold;">0.50</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span> <span style="color: #5B6268;">;; </span><span style="color: #5B6268;">changed this to 0.50</span>
+          <span style="color: #51afef;">(</span>,<span style="color: #98be65;">"*dap-ui-repl*"</span> . <span style="color: #c678dd;">(</span><span style="color: #98be65;">(</span>side . bottom<span style="color: #98be65;">)</span> <span style="color: #98be65;">(</span>slot . <span style="color: #da8548; font-weight: bold;">2</span><span style="color: #98be65;">)</span> <span style="color: #98be65;">(</span><span style="color: #a9a1e1;">window-width</span> . <span style="color: #da8548; font-weight: bold;">0.50</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+          <span style="color: #51afef;">(</span>,<span style="color: #98be65;">"*dap-ui-expressions*"</span> . <span style="color: #c678dd;">(</span><span style="color: #98be65;">(</span>side . right<span style="color: #98be65;">)</span> <span style="color: #98be65;">(</span>slot . <span style="color: #da8548; font-weight: bold;">2</span><span style="color: #98be65;">)</span> <span style="color: #98be65;">(</span><span style="color: #a9a1e1;">window-width</span> . <span style="color: #da8548; font-weight: bold;">0.20</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+          <span style="color: #51afef;">(</span>,<span style="color: #98be65;">"*dap-ui-sessions*"</span> . <span style="color: #c678dd;">(</span><span style="color: #98be65;">(</span>side . right<span style="color: #98be65;">)</span> <span style="color: #98be65;">(</span>slot . <span style="color: #da8548; font-weight: bold;">3</span><span style="color: #98be65;">)</span> <span style="color: #98be65;">(</span><span style="color: #a9a1e1;">window-width</span> . <span style="color: #da8548; font-weight: bold;">0.20</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+          <span style="color: #51afef;">(</span>,<span style="color: #98be65;">"*dap-ui-breakpoints*"</span> . <span style="color: #c678dd;">(</span><span style="color: #98be65;">(</span>side . left<span style="color: #98be65;">)</span> <span style="color: #98be65;">(</span>slot . <span style="color: #da8548; font-weight: bold;">2</span><span style="color: #98be65;">)</span> <span style="color: #98be65;">(</span><span style="color: #a9a1e1;">window-width</span> . , <span style="color: #da8548; font-weight: bold;">0.20</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+          <span style="color: #51afef;">(</span>,<span style="color: #98be65;">"*debug-window*"</span> . <span style="color: #c678dd;">(</span><span style="color: #98be65;">(</span>side . bottom<span style="color: #98be65;">)</span> <span style="color: #98be65;">(</span>slot . <span style="color: #da8548; font-weight: bold;">3</span><span style="color: #98be65;">)</span> <span style="color: #98be65;">(</span><span style="color: #a9a1e1;">window-width</span> . <span style="color: #da8548; font-weight: bold;">0.20</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span>
+
+  <span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(set-popup-rule! "*dap-debug-.*" :side 'bottom :size .20 :slot 1)</span>
+  <span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(set-popup-rule! "*dap-ui-repl*" :side 'right :size .50 :select t :vslot 2)</span>
+  <span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(set-popup-rule! "*dap-ui-locals*" :side 'right :size .50)</span>
+
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">defun</span> <span style="color: #c678dd;">my/window-visible</span> <span style="color: #98be65;">(</span>b-name<span style="color: #98be65;">)</span>
+    <span style="color: #83898d;">"Return whether B-NAME is visible."</span>
+    <span style="color: #98be65;">(</span><span style="color: #51afef;">-&gt;</span> <span style="color: #51afef;">(</span><span style="color: #c678dd;">-compose</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">buffer-name</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">window-buffer</span><span style="color: #51afef;">)</span>
+        <span style="color: #51afef;">(</span><span style="color: #c678dd;">-map</span> <span style="color: #c678dd;">(</span><span style="color: #a9a1e1;">window-list</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+        <span style="color: #51afef;">(</span><span style="color: #c678dd;">-contains?</span> b-name<span style="color: #51afef;">)</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span>
+
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">defun</span> <span style="color: #c678dd;">my/show-debug-windows</span> <span style="color: #98be65;">(</span>session<span style="color: #98be65;">)</span>
+    <span style="color: #83898d;">"Show debug windows."</span>
+    <span style="color: #98be65;">(</span><span style="color: #51afef;">let</span> <span style="color: #51afef;">(</span><span style="color: #c678dd;">(</span><span style="color: #dcaeea;">lsp--cur-workspace</span> <span style="color: #98be65;">(</span><span style="color: #c678dd;">dap--debug-session-workspace</span> session<span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+      <span style="color: #51afef;">(</span><span style="color: #51afef;">save-excursion</span>
+        <span style="color: #c678dd;">(</span><span style="color: #51afef;">unless</span> <span style="color: #98be65;">(</span><span style="color: #c678dd;">my/window-visible</span> <span style="color: #dcaeea;">dap-ui--locals-buffer</span><span style="color: #98be65;">)</span>
+          <span style="color: #98be65;">(</span><span style="color: #c678dd;">dap-ui-locals</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span>
+
+  <span style="color: #c678dd;">(</span><span style="color: #c678dd;">add-hook</span> <span style="color: #51afef;">'</span><span style="color: #dcaeea;">dap-stopped-hook</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">my/show-debug-windows</span><span style="color: #c678dd;">)</span>
+
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">defun</span> <span style="color: #c678dd;">my/hide-debug-windows</span> <span style="color: #98be65;">(</span>session<span style="color: #98be65;">)</span>
+    <span style="color: #83898d;">"Hide debug windows when all debug sessions are dead."</span>
+    <span style="color: #98be65;">(</span><span style="color: #51afef;">unless</span> <span style="color: #51afef;">(</span><span style="color: #c678dd;">-filter</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">dap--session-running</span> <span style="color: #c678dd;">(</span><span style="color: #c678dd;">dap--get-sessions</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+      <span style="color: #51afef;">(</span><span style="color: #51afef;">and</span> <span style="color: #c678dd;">(</span><span style="color: #a9a1e1;">get-buffer</span> <span style="color: #dcaeea;">dap-ui--locals-buffer</span><span style="color: #c678dd;">)</span>
+           <span style="color: #c678dd;">(</span><span style="color: #a9a1e1;">kill-buffer</span> <span style="color: #dcaeea;">dap-ui--locals-buffer</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span>
+
+  <span style="color: #c678dd;">(</span><span style="color: #c678dd;">add-hook</span> <span style="color: #51afef;">'</span><span style="color: #dcaeea;">dap-terminated-hook</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">my/hide-debug-windows</span><span style="color: #c678dd;">)</span>
+  <span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orga2b769e" class="outline-4">
+<h4 id="orga2b769e"><span class="section-number-4">8.4.2</span> Debug templates:</h4>
+<div class="outline-text-4" id="text-8-4-2">
+<p>
+Templates accessible with <code>, d d</code>
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> dap-python
+    <span style="color: #c678dd;">(</span><span style="color: #c678dd;">dap-register-debug-template</span> <span style="color: #98be65;">"dap-debug-script"</span>
+                            <span style="color: #98be65;">(</span><span style="color: #a9a1e1;">list</span> <span style="color: #c678dd;">:type</span> <span style="color: #98be65;">"python"</span>
+                                <span style="color: #c678dd;">:args</span> <span style="color: #98be65;">"-i"</span>
+                                <span style="color: #c678dd;">:cwd</span> <span style="color: #51afef;">(</span><span style="color: #c678dd;">lsp-workspace-root</span><span style="color: #51afef;">)</span>
+                                <span style="color: #c678dd;">:program</span> nil <span style="color: #5B6268;">; </span><span style="color: #5B6268;">(expand-file-name "~/git/blabla")</span>
+                                <span style="color: #c678dd;">:request</span> <span style="color: #98be65;">"launch"</span>
+                                <span style="color: #c678dd;">:name</span> <span style="color: #98be65;">"dap-debug-script"</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span>
+
+    <span style="color: #c678dd;">(</span><span style="color: #c678dd;">dap-register-debug-template</span> <span style="color: #98be65;">"dap-debug-test"</span>
+                            <span style="color: #98be65;">(</span><span style="color: #a9a1e1;">list</span> <span style="color: #c678dd;">:type</span> <span style="color: #98be65;">"python"</span>
+                                <span style="color: #c678dd;">:cwd</span> <span style="color: #51afef;">(</span><span style="color: #c678dd;">lsp-workspace-root</span><span style="color: #51afef;">)</span>
+                                <span style="color: #5B6268;">;; </span><span style="color: #5B6268;">:environment-variables '(("PYTHONPATH" . "src"))</span>
+                                <span style="color: #c678dd;">:module</span> <span style="color: #98be65;">"pytest"</span>
+                                <span style="color: #c678dd;">:request</span> <span style="color: #98be65;">"launch"</span>
+                                <span style="color: #c678dd;">:name</span> <span style="color: #98be65;">"dap-debug-test-file"</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org204f826" class="outline-4">
+<h4 id="org204f826"><span class="section-number-4">8.4.3</span> Debug script:</h4>
+<div class="outline-text-4" id="text-8-4-3">
+<p>
+Standard debug script target, accessible with <code>, d s</code>
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> dap-python
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">defun</span> <span style="color: #c678dd;">dap-python-script</span> <span style="color: #98be65;">()</span>
+    <span style="color: #98be65;">(</span><span style="color: #51afef;">interactive</span>
+     <span style="color: #51afef;">(</span><span style="color: #c678dd;">dap-debug</span>
+      <span style="color: #c678dd;">(</span><span style="color: #a9a1e1;">list</span> <span style="color: #c678dd;">:type</span> <span style="color: #98be65;">"python"</span>
+            <span style="color: #c678dd;">:args</span> <span style="color: #98be65;">"-i"</span>
+            <span style="color: #c678dd;">:cwd</span> <span style="color: #98be65;">(</span><span style="color: #c678dd;">lsp-workspace-root</span><span style="color: #98be65;">)</span>
+            <span style="color: #c678dd;">:program</span> nil
+            <span style="color: #c678dd;">:request</span> <span style="color: #98be65;">"launch"</span>
+            <span style="color: #c678dd;">:name</span> <span style="color: #98be65;">"dap-debug-script"</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org8a4047f" class="outline-4">
+<h4 id="org8a4047f"><span class="section-number-4">8.4.4</span> Debug test at point</h4>
+<div class="outline-text-4" id="text-8-4-4">
+<p>
+Standard debug test target, accessible with <code>, d t</code>
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> dap-python
+  <span style="color: #c678dd;">(</span><span style="color: #a9a1e1;">require</span> <span style="color: #51afef;">'</span><span style="color: #a9a1e1;">python-pytest</span><span style="color: #c678dd;">)</span>
+
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">defun</span> <span style="color: #c678dd;">dap-python-test-method-at-point</span> <span style="color: #98be65;">()</span>
+    <span style="color: #98be65;">(</span><span style="color: #51afef;">interactive</span>
+       <span style="color: #51afef;">(</span><span style="color: #c678dd;">dap-debug</span>
+        <span style="color: #c678dd;">(</span><span style="color: #a9a1e1;">list</span> <span style="color: #c678dd;">:type</span> <span style="color: #98be65;">"python"</span>
+              <span style="color: #c678dd;">:args</span> <span style="color: #98be65;">""</span>
+              <span style="color: #c678dd;">:cwd</span> <span style="color: #98be65;">(</span><span style="color: #c678dd;">lsp-workspace-root</span><span style="color: #98be65;">)</span>
+              <span style="color: #c678dd;">:program</span> <span style="color: #98be65;">(</span><span style="color: #a9a1e1;">concat</span> <span style="color: #51afef;">(</span><span style="color: #dcaeea;">buffer-file-name</span><span style="color: #51afef;">)</span> <span style="color: #98be65;">":"</span> <span style="color: #98be65;">":"</span> <span style="color: #51afef;">(</span><span style="color: #c678dd;">python-pytest--current-defun</span><span style="color: #51afef;">)</span><span style="color: #98be65;">)</span>
+              <span style="color: #c678dd;">:module</span> <span style="color: #98be65;">"pytest"</span>
+              <span style="color: #c678dd;">:request</span> <span style="color: #98be65;">"launch"</span>
+              <span style="color: #c678dd;">:name</span> <span style="color: #98be65;">"dap-debug-test-function"</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org4397a0e" class="outline-4">
+<h4 id="org4397a0e"><span class="section-number-4">8.4.5</span> virtualenv executable</h4>
+<div class="outline-text-4" id="text-8-4-5">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">defadvice!</span> +dap-python-poetry-executable-find-a <span style="color: #c678dd;">(</span>orig-fn <span style="color: #ECBE7B;">&amp;rest</span> args<span style="color: #c678dd;">)</span>
+  <span style="color: #83898d;">"Use the Python binary from the current virtual environment."</span>
+  <span style="color: #c678dd;">:around</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">dap-python--pyenv-executable-find</span>
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">if</span> <span style="color: #98be65;">(</span><span style="color: #c678dd;">getenv</span> <span style="color: #98be65;">"VIRTUAL_ENV"</span><span style="color: #98be65;">)</span>
+      <span style="color: #98be65;">(</span><span style="color: #c678dd;">executable-find</span> <span style="color: #51afef;">(</span><span style="color: #a9a1e1;">car</span> args<span style="color: #51afef;">)</span><span style="color: #98be65;">)</span>
+    <span style="color: #98be65;">(</span><span style="color: #a9a1e1;">apply</span> orig-fn args<span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+<span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(after! dap-python</span>
+<span style="color: #5B6268;">;;   </span><span style="color: #5B6268;">(defun dap-python--pyenv-executable-find (command)</span>
+<span style="color: #5B6268;">;;     </span><span style="color: #5B6268;">(concat (getenv "VIRTUAL_ENV") "/bin/python")))</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc7dd067" class="outline-4">
+<h4 id="orgc7dd067"><span class="section-number-4">8.4.6</span> completion</h4>
+<div class="outline-text-4" id="text-8-4-6">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> <span style="color: #dcaeea;">dap-mode</span>
+  <span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(set-company-backend! 'dap-ui-repl-mode 'company-capf)</span>
+
+  <span style="color: #c678dd;">(</span><span style="color: #c678dd;">add-hook</span> <span style="color: #51afef;">'</span><span style="color: #dcaeea;">dap-ui-repl-mode-hook</span>
+            <span style="color: #98be65;">(</span><span style="color: #51afef;">lambda</span> <span style="color: #51afef;">()</span>
+              <span style="color: #51afef;">(</span><span style="color: #51afef;">setq-local</span> <span style="color: #dcaeea;">company-minimum-prefix-length</span> <span style="color: #da8548; font-weight: bold;">0</span><span style="color: #51afef;">)</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf2e2353" class="outline-4">
+<h4 id="orgf2e2353"><span class="section-number-4">8.4.7</span> Bindings</h4>
+<div class="outline-text-4" id="text-8-4-7">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">map!</span> <span style="color: #c678dd;">:after</span> dap-python
+    <span style="color: #c678dd;">:map</span> <span style="color: #dcaeea;">python-mode-map</span>
+    <span style="color: #c678dd;">:localleader</span>
+    <span style="color: #c678dd;">(</span><span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"debug"</span> <span style="color: #c678dd;">:prefix</span> <span style="color: #98be65;">"d"</span>
+      <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"Hydra"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"h"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">dap-hydra</span>
+      <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"Run debug configuration"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"d"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">dap-debug</span>
+      <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"dap-ui REPL"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"r"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">dap-ui-repl</span>
+      <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"Debug test function"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"t"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">dap-python-test-method-at-point</span>
+      <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"Run last debug configuration"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"l"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">dap-debug-last</span>
+      <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"Toggle breakpoint"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"b"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">dap-breakpoint-toggle</span>
+      <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"dap continue"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"c"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">dap-continue</span>
+      <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"dap next"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"n"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">dap-next</span>
+      <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"Debug script"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"s"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">dap-python-script</span>
+      <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"dap step in"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"i"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">dap-step-in</span>
+      <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"dap eval at point"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"e"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">dap-eval-thing-at-point</span>
+      <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"Disconnect"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"q"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">dap-disconnect</span> <span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org34ffeec" class="outline-3">
+<h3 id="org34ffeec"><span class="section-number-3">8.5</span> emacs-ipython-notebook</h3>
+<div class="outline-text-3" id="text-8-5">
+</div>
+<div id="outline-container-orge374354" class="outline-4">
+<h4 id="orge374354"><span class="section-number-4">8.5.1</span> Don&rsquo;t ignore <code>ein</code> buffers</h4>
+<div class="outline-text-4" id="text-8-5-1">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> ein
+  <span style="color: #c678dd;">(</span><span style="color: #c678dd;">set-popup-rule!</span> <span style="color: #98be65;">"^\\*ein"</span> <span style="color: #c678dd;">:ignore</span> t<span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orge756724" class="outline-4">
+<h4 id="orge756724"><span class="section-number-4">8.5.2</span> Bindings</h4>
+<div class="outline-text-4" id="text-8-5-2">
+<p>
+Bindings, inspired by<a href="https://github.com/millejoh/emacs-ipython-notebook/wiki/Spacemacs-Evil-Bindings"> this</a>.
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">map!</span> <span style="color: #c678dd;">(</span><span style="color: #c678dd;">:when</span> <span style="color: #98be65;">(</span><span style="color: #51afef;">featurep!</span> <span style="color: #c678dd;">:tools</span> ein<span style="color: #98be65;">)</span>
+        <span style="color: #98be65;">(</span><span style="color: #c678dd;">:map</span> ein:notebook-mode-map
+          <span style="color: #c678dd;">:nmvo</span> <span style="color: #dcaeea;">doom-localleader-key</span> nil <span style="color: #5B6268;">;; </span><span style="color: #5B6268;">remove binding to local-leader</span>
+
+          <span style="color: #5B6268;">;; </span><span style="color: #5B6268;">:desc "Execute" :ni "S-RET" #'ein:worksheet-execute-cell</span>
+
+          <span style="color: #c678dd;">:localleader</span>
+          <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"Show Hydra"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"?"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">+ein/hydra/body</span>
+          <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"Execute and step"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"RET"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">ein:worksheet-execute-cell-and-goto-next</span>
+          <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"Yank cell"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"y"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">ein:worksheet-copy-cell</span>
+          <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"Paste cell"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"p"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">ein:worksheet-yank-cell</span>
+          <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"Delete cell"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"d"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">ein:worksheet-kill-cell</span>
+          <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"Insert cell below"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"o"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">ein:worksheet-insert-cell-below</span>
+          <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"Insert cell above"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"O"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">ein:worksheet-insert-cell-above</span>
+          <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"Next cell"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"j"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">ein:worksheet-goto-next-input</span>
+          <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"Previous cell"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"k"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">ein:worksheet-goto-prev-input</span>
+          <span style="color: #c678dd;">:desc</span> <span style="color: #98be65;">"Save notebook"</span> <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"fs"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">ein:notebook-save-notebook-command</span>
+      <span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org4dc3016" class="outline-3">
+<h3 id="org4dc3016"><span class="section-number-3">8.6</span> Dash docsets</h3>
+<div class="outline-text-3" id="text-8-6">
+<p>
+When <code>SPC c k</code> fails, try searching in the docsets with <code>SPC s k</code>.
+Install docsets with <code>dash-docs-install-docset</code>.
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #c678dd;">set-popup-rule!</span> <span style="color: #98be65;">"*eww*"</span> <span style="color: #c678dd;">:side</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">right</span> <span style="color: #c678dd;">:size</span> <span style="color: #da8548; font-weight: bold;">.50</span> <span style="color: #c678dd;">:select</span> t <span style="color: #c678dd;">:vslot</span> <span style="color: #da8548; font-weight: bold;">2</span> <span style="color: #c678dd;">:ttl</span> <span style="color: #da8548; font-weight: bold;">3</span><span style="color: #51afef;">)</span>
+
+<span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> dash-docs
+  <span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(setq dash-docs-docsets-path "/Users/luca/Library/Application Support/Dash/DocSets")</span>
+  <span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(setq counsel-dash-docsets-path "/Users/luca/Library/Application Support/Dash/DocSets")</span>
+  <span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(expand-file-name "~/Library/Application Support/Dash/DocSets")</span>
+  <span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(set-docsets! 'python-mode "NumPy" "Pandas" "scikit-learn"))</span>
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">setq</span> counsel-dash-docsets <span style="color: #51afef;">'</span><span style="color: #98be65;">(</span><span style="color: #98be65;">"Pandas"</span> <span style="color: #98be65;">"scikit-learn"</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span>
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">dash-docs-docsets</span> <span style="color: #51afef;">'</span><span style="color: #98be65;">(</span><span style="color: #98be65;">"Pandas"</span> <span style="color: #98be65;">"scikit-learn"</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgd15abfa" class="outline-3">
+<h3 id="orgd15abfa"><span class="section-number-3">8.7</span> Compilation popup</h3>
+<div class="outline-text-3" id="text-8-7">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #c678dd;">set-popup-rule!</span> <span style="color: #98be65;">"*compilation*"</span> <span style="color: #c678dd;">:side</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">right</span> <span style="color: #c678dd;">:size</span> <span style="color: #da8548; font-weight: bold;">.50</span> <span style="color: #c678dd;">:select</span> t <span style="color: #c678dd;">:vslot</span> <span style="color: #da8548; font-weight: bold;">2</span> <span style="color: #c678dd;">:quit</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">current</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org7a7a33f" class="outline-2">
+<h2 id="org7a7a33f"><span class="section-number-2">9</span> R</h2>
+<div class="outline-text-2" id="text-9">
+</div>
+<div id="outline-container-orgd45e633" class="outline-3">
+<h3 id="orgd45e633"><span class="section-number-3">9.1</span> ESS console popup</h3>
+<div class="outline-text-3" id="text-9-1">
+<p>
+Disable popup for ESS:
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #c678dd;">set-popup-rule!</span> <span style="color: #98be65;">"^\\*R:"</span> <span style="color: #c678dd;">:ignore</span> t<span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgfda722a" class="outline-3">
+<h3 id="orgfda722a"><span class="section-number-3">9.2</span> Async eval</h3>
+<div class="outline-text-3" id="text-9-2">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> ess
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">setq</span> ess-eval-visibly <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">nowait</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc27518d" class="outline-3">
+<h3 id="orgc27518d"><span class="section-number-3">9.3</span> Syntax highlighting</h3>
+<div class="outline-text-3" id="text-9-3">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> ess
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">setq</span> ess-R-font-lock-keywords <span style="color: #51afef;">'</span><span style="color: #98be65;">(</span><span style="color: #51afef;">(</span>ess-R-fl-keyword:keywords . t<span style="color: #51afef;">)</span>
+                                   <span style="color: #51afef;">(</span>ess-R-fl-keyword:constants . t<span style="color: #51afef;">)</span>
+                                   <span style="color: #51afef;">(</span>ess-R-fl-keyword:modifiers . t<span style="color: #51afef;">)</span>
+                                   <span style="color: #51afef;">(</span>ess-R-fl-keyword:fun-defs . t<span style="color: #51afef;">)</span>
+                                   <span style="color: #51afef;">(</span>ess-R-fl-keyword:assign-ops . t<span style="color: #51afef;">)</span>
+                                   <span style="color: #51afef;">(</span>ess-R-fl-keyword:%op% . t<span style="color: #51afef;">)</span>
+                                   <span style="color: #51afef;">(</span>ess-fl-keyword:fun-calls . t<span style="color: #51afef;">)</span>
+                                   <span style="color: #51afef;">(</span>ess-fl-keyword:numbers . t<span style="color: #51afef;">)</span>
+                                   <span style="color: #51afef;">(</span>ess-fl-keyword:operators . t<span style="color: #51afef;">)</span>
+                                   <span style="color: #51afef;">(</span>ess-fl-keyword:delimiters . t<span style="color: #51afef;">)</span>
+                                   <span style="color: #51afef;">(</span>ess-fl-keyword:= . t<span style="color: #51afef;">)</span>
+                                   <span style="color: #51afef;">(</span>ess-R-fl-keyword:F&amp;T . t<span style="color: #51afef;">)</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgfe52cfe" class="outline-3">
+<h3 id="orgfe52cfe"><span class="section-number-3">9.4</span> Pretty symbols</h3>
+<div class="outline-text-3" id="text-9-4">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> ess-r-mode
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">appendq!</span> <span style="color: #dcaeea;">+pretty-code-symbols</span>
+            <span style="color: #51afef;">'</span><span style="color: #98be65;">(</span><span style="color: #c678dd;">:assign</span> <span style="color: #98be65;">"&#10229;"</span>
+              <span style="color: #c678dd;">:multiply</span> <span style="color: #98be65;">"&#215;"</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span>
+  <span style="color: #c678dd;">(</span><span style="color: #c678dd;">set-pretty-symbols!</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">ess-r-mode</span>
+    <span style="color: #5B6268;">;; </span><span style="color: #5B6268;">Functional</span>
+    <span style="color: #c678dd;">:def</span> <span style="color: #98be65;">"function"</span>
+    <span style="color: #5B6268;">;; </span><span style="color: #5B6268;">Types</span>
+    <span style="color: #c678dd;">:null</span> <span style="color: #98be65;">"NULL"</span>
+    <span style="color: #c678dd;">:true</span> <span style="color: #98be65;">"TRUE"</span>
+    <span style="color: #c678dd;">:false</span> <span style="color: #98be65;">"FALSE"</span>
+    <span style="color: #c678dd;">:int</span> <span style="color: #98be65;">"int"</span>
+    <span style="color: #c678dd;">:floar</span> <span style="color: #98be65;">"float"</span>
+    <span style="color: #c678dd;">:bool</span> <span style="color: #98be65;">"bool"</span>
+    <span style="color: #5B6268;">;; </span><span style="color: #5B6268;">Flow</span>
+    <span style="color: #c678dd;">:not</span> <span style="color: #98be65;">"!"</span>
+    <span style="color: #c678dd;">:and</span> <span style="color: #98be65;">"&amp;&amp;"</span> <span style="color: #c678dd;">:or</span> <span style="color: #98be65;">"||"</span>
+    <span style="color: #c678dd;">:for</span> <span style="color: #98be65;">"for"</span>
+    <span style="color: #c678dd;">:in</span> <span style="color: #98be65;">"%in%"</span>
+    <span style="color: #c678dd;">:return</span> <span style="color: #98be65;">"return"</span>
+    <span style="color: #5B6268;">;; </span><span style="color: #5B6268;">Other</span>
+    <span style="color: #c678dd;">:assign</span> <span style="color: #98be65;">"&lt;-"</span>
+    <span style="color: #c678dd;">:multiply</span> <span style="color: #98be65;">"%*%"</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org793134a" class="outline-2">
+<h2 id="org793134a"><span class="section-number-2">10</span> Clojure</h2>
+<div class="outline-text-2" id="text-10">
+</div>
+<div id="outline-container-orgd74bfe2" class="outline-3">
+<h3 id="orgd74bfe2"><span class="section-number-3">10.1</span> Use flycheck</h3>
+<div class="outline-text-3" id="text-10-1">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> <span style="color: #dcaeea;">lsp-mode</span>
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">add-hook!</span> clojure-mode <span style="color: #98be65;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">lsp-diagnostic-package</span> <span style="color: #c678dd;">:flycheck</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org17f457a" class="outline-3">
+<h3 id="org17f457a"><span class="section-number-3">10.2</span> Company keybingins</h3>
+<div class="outline-text-3" id="text-10-2">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> cider
+  <span style="color: #c678dd;">(</span><span style="color: #c678dd;">add-hook</span> <span style="color: #51afef;">'</span><span style="color: #dcaeea;">company-completion-started-hook</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">custom/set-company-maps</span><span style="color: #c678dd;">)</span>
+  <span style="color: #c678dd;">(</span><span style="color: #c678dd;">add-hook</span> <span style="color: #51afef;">'</span><span style="color: #dcaeea;">company-completion-finished-hook</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">custom/unset-company-maps</span><span style="color: #c678dd;">)</span>
+  <span style="color: #c678dd;">(</span><span style="color: #c678dd;">add-hook</span> <span style="color: #51afef;">'</span><span style="color: #dcaeea;">company-completion-cancelled-hook</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">custom/unset-company-maps</span><span style="color: #c678dd;">)</span>
+
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">defun</span> <span style="color: #c678dd;">custom/unset-company-maps</span> <span style="color: #98be65;">(</span><span style="color: #ECBE7B;">&amp;rest</span> unused<span style="color: #98be65;">)</span>
+    <span style="color: #83898d;">"Set default mappings (outside of company).</span>
+<span style="color: #83898d;">    Arguments (UNUSED) are ignored."</span>
+    <span style="color: #98be65;">(</span><span style="color: #51afef;">general-def</span>
+      <span style="color: #c678dd;">:states</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">insert</span>
+      <span style="color: #c678dd;">:keymaps</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">override</span>
+      <span style="color: #98be65;">"&lt;down&gt;"</span> nil
+      <span style="color: #98be65;">"&lt;up&gt;"</span>   nil
+      <span style="color: #98be65;">"RET"</span>    nil
+      <span style="color: #51afef;">[</span>return<span style="color: #51afef;">]</span> nil
+      <span style="color: #98be65;">"C-n"</span>    nil
+      <span style="color: #98be65;">"C-p"</span>    nil
+      <span style="color: #98be65;">"C-j"</span>    nil
+      <span style="color: #98be65;">"C-k"</span>    nil
+      <span style="color: #98be65;">"C-h"</span>    nil
+      <span style="color: #98be65;">"C-u"</span>    nil
+      <span style="color: #98be65;">"C-d"</span>    nil
+      <span style="color: #98be65;">"C-s"</span>    nil
+      <span style="color: #98be65;">"C-S-s"</span>   <span style="color: #51afef;">(</span><span style="color: #51afef;">cond</span> <span style="color: #c678dd;">(</span><span style="color: #98be65;">(</span><span style="color: #51afef;">featurep!</span> <span style="color: #c678dd;">:completion</span> helm<span style="color: #98be65;">)</span> nil<span style="color: #c678dd;">)</span>
+                      <span style="color: #c678dd;">(</span><span style="color: #98be65;">(</span><span style="color: #51afef;">featurep!</span> <span style="color: #c678dd;">:completion</span> ivy<span style="color: #98be65;">)</span>  nil<span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+      <span style="color: #98be65;">"C-SPC"</span>   nil
+      <span style="color: #98be65;">"TAB"</span>     nil
+      <span style="color: #51afef;">[</span>tab<span style="color: #51afef;">]</span>     nil
+      <span style="color: #51afef;">[</span>backtab<span style="color: #51afef;">]</span> nil<span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span>
+
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">defun</span> <span style="color: #c678dd;">custom/set-company-maps</span> <span style="color: #98be65;">(</span><span style="color: #ECBE7B;">&amp;rest</span> unused<span style="color: #98be65;">)</span>
+    <span style="color: #83898d;">"Set maps for when you're inside company completion.</span>
+<span style="color: #83898d;">    Arguments (UNUSED) are ignored."</span>
+    <span style="color: #98be65;">(</span><span style="color: #51afef;">general-def</span>
+      <span style="color: #c678dd;">:states</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">insert</span>
+      <span style="color: #c678dd;">:keymaps</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">override</span>
+      <span style="color: #98be65;">"&lt;down&gt;"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">company-select-next</span>
+      <span style="color: #98be65;">"&lt;up&gt;"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">company-select-previous</span>
+      <span style="color: #98be65;">"RET"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">company-complete</span>
+      <span style="color: #51afef;">[</span>return<span style="color: #51afef;">]</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">company-complete</span>
+      <span style="color: #98be65;">"C-w"</span>     nil           <span style="color: #5B6268;">; </span><span style="color: #5B6268;">don't interfere with `</span><span style="color: #a9a1e1;">evil-delete-backward-word</span><span style="color: #5B6268;">'</span>
+      <span style="color: #98be65;">"C-n"</span>     <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">company-select-next</span>
+      <span style="color: #98be65;">"C-p"</span>     <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">company-select-previous</span>
+      <span style="color: #98be65;">"C-j"</span>     <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">company-select-next</span>
+      <span style="color: #98be65;">"C-k"</span>     <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">company-select-previous</span>
+      <span style="color: #98be65;">"C-h"</span>     <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">company-show-doc-buffer</span>
+      <span style="color: #98be65;">"C-u"</span>     <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">company-previous-page</span>
+      <span style="color: #98be65;">"C-d"</span>     <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">company-next-page</span>
+      <span style="color: #98be65;">"C-s"</span>     <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">company-filter-candidates</span>
+      <span style="color: #98be65;">"C-S-s"</span>   <span style="color: #51afef;">(</span><span style="color: #51afef;">cond</span> <span style="color: #c678dd;">(</span><span style="color: #98be65;">(</span><span style="color: #51afef;">featurep!</span> <span style="color: #c678dd;">:completion</span> helm<span style="color: #98be65;">)</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">helm-company</span><span style="color: #c678dd;">)</span>
+                      <span style="color: #c678dd;">(</span><span style="color: #98be65;">(</span><span style="color: #51afef;">featurep!</span> <span style="color: #c678dd;">:completion</span> ivy<span style="color: #98be65;">)</span>  <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">counsel-company</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+      <span style="color: #98be65;">"C-SPC"</span>   <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">company-complete-common</span>
+      <span style="color: #98be65;">"TAB"</span>     <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">company-complete-common-or-cycle</span>
+      <span style="color: #51afef;">[</span>tab<span style="color: #51afef;">]</span>     <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">company-complete-common-or-cycle</span>
+      <span style="color: #51afef;">[</span>backtab<span style="color: #51afef;">]</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">company-select-previous</span>    <span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span>
+  <span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orge2cdbc6" class="outline-3">
+<h3 id="orge2cdbc6"><span class="section-number-3">10.3</span> REPL keybindings</h3>
+<div class="outline-text-3" id="text-10-3">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">add-hook!</span> cider-repl-mode <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">evil-normalize-keymaps</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgf3cbb40" class="outline-3">
+<h3 id="orgf3cbb40"><span class="section-number-3">10.4</span> <span class="todo TODO">TODO</span> Cleverparens</h3>
+<div class="outline-text-3" id="text-10-4">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(after! smartparens</span>
+<span style="color: #5B6268;">;;   </span><span style="color: #5B6268;">(add-hook! clojure-mode #'smartparens-strict-mode)</span>
+
+<span style="color: #5B6268;">;;   </span><span style="color: #5B6268;">(use-package! evil-cleverparens</span>
+<span style="color: #5B6268;">;;     </span><span style="color: #5B6268;">:init</span>
+<span style="color: #5B6268;">;;     </span><span style="color: #5B6268;">(setq evil-move-beyond-eol t</span>
+<span style="color: #5B6268;">;;           </span><span style="color: #5B6268;">evil-cleverparens-use-additional-bindings nil</span>
+<span style="color: #5B6268;">;;           </span><span style="color: #5B6268;">;; evil-cleverparens-swap-move-by-word-and-symbol t</span>
+<span style="color: #5B6268;">;;           </span><span style="color: #5B6268;">;; evil-cleverparens-use-regular-insert t</span>
+<span style="color: #5B6268;">;;           </span><span style="color: #5B6268;">)</span>
+
+<span style="color: #5B6268;">;;     </span><span style="color: #5B6268;">(add-hook! clojure-mode #'evil-cleverparens-mode)</span>
+<span style="color: #5B6268;">;;     </span><span style="color: #5B6268;">;; (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode)</span>
+<span style="color: #5B6268;">;;     </span><span style="color: #5B6268;">))</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org1c3c735" class="outline-3">
+<h3 id="org1c3c735"><span class="section-number-3">10.5</span> Aggressive indent</h3>
+<div class="outline-text-3" id="text-10-5">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> clojure-mode
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">use-package!</span> aggressive-indent
+    <span style="color: #c678dd;">:config</span> <span style="color: #98be65;">(</span><span style="color: #51afef;">add-hook!</span> clojure-mode <span style="color: #51afef;">(</span><span style="color: #dcaeea;">aggressive-indent-mode</span> <span style="color: #da8548; font-weight: bold;">1</span><span style="color: #51afef;">)</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgea8396b" class="outline-3">
+<h3 id="orgea8396b"><span class="section-number-3">10.6</span> <span class="todo TODO">TODO</span> Cleverparens keybindings</h3>
+<div class="outline-text-3" id="text-10-6">
+<p>
+With <code>lispyville</code> you can wrap using <code>M-(</code> for example!
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(map! :after evil-cleverparens</span>
+<span style="color: #5B6268;">;;       </span><span style="color: #5B6268;">:map clojure-mode-map</span>
+<span style="color: #5B6268;">;;       </span><span style="color: #5B6268;">:localleader</span>
+<span style="color: #5B6268;">;;       </span><span style="color: #5B6268;">(:desc "Wrap round" :n "(" #'sp-wrap-round</span>
+<span style="color: #5B6268;">;;        </span><span style="color: #5B6268;">:desc "Wrap square" :n "[" #'sp-wrap-square</span>
+<span style="color: #5B6268;">;;        </span><span style="color: #5B6268;">:desc "Wrap curly" :n "{" #'sp-wrap-curly</span>
+<span style="color: #5B6268;">;;        </span><span style="color: #5B6268;">:desc "Unwrap sexp" :n "u" #'sp-unwrap-sexp</span>
+<span style="color: #5B6268;">;;        </span><span style="color: #5B6268;">))</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgd6d3509" class="outline-3">
+<h3 id="orgd6d3509"><span class="section-number-3">10.7</span> Lispyville</h3>
+<div class="outline-text-3" id="text-10-7">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> lispyville
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">lispyville-key-theme</span>
+        <span style="color: #51afef;">'</span><span style="color: #98be65;">(</span><span style="color: #51afef;">(</span>operators normal<span style="color: #51afef;">)</span>
+          c-w
+          <span style="color: #51afef;">(</span>prettify insert<span style="color: #51afef;">)</span>
+          <span style="color: #51afef;">(</span>atom-movement normal visual<span style="color: #51afef;">)</span>
+          slurp/barf-lispy
+          additional
+          additional-insert
+          additional-wrap
+          additional-motions<span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span>
+
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">lispyville-motions-put-into-special</span> t<span style="color: #c678dd;">)</span>
+
+<span style="color: #c678dd;">(</span><span style="color: #51afef;">map!</span> <span style="color: #c678dd;">:mode</span> <span style="color: #dcaeea;">lispy-mode</span>
+    <span style="color: #c678dd;">:i</span> <span style="color: #98be65;">"M-["</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">lispy-brackets</span>
+    <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"["</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">lispyville-previous-opening</span>
+    <span style="color: #c678dd;">:n</span> <span style="color: #98be65;">"]"</span> <span style="color: #51afef;">#'</span><span style="color: #ECBE7B;">lispyville-next-opening</span><span style="color: #c678dd;">)</span>
+
+  <span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(map! :map lispy-mode-map</span>
+  <span style="color: #5B6268;">;;       </span><span style="color: #5B6268;">:i "[" #'lispy-brackets)</span>
+
+  <span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(map! :map evil-motion-state-map</span>
+  <span style="color: #5B6268;">;;         </span><span style="color: #5B6268;">:n "[[" #'lispyville-previous-opening)</span>
+<span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgc5f1359" class="outline-3">
+<h3 id="orgc5f1359"><span class="section-number-3">10.8</span> Vega view</h3>
+<div class="outline-text-3" id="text-10-8">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> cider
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">use-package!</span> vega-view
+    <span style="color: #c678dd;">:init</span>
+    <span style="color: #98be65;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">vega-view-prefer-png</span> t<span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgb085b0c" class="outline-3">
+<h3 id="orgb085b0c"><span class="section-number-3">10.9</span> nREPL timeout</h3>
+<div class="outline-text-3" id="text-10-9">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> cider
+ <span style="color: #c678dd;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">nrepl-sync-request-timeout</span> nil<span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgdbc7912" class="outline-3">
+<h3 id="orgdbc7912"><span class="section-number-3">10.10</span> Align vertically automatically</h3>
+<div class="outline-text-3" id="text-10-10">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> clojure-mode
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">clojure-align-forms-automatically</span> t<span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgca87668" class="outline-3">
+<h3 id="orgca87668"><span class="section-number-3">10.11</span> <span class="todo TODO">TODO</span> Sayid debugger</h3>
+<div class="outline-text-3" id="text-10-11">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(after! cider</span>
+<span style="color: #5B6268;">;;   </span><span style="color: #5B6268;">(eval-after-load 'clojure-mode</span>
+<span style="color: #5B6268;">;;     </span><span style="color: #5B6268;">'(sayid-setup-package)))</span>
+
+<span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(use-package sayid</span>
+<span style="color: #5B6268;">;;     </span><span style="color: #5B6268;">:defer t</span>
+<span style="color: #5B6268;">;;     </span><span style="color: #5B6268;">:init</span>
+<span style="color: #5B6268;">;;     </span><span style="color: #5B6268;">(progn</span>
+<span style="color: #5B6268;">;;       </span><span style="color: #5B6268;">(setq sayid--key-binding-prefixes</span>
+<span style="color: #5B6268;">;;             </span><span style="color: #5B6268;">'(("mdt" . "trace")))</span>
+<span style="color: #5B6268;">;;       </span><span style="color: #5B6268;">(spacemacs|forall-clojure-modes m</span>
+<span style="color: #5B6268;">;;         </span><span style="color: #5B6268;">(mapc (lambda (x) (spacemacs/declare-prefix-for-mode m</span>
+<span style="color: #5B6268;">;;                             </span><span style="color: #5B6268;">(car x) (cdr x)))</span>
+<span style="color: #5B6268;">;;               </span><span style="color: #5B6268;">sayid--key-binding-prefixes)</span>
+<span style="color: #5B6268;">;;         </span><span style="color: #5B6268;">(spacemacs/set-leader-keys-for-major-mode m</span>
+<span style="color: #5B6268;">;;           </span><span style="color: #5B6268;">;;These keybindings mostly preserved from the default sayid bindings</span>
+<span style="color: #5B6268;">;;           </span><span style="color: #5B6268;">"d!" 'sayid-load-enable-clear</span>
+<span style="color: #5B6268;">;;           </span><span style="color: #5B6268;">"dE" 'sayid-eval-last-sexp ;in default sayid bindings this is lowercase e, but that was already used in clojure mode</span>
+<span style="color: #5B6268;">;;           </span><span style="color: #5B6268;">"dc" 'sayid-clear-log</span>
+<span style="color: #5B6268;">;;           </span><span style="color: #5B6268;">"df" 'sayid-query-form-at-point</span>
+<span style="color: #5B6268;">;;           </span><span style="color: #5B6268;">"dh" 'sayid-show-help</span>
+<span style="color: #5B6268;">;;           </span><span style="color: #5B6268;">"ds" 'sayid-show-traced</span>
+<span style="color: #5B6268;">;;           </span><span style="color: #5B6268;">"dS" 'sayid-show-traced-ns</span>
+<span style="color: #5B6268;">;;           </span><span style="color: #5B6268;">"dtb" 'sayid-trace-ns-in-file</span>
+<span style="color: #5B6268;">;;           </span><span style="color: #5B6268;">"dtd" 'sayid-trace-fn-disable</span>
+<span style="color: #5B6268;">;;           </span><span style="color: #5B6268;">"dtD" 'sayid-trace-disable-all</span>
+<span style="color: #5B6268;">;;           </span><span style="color: #5B6268;">"dte" 'sayid-trace-fn-enable</span>
+<span style="color: #5B6268;">;;           </span><span style="color: #5B6268;">"dtE" 'sayid-trace-enable-all</span>
+<span style="color: #5B6268;">;;           </span><span style="color: #5B6268;">"dtK" 'sayid-kill-all-traces</span>
+<span style="color: #5B6268;">;;           </span><span style="color: #5B6268;">"dtn" 'sayid-inner-trace-fn</span>
+<span style="color: #5B6268;">;;           </span><span style="color: #5B6268;">"dto" 'sayid-outer-trace-fn</span>
+<span style="color: #5B6268;">;;           </span><span style="color: #5B6268;">"dtp" 'sayid-trace-ns-by-pattern</span>
+<span style="color: #5B6268;">;;           </span><span style="color: #5B6268;">"dtr" 'sayid-remove-trace-fn</span>
+<span style="color: #5B6268;">;;           </span><span style="color: #5B6268;">"dty" 'sayid-trace-all-ns-in-dir</span>
+<span style="color: #5B6268;">;;           </span><span style="color: #5B6268;">"dV" 'sayid-set-view</span>
+<span style="color: #5B6268;">;;           </span><span style="color: #5B6268;">"dw" 'sayid-get-workspace</span>
+<span style="color: #5B6268;">;;           </span><span style="color: #5B6268;">"dx" 'sayid-reset-workspace</span>
+<span style="color: #5B6268;">;;           </span><span style="color: #5B6268;">))</span>
+
+<span style="color: #5B6268;">;;       </span><span style="color: #5B6268;">(evilified-state-evilify sayid-mode sayid-mode-map</span>
+<span style="color: #5B6268;">;;         </span><span style="color: #5B6268;">(kbd "H") 'sayid-buf-show-help</span>
+<span style="color: #5B6268;">;;         </span><span style="color: #5B6268;">(kbd "n") 'sayid-buffer-nav-to-next</span>
+<span style="color: #5B6268;">;;         </span><span style="color: #5B6268;">(kbd "N") 'sayid-buffer-nav-to-prev</span>
+<span style="color: #5B6268;">;;         </span><span style="color: #5B6268;">(kbd "C-s v") 'sayid-toggle-view</span>
+<span style="color: #5B6268;">;;         </span><span style="color: #5B6268;">(kbd "C-s V") 'sayid-set-view</span>
+<span style="color: #5B6268;">;;         </span><span style="color: #5B6268;">(kbd "L") 'sayid-buf-back</span>
+<span style="color: #5B6268;">;;         </span><span style="color: #5B6268;">(kbd "e") 'sayid-gen-instance-expr) ;Originally this was bound to 'g', but I feel this is still mnemonic and doesn't overlap with evil</span>
+
+<span style="color: #5B6268;">;;       </span><span style="color: #5B6268;">(evilified-state-evilify sayid-pprint-mode sayid-pprint-mode-map</span>
+<span style="color: #5B6268;">;;         </span><span style="color: #5B6268;">(kbd "h") 'sayid-pprint-buf-show-help</span>
+<span style="color: #5B6268;">;;         </span><span style="color: #5B6268;">(kbd "n") 'sayid-pprint-buf-next</span>
+<span style="color: #5B6268;">;;         </span><span style="color: #5B6268;">(kbd "N") 'sayid-pprint-buf-prev</span>
+<span style="color: #5B6268;">;;         </span><span style="color: #5B6268;">(kbd "l") 'sayid-pprint-buf-exit)</span>
+
+<span style="color: #5B6268;">;;       </span><span style="color: #5B6268;">(evilified-state-evilify sayid-traced-mode sayid-traced-mode-map</span>
+<span style="color: #5B6268;">;;         </span><span style="color: #5B6268;">(kbd "l") 'sayid-show-traced</span>
+<span style="color: #5B6268;">;;         </span><span style="color: #5B6268;">(kbd "h") 'sayid-traced-buf-show-help)))</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orge8bae4b" class="outline-2">
+<h2 id="orge8bae4b"><span class="section-number-2">11</span> Shell</h2>
+<div class="outline-text-2" id="text-11">
+</div>
+<div id="outline-container-org4f2af09" class="outline-3">
+<h3 id="org4f2af09"><span class="section-number-3">11.1</span> Async Shell command</h3>
+<div class="outline-text-3" id="text-11-1">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">defun</span> <span style="color: #c678dd;">shell-command-print-separator</span> <span style="color: #c678dd;">()</span>
+  <span style="color: #c678dd;">(</span><span style="color: #a9a1e1;">overlay-put</span> <span style="color: #98be65;">(</span><span style="color: #a9a1e1;">make-overlay</span> <span style="color: #51afef;">(</span><span style="color: #a9a1e1;">point-max</span><span style="color: #51afef;">)</span> <span style="color: #51afef;">(</span><span style="color: #a9a1e1;">point-max</span><span style="color: #51afef;">)</span><span style="color: #98be65;">)</span>
+               <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">before-string</span>
+               <span style="color: #98be65;">(</span><span style="color: #a9a1e1;">propertize</span> <span style="color: #98be65;">"!"</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">display</span>
+                           <span style="color: #51afef;">(</span><span style="color: #a9a1e1;">list</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">left-fringe</span>
+                                 <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">right-triangle</span><span style="color: #51afef;">)</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+
+<span style="color: #51afef;">(</span><span style="color: #c678dd;">advice-add</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">shell-command--save-pos-or-erase</span> <span style="color: #c678dd;">:after</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">shell-command-print-separator</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orga5d28f1" class="outline-3">
+<h3 id="orga5d28f1"><span class="section-number-3">11.2</span> Async command and vterm popups</h3>
+<div class="outline-text-3" id="text-11-2">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">  <span style="color: #51afef;">(</span><span style="color: #c678dd;">set-popup-rule!</span> <span style="color: #98be65;">"*Async Shell Command*"</span> <span style="color: #c678dd;">:side</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">bottom</span> <span style="color: #c678dd;">:size</span> <span style="color: #da8548; font-weight: bold;">.40</span><span style="color: #51afef;">)</span>
+  <span style="color: #51afef;">(</span><span style="color: #c678dd;">set-popup-rule!</span> <span style="color: #98be65;">"vterm"</span> <span style="color: #c678dd;">:side</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">right</span> <span style="color: #c678dd;">:size</span> <span style="color: #da8548; font-weight: bold;">.40</span> <span style="color: #c678dd;">:quit</span> <span style="color: #51afef;">'</span><span style="color: #ECBE7B;">current</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org74d2427" class="outline-3">
+<h3 id="org74d2427"><span class="section-number-3">11.3</span> Counsel rg base command</h3>
+<div class="outline-text-3" id="text-11-3">
+<div class="org-src-container">
+<pre class="src src-emacs-lisp"><span style="color: #51afef;">(</span><span style="color: #51afef;">after!</span> counsel
+  <span style="color: #5B6268;">;; </span><span style="color: #5B6268;">:config</span>
+  <span style="color: #5B6268;">;; </span><span style="color: #5B6268;">Thanks to https://github.com/kaushalmodi/.emacs.d/blob/master/setup-files/setup-counsel.el</span>
+  <span style="color: #5B6268;">;; </span><span style="color: #5B6268;">(setq counsel-rg-base-command "rg --with-filename --no-heading --line-number --hidden --color never %s"))</span>
+  <span style="color: #c678dd;">(</span><span style="color: #51afef;">setq</span> <span style="color: #dcaeea;">counsel-rg-base-command</span> <span style="color: #98be65;">(</span><span style="color: #a9a1e1;">concat</span> <span style="color: #dcaeea;">counsel-rg-base-command</span> <span style="color: #98be65;">" --hidden"</span><span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: Luca Cambiaghi</p>
+<p class="date">Created: 2020-06-07 Sun 22:41</p>
+</div>
+</body>
+</html>

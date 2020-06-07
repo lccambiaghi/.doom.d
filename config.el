@@ -32,8 +32,8 @@
 
 (setq display-line-numbers-type nil)
 
-(setq doom-font (font-spec :family "Menlo" :size 14)
-      doom-big-font (font-spec :family "Menlo" :size 19))
+(setq doom-font (font-spec :family "Menlo" :size 16)
+      doom-big-font (font-spec :family "Menlo" :size 20))
 ;; (setq doom-font (font-spec :family "Fira Code" :size 14)
 ;;       doom-big-font (font-spec :family "Fira Code" :size 22)
 ;; doom-variable-pitch-font (font-spec :family "Overpass" :size 16))
@@ -41,9 +41,8 @@
 (after! which-key
     (setq which-key-idle-delay 0.5))
 
-;transparent adjustment
-;; (set-frame-parameter (selected-frame)'alpha '(94 . 94))
-;; (add-to-list 'default-frame-alist'(alpha . (94 . 94)))
+;; (set-frame-parameter (selected-frame)'alpha '(98 . 98))
+;; (add-to-list 'default-frame-alist'(alpha . (98 . 98)))
 
 (setq doom-theme 'doom-one)
 
@@ -55,8 +54,7 @@
         centaur-tabs-modified-marker "M"
         centaur-tabs-cycle-scope 'tabs
         centaur-tabs-set-close-button nil)
-  (centaur-tabs-group-by-projectile-project)
-  (add-hook 'dired-mode-hook 'centaur-tabs-local-mode))
+  (centaur-tabs-group-by-projectile-project))
 
 (after! winum
   ;; (defun winum-assign-0-to-treemacs ()
@@ -113,7 +111,7 @@
 ;;   '(company-capf company-files company-dabbrev-code))
 (after! company
   (use-package company-tabnine :ensure t)
-  (setq company-backends '(company-tabnine company-capf company-yasnippet)))
+  (setq company-backends '(company-tabnine company-capf)))
 
 ;; (after! company
 ;;   (add-to-list 'company-backends 'company-tabnine))
@@ -133,12 +131,12 @@
 (setq org-directory "~/git/org/"
       org-image-actual-width nil
       +org-export-directory "~/git/org/export/"
-      org-default-notes-file "~/git/org/inbox.org"
+      org-default-notes-file "~/git/org/personal/inbox.org"
       org-id-locations-file "~/git/org/.orgids"
       ;; org-export-in-background t
       org-catch-invisible-edits 'smart)
 
-(load! "modules/ox-ravel")
+;; (load! "modules/ox-ravel")
 
 (after! org
 
@@ -176,9 +174,14 @@
 
 ;; (setq global-org-pretty-table-mode t)
 
-(add-hook! 'org-mode-hook #'+org-pretty-mode)
+;; (add-hook! 'org-mode-hook #'+org-pretty-mode)
 
 (set-popup-rule! "*org agenda*" :side 'right :size .40 :select t :vslot 2 :ttl 3)
+
+(require 'ox-ipynb)
+
+(after! evil-org
+  (setq org-babel-clojure-backend 'cider))
 
 (after! evil-org
   (setq org-babel-default-header-args:jupyter-python '((:async . "yes")
@@ -190,7 +193,6 @@
 ;; (:when (featurep! :lang +jupyter)
 (map! :after evil-org
       :map evil-org-mode-map
-      :n "gR" #'jupyter-org-execute-subtree
       :leader
       :desc "tangle" :n "ct" #'org-babel-tangle
       :localleader
@@ -203,21 +205,55 @@
       :desc "Merge code blocks" :n "m" #'jupyter-org-merge-blocks
       :desc "Split code block" :n "-" #'jupyter-org-split-src-block
       :desc "Fold results" :n "z" #'org-babel-hide-result-toggle
-      )
+
+      :map org-src-mode-map
+      :localleader
+      :desc "Exit edit" :n "'" #'org-edit-src-exit)
+
+(map! :after python
+      :map python-mode-map
+      :localleader
+      (:desc "eval" :prefix "e"
+       :desc "line or region" :n "e" #'jupyter-eval-line-or-region
+        :desc "defun" :n "d" #'jupyter-eval-defun
+       :desc "buffer" :n "b" #'jupyter-eval-buffer))
 
 (set-popup-rule! "*jupyter-pager*" :side 'right :size .40 :select t :vslot 2 :ttl 3)
-;; (after! jupyter (set-popup-rule! "^\\*Org Src*" :side 'right :size .40 :select t :vslot 2 :ttl 3))
-(set-popup-rule! "^\\*Org Src*" :ignore t)
+(set-popup-rule! "^\\*Org Src*" :side 'right :size .60 :select t :vslot 2 :ttl 3)
+(set-popup-rule! "*jupyter-repl*" :side 'bottom :size .30 :vslot 2 :ttl 3)
 
 (after! evil-org
   (org-babel-lob-ingest "/Users/luca/git/experiments/literate/ml/rpy2.org"))
 
+(after! jupyter
+  (set-eval-handler! 'jupyter-repl-interaction-mode #'jupyter-eval-line-or-region))
+
+(add-hook! python-mode
+  (set-repl-handler! 'python-mode #'jupyter-repl-pop-to-buffer))
+
+(after! jupyter
+  (setq jupyter-eval-use-overlays t))
+
+(after! jupyter
+  (cl-defmethod jupyter-org--insert-result (_req context result)
+    (let ((str
+           (org-element-interpret-data
+            (jupyter-org--wrap-result-maybe
+             context (if (jupyter-org--stream-result-p result)
+                         (thread-last result
+                           jupyter-org-strip-last-newline
+                           jupyter-org-scalar)
+                       result)))))
+      (if (< (length str) 4000)
+          (insert str)
+        (insert (format ": Result was too long! Length was %d" (length str)))))
+    (when (/= (point) (line-beginning-position))
+      ;; Org objects such as file links do not have a newline added when
+      ;; converting to their string representation by
+      ;; `org-element-interpret-data' so insert one in these cases.
+      (insert "\n"))))
+
 ;; (setq org-image-actual-width t)
-
-(require 'ox-ipynb)
-
-(after! evil-org
-  (setq org-babel-clojure-backend 'cider))
 
 (defadvice! +python-poetry-open-repl-a (orig-fn &rest args)
   "Use the Python binary from the current virtual environment."
@@ -226,11 +262,6 @@
       (let ((python-shell-interpreter (executable-find "ipython")))
         (apply orig-fn args))
     (apply orig-fn args)))
-
-(add-hook! python-mode
-  ;; (set-repl-handler! 'python-mode #'jupyter-repl-pop-to-buffer)
-  (set-repl-handler! 'python-mode #'+python/open-ipython-repl)
-  )
 
 (setq python-shell-prompt-detect-failure-warning nil)
 
@@ -539,33 +570,72 @@
 
 (add-hook! cider-repl-mode #'evil-normalize-keymaps)
 
-(after! smartparens
-  ;; (sp-pair "'" nil :actions :rem)
-  ;; (sp-pair "`" nil :actions :rem)
-  (smartparens-global-strict-mode 1))
+;; (after! smartparens
+;;   (add-hook! clojure-mode #'smartparens-strict-mode)
 
-(use-package! evil-cleverparens
-  :init
-  (setq evil-move-beyond-eol t
-        evil-cleverparens-use-additional-bindings nil
-        evil-cleverparens-swap-move-by-word-and-symbol t
-        ;; evil-cleverparens-use-regular-insert t
-        )
-  (add-hook! prog-mode #'evil-cleverparens-mode))
-  ;; (after! sly
-  ;;   (add-hook! sly-mrepl-mode #'evil-cleverparens-mode)))
+;;   (use-package! evil-cleverparens
+;;     :init
+;;     (setq evil-move-beyond-eol t
+;;           evil-cleverparens-use-additional-bindings nil
+;;           ;; evil-cleverparens-swap-move-by-word-and-symbol t
+;;           ;; evil-cleverparens-use-regular-insert t
+;;           )
 
-(use-package! aggressive-indent
-  :config (add-hook! prog-mode (aggressive-indent-mode 1)))
+;;     (add-hook! clojure-mode #'evil-cleverparens-mode)
+;;     ;; (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode)
+;;     ))
 
-(map! :after evil-cleverparens
-      :map clojure-mode-map
-      :localleader
-      (:desc "Wrap round" :n "(" #'sp-wrap-round
-       :desc "Wrap square" :n "[" #'sp-wrap-square
-       :desc "Wrap curly" :n "{" #'sp-wrap-curly
-       :desc "Unwrap sexp" :n "u" #'sp-unwrap-sexp
-       ))
+(after! clojure-mode
+  (use-package! aggressive-indent
+    :config (add-hook! clojure-mode (aggressive-indent-mode 1))))
+
+;; (map! :after evil-cleverparens
+;;       :map clojure-mode-map
+;;       :localleader
+;;       (:desc "Wrap round" :n "(" #'sp-wrap-round
+;;        :desc "Wrap square" :n "[" #'sp-wrap-square
+;;        :desc "Wrap curly" :n "{" #'sp-wrap-curly
+;;        :desc "Unwrap sexp" :n "u" #'sp-unwrap-sexp
+;;        ))
+
+(after! lispyville
+  (setq lispyville-key-theme
+        '((operators normal)
+          c-w
+          (prettify insert)
+          (atom-movement normal visual)
+          slurp/barf-lispy
+          additional
+          additional-insert
+          additional-wrap
+          additional-motions))
+
+  ;; (setq lispyville-motions-put-into-special t)
+
+  (map! :mode lispy-mode
+        :after lispyville
+        ;; :i "M-[" #'lispy-brackets
+        :n "[" #'lispyville-previous-opening
+        :n "]" #'lispyville-next-opening)
+
+  (map! :map lispy-mode-map
+        :after lispyville
+        :i "[" #'lispy-brackets)
+
+  ;; (map! :map evil-motion-state-map
+  ;;         :n "[[" #'lispyville-previous-opening)
+  )
+
+(after! cider
+  (use-package! vega-view
+    :init
+    (setq vega-view-prefer-png t)))
+
+(after! cider
+ (setq nrepl-sync-request-timeout nil))
+
+(after! clojure-mode
+  (setq clojure-align-forms-automatically t))
 
 ;; (after! cider
 ;;   (eval-after-load 'clojure-mode
@@ -634,8 +704,8 @@
 
 (advice-add 'shell-command--save-pos-or-erase :after 'shell-command-print-separator)
 
-(set-popup-rule! "*Async Shell Command*" :side 'bottom :size .40)
-(set-popup-rule! "vterm" :side 'right :size .40 :ttl nil)
+  (set-popup-rule! "*Async Shell Command*" :side 'bottom :size .40)
+  (set-popup-rule! "vterm" :side 'right :size .40 :quit 'current)
 
 (after! counsel
   ;; :config
