@@ -84,6 +84,14 @@
 (setq evil-split-window-below t
       evil-vsplit-window-right t)
 
+(use-package tree-sitter :after python)
+
+(after! tree-sitter
+  (require 'tree-sitter)
+  (require 'tree-sitter-langs)
+  (require 'tree-sitter-hl)
+  (add-hook 'python-mode-hook #'tree-sitter-hl-mode))
+
 (after! magit
   ;; (magit-wip-mode)
   (setq magit-repository-directories '(("~/git" . 2))
@@ -219,7 +227,7 @@
        :desc "buffer" :n "b" #'jupyter-eval-buffer))
 
 (set-popup-rule! "*jupyter-pager*" :side 'right :size .40 :select t :vslot 2 :ttl 3)
-(set-popup-rule! "^\\*Org Src*" :side 'right :size .60 :select t :vslot 2 :ttl 3)
+(set-popup-rule! "^\\*Org Src*" :side 'right :size .60 :select t :vslot 2 :ttl 3 :quit nil)
 (set-popup-rule! "*jupyter-repl*" :side 'bottom :size .30 :vslot 2 :ttl 3)
 
 (after! evil-org
@@ -244,7 +252,7 @@
                            jupyter-org-strip-last-newline
                            jupyter-org-scalar)
                        result)))))
-      (if (< (length str) 4000)
+      (if (< (length str) 10000)
           (insert str)
         (insert (format ": Result was too long! Length was %d" (length str)))))
     (when (/= (point) (line-beginning-position))
@@ -254,6 +262,14 @@
       (insert "\n"))))
 
 ;; (setq org-image-actual-width t)
+
+(defadvice! fixed-zmq-start-process (orig-fn &rest args)
+  :around #'zmq-start-process
+  (letf! (defun make-process (&rest plist)
+           (plist-put! plist :coding (plist-get plist :coding-system))
+           (plist-delete! plist :coding-system)
+           (apply make-process plist))
+    (apply orig-fn args)))
 
 (defadvice! +python-poetry-open-repl-a (orig-fn &rest args)
   "Use the Python binary from the current virtual environment."
@@ -309,6 +325,9 @@
         ;; lsp-enable-on-type-formatting nil
         lsp-enable-symbol-highlighting nil))
         ;; lsp-enable-file-watchers nil))
+
+(after! lsp-mode
+  (setq lsp-restart 'ignore))
 
 (after! python-pytest
   (setq python-pytest-arguments '("--color" "--failed-first"))
@@ -626,10 +645,10 @@
   ;;         :n "[[" #'lispyville-previous-opening)
   )
 
-(after! cider
-  (use-package! vega-view
-    :init
-    (setq vega-view-prefer-png t)))
+;; (after! cider
+;;   (use-package! vega-view
+;;     :init
+;;     (setq vega-view-prefer-png t)))
 
 (after! cider
  (setq nrepl-sync-request-timeout nil))
@@ -707,8 +726,8 @@
   (set-popup-rule! "*Async Shell Command*" :side 'bottom :size .40)
   (set-popup-rule! "vterm" :side 'right :size .40 :quit 'current)
 
-(after! counsel
+;; (after! counsel
   ;; :config
   ;; Thanks to https://github.com/kaushalmodi/.emacs.d/blob/master/setup-files/setup-counsel.el
   ;; (setq counsel-rg-base-command "rg --with-filename --no-heading --line-number --hidden --color never %s"))
-  (setq counsel-rg-base-command (concat counsel-rg-base-command " --hidden")))
+  ;; (setq counsel-rg-base-command (concat counsel-rg-base-command " --hidden")))
