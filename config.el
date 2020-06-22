@@ -84,7 +84,7 @@
 (setq evil-split-window-below t
       evil-vsplit-window-right t)
 
-(use-package tree-sitter :after python)
+(use-package tree-sitter :after python-mode)
 
 (after! tree-sitter
   (require 'tree-sitter)
@@ -300,24 +300,28 @@
 ;; (after! lsp-mode
 ;;   (setq lsp-idle-delay 0.500))
 
-(setq +lsp-company-backend 'company-capf)
+;; (setq +lsp-company-backend 'company-capf)
 
 (set-popup-rule! "^\\*lsp-help" :side 'right :size .50 :select t :vslot 1)
 
-(after! pyimport
-  (setq pyimport-pyflakes-path "~/git/experiments/.venv/bin/pyflakes"))
+;; (after! pyimport
+;;   (setq pyimport-pyflakes-path "~/git/experiments/.venv/bin/pyflakes"))
 
 ;; (after! lsp-mode
 ;;   (setq lsp-diagnostic-package :flymake))
 
-(after! lsp-mode
-  (add-hook! python-mode (setq lsp-diagnostic-package :flymake)))
+;; (after! lsp-mode
+;;   (add-hook! python-mode (setq lsp-diagnostic-package :flymake)))
 
 ;; (after! python
 ;;   (setq python-flymake-command  "~/git/experiments/.venv/bin/pyflakes"))
 
 ;; (after! flycheck
 ;;   (setq-default flycheck-checker 'python-pylint))
+
+(after! lsp-mode
+  (setq lsp-diagnostic-package :none))
+  ;; (setq flycheck-disabled-checkers 'lsp)
 
 (after! lsp-mode
   (setq lsp-eldoc-enable-hover nil
@@ -527,8 +531,8 @@
     :assign "<-"
     :multiply "%*%"))
 
-(after! lsp-mode
-  (add-hook! clojure-mode (setq lsp-diagnostic-package :flycheck)))
+;; (after! lsp-mode
+;;   (add-hook! clojure-mode (setq lsp-diagnostic-package :flycheck)))
 
 (after! cider
   (add-hook 'company-completion-started-hook 'custom/set-company-maps)
@@ -620,12 +624,12 @@
 (after! lispyville
   (setq lispyville-key-theme
         '((operators normal)
-          c-w
+          ;; c-w
           (prettify insert)
           (atom-movement normal visual)
           slurp/barf-lispy
           additional
-          additional-insert
+          ;; additional-insert
           additional-wrap
           additional-motions))
 
@@ -713,6 +717,14 @@
 ;;       (evilified-state-evilify sayid-traced-mode sayid-traced-mode-map
 ;;         (kbd "l") 'sayid-show-traced
 ;;         (kbd "h") 'sayid-traced-buf-show-help)))
+
+(map! :after cider-mode
+      :map clojure-mode-map
+      :localleader
+      (:desc "eval" :prefix "e"
+       :desc "sexp in comment" :n "E" #'cider-pprint-eval-last-sexp-to-comment
+       :desc "defun in comment" :n "D" #'cider-pprint-eval-defun-to-comment
+       ))
 
 (defun shell-command-print-separator ()
   (overlay-put (make-overlay (point-max) (point-max))

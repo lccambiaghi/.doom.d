@@ -137,7 +137,7 @@ use those keys!
 ** Syntax highlighting
 After ~doom sync~ you should run ~tree-sitter-install-grammars~
 #+BEGIN_SRC emacs-lisp
-(use-package tree-sitter :after python)
+(use-package tree-sitter :after python-mode)
 
 (after! tree-sitter
   (require 'tree-sitter)
@@ -442,28 +442,28 @@ This variable determines how often lsp-mode will refresh the highlights, lenses,
 ;; (after! lsp-mode
 ;;   (setq lsp-idle-delay 0.500))
 #+END_SRC
-*** Prefer company-capf over company-lsp
+*** TODO Prefer company-capf over company-lsp
 #+BEGIN_SRC emacs-lisp
-(setq +lsp-company-backend 'company-capf)
+;; (setq +lsp-company-backend 'company-capf)
 #+END_SRC
 *** lsp-help popup
 Lookup documentation with ~SPC c k~
 #+BEGIN_SRC emacs-lisp
 (set-popup-rule! "^\\*lsp-help" :side 'right :size .50 :select t :vslot 1)
 #+END_SRC
-*** Missing imports
+*** TODO Missing imports
 In python mode, use ~, i i~ to add missing imports
 #+BEGIN_SRC emacs-lisp
-(after! pyimport
-  (setq pyimport-pyflakes-path "~/git/experiments/.venv/bin/pyflakes"))
+;; (after! pyimport
+;;   (setq pyimport-pyflakes-path "~/git/experiments/.venv/bin/pyflakes"))
 #+END_SRC
-*** Use flymake instead of flycheck
+*** TODO Use flymake instead of flycheck
 #+BEGIN_SRC emacs-lisp
 ;; (after! lsp-mode
 ;;   (setq lsp-diagnostic-package :flymake))
 
-(after! lsp-mode
-  (add-hook! python-mode (setq lsp-diagnostic-package :flymake)))
+;; (after! lsp-mode
+;;   (add-hook! python-mode (setq lsp-diagnostic-package :flymake)))
 
 ;; (after! python
 ;;   (setq python-flymake-command  "~/git/experiments/.venv/bin/pyflakes"))
@@ -471,6 +471,13 @@ In python mode, use ~, i i~ to add missing imports
 ;; (after! flycheck
 ;;   (setq-default flycheck-checker 'python-pylint))
 #+END_SRC
+*** Disable lsp flycheck checker
+#+BEGIN_SRC emacs-lisp
+(after! lsp-mode
+  (setq lsp-diagnostic-package :none))
+  ;; (setq flycheck-disabled-checkers 'lsp)
+#+END_SRC
+
 *** UI
 #+BEGIN_SRC emacs-lisp
 (after! lsp-mode
@@ -731,10 +738,10 @@ Disable popup for ESS:
     :multiply "%*%"))
 #+END_SRC
 * Clojure
-** Use flycheck
+** TODO Use flycheck
 #+BEGIN_SRC emacs-lisp
-(after! lsp-mode
-  (add-hook! clojure-mode (setq lsp-diagnostic-package :flycheck)))
+;; (after! lsp-mode
+;;   (add-hook! clojure-mode (setq lsp-diagnostic-package :flycheck)))
 #+END_SRC
 ** Company keybingins
 #+BEGIN_SRC emacs-lisp
@@ -840,12 +847,12 @@ With ~lispyville~ you can wrap using =M-(= for example!
 (after! lispyville
   (setq lispyville-key-theme
         '((operators normal)
-          c-w
+          ;; c-w
           (prettify insert)
           (atom-movement normal visual)
           slurp/barf-lispy
           additional
-          additional-insert
+          ;; additional-insert
           additional-wrap
           additional-motions))
 
@@ -943,6 +950,18 @@ With ~lispyville~ you can wrap using =M-(= for example!
 ;;       (evilified-state-evilify sayid-traced-mode sayid-traced-mode-map
 ;;         (kbd "l") 'sayid-show-traced
 ;;         (kbd "h") 'sayid-traced-buf-show-help)))
+#+END_SRC
+** Cider keybindings
+Remember you can use =gr af= to evaluate the outer form.
+=ap= is a paragraph, =as= is a sentence.
+#+BEGIN_SRC emacs-lisp
+(map! :after cider-mode
+      :map clojure-mode-map
+      :localleader
+      (:desc "eval" :prefix "e"
+       :desc "sexp in comment" :n "E" #'cider-pprint-eval-last-sexp-to-comment
+       :desc "defun in comment" :n "D" #'cider-pprint-eval-defun-to-comment
+       ))
 #+END_SRC
 * Shell
 ** Async Shell command

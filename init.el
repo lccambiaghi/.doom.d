@@ -27,9 +27,10 @@
 
        ;;helm              ; the *other* search engine for love and life
        ;;ido               ; the other *other* search engine...
-       (ivy                ; a search engine for love and life
+       (ivy                             ; a search engine for love and life
         ;; +childframe
-        +icons)
+        ;; +icons
+        )
 
        :ui
        ;;deft              ; notational velocity for Emacs
@@ -73,7 +74,9 @@
        ;;word-wrap         ; soft wrapping with language-aware indent
 
        :emacs
-       (dired +ranger +icons)             ; making dired pretty [functional]
+       (dired
+        +ranger ;; +icons
+        )             ; making dired pretty [functional]
        electric          ; smarter, keyword-based electric-indent
        ibuffer           ; interactive buffer management
        vc                ; version-control and Emacs, sitting in a tree

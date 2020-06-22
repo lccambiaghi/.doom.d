@@ -1,13 +1,11 @@
-# Created 2020-06-07 Sun 22:46
+# Created 2020-06-22 Mon 21:55
 #+TITLE: 
 #+AUTHOR: Luca Cambiaghi
 #+export_file_name: readme
-#+setupfile: theme-readtheorg-local.setup
 
 * Preamble
 This is my private DOOM emacs configuration. It is tangled from ~config.org~ to ~config.el~
-and is exported to ~readme.org~ with =,eOo= to render in the githup repo.
-You can find an export HTML version of it here: https://lccambiaghi.github.io/.doom.d/readme.html
+and is exported to ~readme.org~ with =, e O o= to render in the githup repo.
 
 ** Username and e-mail:
 #+begin_src emacs-lisp
@@ -137,6 +135,17 @@ use those keys!
 (setq evil-split-window-below t
       evil-vsplit-window-right t)
 #+end_src
+** Syntax highlighting
+After ~doom sync~ you should run ~tree-sitter-install-grammars~
+#+begin_src emacs-lisp
+(use-package tree-sitter :after python-mode)
+
+(after! tree-sitter
+  (require 'tree-sitter)
+  (require 'tree-sitter-langs)
+  (require 'tree-sitter-hl)
+  (add-hook 'python-mode-hook #'tree-sitter-hl-mode))
+#+end_src
 
 * Magit
 #+begin_src emacs-lisp
@@ -209,8 +218,7 @@ Load ~ox-ravel~:
 ;; (load! "modules/ox-ravel")
 #+end_src
 This allows to export from ~.org~ to ~.Rmd~
-** Capture
-*** Templates
+** Capture templates
 #+begin_src emacs-lisp
 (after! org
 
@@ -314,7 +322,7 @@ This allows to export from ~.org~ to ~.Rmd~
 ** Popups
 #+begin_src emacs-lisp
 (set-popup-rule! "*jupyter-pager*" :side 'right :size .40 :select t :vslot 2 :ttl 3)
-(set-popup-rule! "^\\*Org Src*" :side 'right :size .60 :select t :vslot 2 :ttl 3)
+(set-popup-rule! "^\\*Org Src*" :side 'right :size .60 :select t :vslot 2 :ttl 3 :quit nil)
 (set-popup-rule! "*jupyter-repl*" :side 'bottom :size .30 :vslot 2 :ttl 3)
 #+end_src
 ** Library of babel
@@ -355,7 +363,7 @@ Evaluate simple expressions to the right of the symbol with =, e e=
                            jupyter-org-strip-last-newline
                            jupyter-org-scalar)
                        result)))))
-      (if (< (length str) 4000)
+      (if (< (length str) 10000)
           (insert str)
         (insert (format ": Result was too long! Length was %d" (length str)))))
     (when (/= (point) (line-beginning-position))
@@ -369,6 +377,17 @@ Evaluate simple expressions to the right of the symbol with =, e e=
 #+begin_src emacs-lisp
 ;; (setq org-image-actual-width t)
 #+end_src
+** Fix zmq keywords
+#+begin_src emacs-lisp
+(defadvice! fixed-zmq-start-process (orig-fn &rest args)
+  :around #'zmq-start-process
+  (letf! (defun make-process (&rest plist)
+           (plist-put! plist :coding (plist-get plist :coding-system))
+           (plist-delete! plist :coding-system)
+           (apply make-process plist))
+    (apply orig-fn args)))
+#+end_src
+
 * Python
 ** REPL
 *** virtualenv executable
@@ -424,28 +443,28 @@ This variable determines how often lsp-mode will refresh the highlights, lenses,
 ;; (after! lsp-mode
 ;;   (setq lsp-idle-delay 0.500))
 #+end_src
-*** Prefer company-capf over company-lsp
+*** TODO Prefer company-capf over company-lsp
 #+begin_src emacs-lisp
-(setq +lsp-company-backend 'company-capf)
+;; (setq +lsp-company-backend 'company-capf)
 #+end_src
 *** lsp-help popup
 Lookup documentation with ~SPC c k~
 #+begin_src emacs-lisp
 (set-popup-rule! "^\\*lsp-help" :side 'right :size .50 :select t :vslot 1)
 #+end_src
-*** Missing imports
+*** TODO Missing imports
 In python mode, use ~, i i~ to add missing imports
 #+begin_src emacs-lisp
-(after! pyimport
-  (setq pyimport-pyflakes-path "~/git/experiments/.venv/bin/pyflakes"))
+;; (after! pyimport
+;;   (setq pyimport-pyflakes-path "~/git/experiments/.venv/bin/pyflakes"))
 #+end_src
-*** Use flymake instead of flycheck
+*** TODO Use flymake instead of flycheck
 #+begin_src emacs-lisp
 ;; (after! lsp-mode
 ;;   (setq lsp-diagnostic-package :flymake))
 
-(after! lsp-mode
-  (add-hook! python-mode (setq lsp-diagnostic-package :flymake)))
+;; (after! lsp-mode
+;;   (add-hook! python-mode (setq lsp-diagnostic-package :flymake)))
 
 ;; (after! python
 ;;   (setq python-flymake-command  "~/git/experiments/.venv/bin/pyflakes"))
@@ -453,6 +472,13 @@ In python mode, use ~, i i~ to add missing imports
 ;; (after! flycheck
 ;;   (setq-default flycheck-checker 'python-pylint))
 #+end_src
+*** Disable lsp flycheck checker
+#+begin_src emacs-lisp
+(after! lsp-mode
+  (setq lsp-diagnostic-package :none))
+  ;; (setq flycheck-disabled-checkers 'lsp)
+#+end_src
+
 *** UI
 #+begin_src emacs-lisp
 (after! lsp-mode
@@ -462,6 +488,12 @@ In python mode, use ~, i i~ to add missing imports
         lsp-enable-symbol-highlighting nil))
         ;; lsp-enable-file-watchers nil))
 #+end_src
+*** Don't restart on exit
+#+begin_src emacs-lisp
+(after! lsp-mode
+  (setq lsp-restart 'ignore))
+#+end_src
+
 ** Pytest
 #+begin_src emacs-lisp
 (after! python-pytest
@@ -707,10 +739,10 @@ Disable popup for ESS:
     :multiply "%*%"))
 #+end_src
 * Clojure
-** Use flycheck
+** TODO Use flycheck
 #+begin_src emacs-lisp
-(after! lsp-mode
-  (add-hook! clojure-mode (setq lsp-diagnostic-package :flycheck)))
+;; (after! lsp-mode
+;;   (add-hook! clojure-mode (setq lsp-diagnostic-package :flycheck)))
 #+end_src
 ** Company keybingins
 #+begin_src emacs-lisp
@@ -816,12 +848,12 @@ With ~lispyville~ you can wrap using =M-(= for example!
 (after! lispyville
   (setq lispyville-key-theme
         '((operators normal)
-          c-w
+          ;; c-w
           (prettify insert)
           (atom-movement normal visual)
           slurp/barf-lispy
           additional
-          additional-insert
+          ;; additional-insert
           additional-wrap
           additional-motions))
 
@@ -842,12 +874,12 @@ With ~lispyville~ you can wrap using =M-(= for example!
   )
 #+end_src
 
-** Vega view
+** TODO Vega view
 #+begin_src emacs-lisp
-(after! cider
-  (use-package! vega-view
-    :init
-    (setq vega-view-prefer-png t)))
+;; (after! cider
+;;   (use-package! vega-view
+;;     :init
+;;     (setq vega-view-prefer-png t)))
 #+end_src
 ** nREPL timeout
 #+begin_src emacs-lisp
@@ -920,6 +952,18 @@ With ~lispyville~ you can wrap using =M-(= for example!
 ;;         (kbd "l") 'sayid-show-traced
 ;;         (kbd "h") 'sayid-traced-buf-show-help)))
 #+end_src
+** Cider keybindings
+Remember you can use =gr af= to evaluate the outer form.
+=ap= is a paragraph, =as= is a sentence.
+#+begin_src emacs-lisp
+(map! :after cider-mode
+      :map clojure-mode-map
+      :localleader
+      (:desc "eval" :prefix "e"
+       :desc "sexp in comment" :n "E" #'cider-pprint-eval-last-sexp-to-comment
+       :desc "defun in comment" :n "D" #'cider-pprint-eval-defun-to-comment
+       ))
+#+end_src
 * Shell
 ** Async Shell command
 #+begin_src emacs-lisp
@@ -937,11 +981,11 @@ With ~lispyville~ you can wrap using =M-(= for example!
   (set-popup-rule! "*Async Shell Command*" :side 'bottom :size .40)
   (set-popup-rule! "vterm" :side 'right :size .40 :quit 'current)
 #+end_src
-** Counsel rg base command
+** TODO Counsel rg base command
 #+begin_src emacs-lisp
-(after! counsel
+;; (after! counsel
   ;; :config
   ;; Thanks to https://github.com/kaushalmodi/.emacs.d/blob/master/setup-files/setup-counsel.el
   ;; (setq counsel-rg-base-command "rg --with-filename --no-heading --line-number --hidden --color never %s"))
-  (setq counsel-rg-base-command (concat counsel-rg-base-command " --hidden")))
+  ;; (setq counsel-rg-base-command (concat counsel-rg-base-command " --hidden")))
 #+end_src
