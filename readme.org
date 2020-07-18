@@ -1,11 +1,12 @@
-# Created 2020-06-22 Mon 21:55
+# Created 2020-07-19 Sun 01:22
 #+TITLE: 
 #+AUTHOR: Luca Cambiaghi
 #+export_file_name: readme
 
 * Preamble
 This is my private DOOM emacs configuration. It is tangled from ~config.org~ to ~config.el~
-and is exported to ~readme.org~ with =, e O o= to render in the githup repo.
+and is exported to ~readme.org~ with =,e O o= to render in the githup repo.
+It is also rendered to HTML thanks to [[https://github.com/fniessen/org-html-themes][org-html-themes]] with =,e h h=
 
 ** Username and e-mail:
 #+begin_src emacs-lisp
@@ -103,6 +104,7 @@ use those keys!
   ;;   (when (string-match-p (buffer-name) "*Treemacs*") 10))
 
   ;; (add-to-list 'winum-assign-functions #'winum-assign-0-to-treemacs)
+  ;; (set-face-attribute 'winum-face nil :weight 'bold)
 
     (map! (:when (featurep! :ui window-select)
             :leader
@@ -146,6 +148,13 @@ After ~doom sync~ you should run ~tree-sitter-install-grammars~
   (require 'tree-sitter-hl)
   (add-hook 'python-mode-hook #'tree-sitter-hl-mode))
 #+end_src
+** Toggle centered cursor
+#+begin_src emacs-lisp
+(map! :leader
+      :desc "toggle centered cursor"                   :n "t-" (λ! () (interactive) (centered-cursor-mode 'toggle))
+      )
+#+end_src
+
 
 * Magit
 #+begin_src emacs-lisp
@@ -181,7 +190,7 @@ After ~doom sync~ you should run ~tree-sitter-install-grammars~
 ;;   '(company-capf company-files company-dabbrev-code))
 (after! company
   (use-package company-tabnine :ensure t)
-  (setq company-backends '(company-tabnine company-capf)))
+  (setq company-backends '(company-tabnine company-capf company-yasnippet)))
 
 ;; (after! company
 ;;   (add-to-list 'company-backends 'company-tabnine))
@@ -204,11 +213,12 @@ After ~doom sync~ you should run ~tree-sitter-install-grammars~
 * Org
 ** Better defaults
 #+begin_src emacs-lisp
-(setq org-directory "~/git/org/"
+(setq org-directory "~/Dropbox/org"
       org-image-actual-width nil
-      +org-export-directory "~/git/org/export/"
-      org-default-notes-file "~/git/org/personal/inbox.org"
-      org-id-locations-file "~/git/org/.orgids"
+      +org-export-directory "~/Dropbox/org/export"
+      org-default-notes-file "~/Dropbox/org/personal/inbox.org"
+      org-id-locations-file "~/Dropbox/org/.orgids"
+      org-agenda-files (directory-files-recursively "~/Dropbox/org/" "\\.org$")
       ;; org-export-in-background t
       org-catch-invisible-edits 'smart)
 #+end_src
@@ -227,7 +237,7 @@ This allows to export from ~.org~ to ~.Rmd~
                     ("u" "URL")))
 
   (add-to-list 'org-capture-templates
-             '("dn" "New Diary Entry" entry(file+olp+datetree"~/git/org/personal/diary.org" "Daily Logs")
+             '("dn" "New Diary Entry" entry(file+olp+datetree"~/git/Dropbox/org/personal/diary.org" "Daily Logs")
 "* %^{thought for the day}
 :PROPERTIES:
 :CATEGORY: %^{category}
@@ -247,7 +257,7 @@ This allows to export from ~.org~ to ~.Rmd~
 - %?"))
 
   (add-to-list 'org-capture-templates
-      '("un" "New URL Entry" entry(file+function "~/git/org/personal/dailies.org" org-reverse-datetree-goto-date-in-file)
+      '("un" "New URL Entry" entry(file+function "~/Dropbox/org/personal/dailies.org" org-reverse-datetree-goto-date-in-file)
             "* [[%^{URL}][%^{Description}]] %^g %?")))
 #+end_src
 ** Prettify
@@ -277,6 +287,27 @@ This allows to export from ~.org~ to ~.Rmd~
 #+begin_src emacs-lisp
 (after! evil-org
   (setq org-babel-clojure-backend 'cider))
+#+end_src
+** Reveal
+#+begin_src emacs-lisp
+(after! org-re-reveal
+(setq org-re-reveal-root "./reveal.js")
+  )
+#+end_src
+
+** org-cv
+#+begin_src emacs-lisp
+(after! evil-org
+    (use-package ox-moderncv
+        :load-path "/Users/luca/git/org-cv/"
+        :init (require 'ox-altacv))
+        ;; :init (require 'ox-moderncv))
+    )
+#+end_src
+** Use xelatex
+#+begin_src emacs-lisp
+(after! latex
+    (setq org-latex-compiler "xelatex"))
 #+end_src
 
 * emacs-jupyter
@@ -420,6 +451,30 @@ Evaluate simple expressions to the right of the symbol with =, e e=
 (after! lsp-python-ms
   (set-lsp-priority! 'mspyls 1))
 #+end_src
+*** TODO Use pyright
+#+begin_src emacs-lisp
+;; (setq lsp-pyright-server-cmd '("pyright-langserver"
+;;                                "--stdio"))
+
+;; (after! lsp-mode
+;;   (lsp-register-client
+;;    (make-lsp-client
+;;     :new-connection (lsp-stdio-connection
+;;                      (lambda () lsp-pyright-server-cmd)
+;;                      (lambda ()
+;;                        (and (cl-first lsp-pyright-server-cmd)
+;;                             (executable-find (cl-first lsp-pyright-server-cmd)))))
+;;     :major-modes '(python-mode)
+;;     :server-id 'mspyright
+;;     :priority 1
+;;     :initialized-fn (lambda (workspace)
+;;                       (with-lsp-workspace workspace
+;;                         (lsp--set-configuration (lsp-configuration-section "python"))))
+;;     :notification-handlers (lsp-ht ("pyright/beginProgress" 'ignore)
+;;                                    ("pyright/reportProgress" 'ignore)
+;;                                    ("pyright/endProgress" 'ignore))))
+;;   )
+#+end_src
 
 *** Don't guess project root
 In case we get a wrong workspace root, we can delete it with ~lsp-workspace-folders-remove~
@@ -503,22 +558,20 @@ In python mode, use ~, i i~ to add missing imports
 (set-popup-rule! "^\\*pytest*" :side 'right :size .50)
 #+end_src
 ** dap-mode
-*** dap-ui windows
+*** dap configure windows
 #+begin_src emacs-lisp
-(after! dap-mode
+(after! dap-python
   (setq dap-auto-show-output nil)
+
+  (setq dap-auto-configure-features '(locals))
 
   (setq dap-ui-buffer-configurations
         `((,"*dap-ui-locals*"  . ((side . right) (slot . 1) (window-width . 0.50))) ;; changed this to 0.50
-          (,"*dap-ui-repl*" . ((side . bottom) (slot . 2) (window-width . 0.50)))
           (,"*dap-ui-expressions*" . ((side . right) (slot . 2) (window-width . 0.20)))
           (,"*dap-ui-sessions*" . ((side . right) (slot . 3) (window-width . 0.20)))
           (,"*dap-ui-breakpoints*" . ((side . left) (slot . 2) (window-width . , 0.20)))
           (,"*debug-window*" . ((side . bottom) (slot . 3) (window-width . 0.20)))))
 
-  ;; (set-popup-rule! "*dap-debug-.*" :side 'bottom :size .20 :slot 1)
-  ;; (set-popup-rule! "*dap-ui-repl*" :side 'right :size .50 :select t :vslot 2)
-  ;; (set-popup-rule! "*dap-ui-locals*" :side 'right :size .50)
 
   (defun my/window-visible (b-name)
     "Return whether B-NAME is visible."
@@ -542,29 +595,55 @@ In python mode, use ~, i i~ to add missing imports
            (kill-buffer dap-ui--locals-buffer))))
 
   (add-hook 'dap-terminated-hook 'my/hide-debug-windows)
+
   )
+#+end_src
+
+*** TODO dap-ui windows
+#+begin_src emacs-lisp
+;; (after! dap-mode
+
+
+;;   ;; (set-popup-rule! "*dap-debug-.*" :side 'bottom :size .20 :slot 1)
+;;   ;; (set-popup-rule! "*dap-ui-repl*" :side 'right :size .50 :select t :vslot 2)
+;;   ;; (set-popup-rule! "*dap-ui-locals*" :side 'right :size .50)
+
+;;   )
 #+end_src
 
 *** Debug templates:
 Templates accessible with =, d d=
 #+begin_src emacs-lisp
 (after! dap-python
-    (dap-register-debug-template "dap-debug-script"
-                            (list :type "python"
-                                :args "-i"
-                                :cwd (lsp-workspace-root)
-                                :program nil ; (expand-file-name "~/git/blabla")
-                                :request "launch"
-                                :name "dap-debug-script"))
+  (dap-register-debug-template "dap-debug-script"
+                               (list :type "python"
+                                     :args "-i"
+                                     :cwd (lsp-workspace-root)
+                                     :program nil ; (expand-file-name "~/git/blabla")
+                                     :request "launch"
+                                     :name "dap-debug-script"))
 
-    (dap-register-debug-template "dap-debug-test"
-                            (list :type "python"
-                                :cwd (lsp-workspace-root)
-                                ;; :environment-variables '(("PYTHONPATH" . "src"))
-                                :module "pytest"
-                                :request "launch"
-                                :name "dap-debug-test-file")))
+  (dap-register-debug-template "dap-debug-test"
+                               (list :type "python"
+                                     :cwd (lsp-workspace-root)
+                                     ;; :environment-variables '(("PYTHONPATH" . "src"))
+                                     :module "pytest"
+                                     :request "launch"
+                                     :name "dap-debug-test-file"))
+
+  (dap-register-debug-template "dap-debug-bokeh"
+                               (list :type "python"
+                                     :args "--show crewrelief --log-level info"
+                                     :cwd (expand-file-name "~/git/crewrelief/src")
+                                     :program "serve"
+                                     :module "bokeh"
+                                     :request "launch"
+                                     :name "dap-debug-bokeh"))
+
+
+  )
 #+end_src
+
 *** Debug script:
 Standard debug script target, accessible with =, d s=
 #+begin_src emacs-lisp
@@ -610,14 +689,15 @@ Standard debug test target, accessible with =, d t=
 ;;   (defun dap-python--pyenv-executable-find (command)
 ;;     (concat (getenv "VIRTUAL_ENV") "/bin/python")))
 #+end_src
-*** completion
+*** TODO completion
 #+begin_src emacs-lisp
-(after! dap-mode
   ;; (set-company-backend! 'dap-ui-repl-mode 'company-capf)
 
-  (add-hook 'dap-ui-repl-mode-hook
-            (lambda ()
-              (setq-local company-minimum-prefix-length 0))))
+;; (after! dap-mode
+
+;;   (add-hook 'dap-ui-repl-mode-hook
+;;             (lambda ()
+;;               (setq-local company-minimum-prefix-length 0))))
 #+end_src
 *** Bindings
 #+begin_src emacs-lisp
@@ -808,22 +888,24 @@ Disable popup for ESS:
 (add-hook! cider-repl-mode #'evil-normalize-keymaps)
 #+end_src
 
-** TODO Cleverparens
+** Cleverparens
 #+begin_src emacs-lisp
-;; (after! smartparens
-;;   (add-hook! clojure-mode #'smartparens-strict-mode)
+(after! smartparens
+  ;; (add-hook! clojure-mode #'smartparens-strict-mode)
 
-;;   (use-package! evil-cleverparens
-;;     :init
-;;     (setq evil-move-beyond-eol t
-;;           evil-cleverparens-use-additional-bindings nil
-;;           ;; evil-cleverparens-swap-move-by-word-and-symbol t
-;;           ;; evil-cleverparens-use-regular-insert t
-;;           )
+  (setq evil-cleverparens-use-s-and-S nil)
 
-;;     (add-hook! clojure-mode #'evil-cleverparens-mode)
-;;     ;; (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode)
-;;     ))
+  (use-package! evil-cleverparens
+    :init
+    (setq evil-move-beyond-eol t
+          evil-cleverparens-use-additional-bindings nil
+          ;; evil-cleverparens-swap-move-by-word-and-symbol t
+          ;; evil-cleverparens-use-regular-insert t
+          )
+
+    (add-hook! clojure-mode #'evil-cleverparens-mode)
+    ;; (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode)
+    ))
 #+end_src
 ** Aggressive indent
 #+begin_src emacs-lisp
@@ -831,47 +913,47 @@ Disable popup for ESS:
   (use-package! aggressive-indent
     :config (add-hook! clojure-mode (aggressive-indent-mode 1))))
 #+end_src
-** TODO Cleverparens keybindings
+** Cleverparens keybindings
 With ~lispyville~ you can wrap using =M-(= for example!
 #+begin_src emacs-lisp
-;; (map! :after evil-cleverparens
-;;       :map clojure-mode-map
-;;       :localleader
-;;       (:desc "Wrap round" :n "(" #'sp-wrap-round
-;;        :desc "Wrap square" :n "[" #'sp-wrap-square
-;;        :desc "Wrap curly" :n "{" #'sp-wrap-curly
-;;        :desc "Unwrap sexp" :n "u" #'sp-unwrap-sexp
-;;        ))
+(map! :after evil-cleverparens
+      :map clojure-mode-map
+      :localleader
+      (:desc "Wrap round" :n "(" #'sp-wrap-round
+       :desc "Wrap square" :n "[" #'sp-wrap-square
+       :desc "Wrap curly" :n "{" #'sp-wrap-curly
+       :desc "Unwrap sexp" :n "u" #'sp-unwrap-sexp
+       ))
 #+end_src
-** Lispyville
+** TODO Lispyville
 #+begin_src emacs-lisp
-(after! lispyville
-  (setq lispyville-key-theme
-        '((operators normal)
-          ;; c-w
-          (prettify insert)
-          (atom-movement normal visual)
-          slurp/barf-lispy
-          additional
-          ;; additional-insert
-          additional-wrap
-          additional-motions))
+;; (after! lispyville
+;;   (setq lispyville-key-theme
+;;         '((operators normal)
+;;           ;; c-w
+;;           (prettify insert)
+;;           (atom-movement normal visual)
+;;           slurp/barf-lispy
+;;           additional
+;;           ;; additional-insert
+;;           additional-wrap
+;;           additional-motions))
 
-  ;; (setq lispyville-motions-put-into-special t)
+;;   ;; (setq lispyville-motions-put-into-special t)
 
-  (map! :mode lispy-mode
-        :after lispyville
-        ;; :i "M-[" #'lispy-brackets
-        :n "[" #'lispyville-previous-opening
-        :n "]" #'lispyville-next-opening)
+;;   (map! :mode lispy-mode
+;;         :after lispyville
+;;         ;; :i "M-[" #'lispy-brackets
+;;         :n "[" #'lispyville-previous-opening
+;;         :n "]" #'lispyville-next-opening)
 
-  (map! :map lispy-mode-map
-        :after lispyville
-        :i "[" #'lispy-brackets)
+;;   (map! :map lispy-mode-map
+;;         :after lispyville
+;;         :i "[" #'lispy-brackets)
 
-  ;; (map! :map evil-motion-state-map
-  ;;         :n "[[" #'lispyville-previous-opening)
-  )
+;;   ;; (map! :map evil-motion-state-map
+;;   ;;         :n "[[" #'lispyville-previous-opening)
+;;   )
 #+end_src
 
 ** TODO Vega view
@@ -956,7 +1038,7 @@ With ~lispyville~ you can wrap using =M-(= for example!
 Remember you can use =gr af= to evaluate the outer form.
 =ap= is a paragraph, =as= is a sentence.
 #+begin_src emacs-lisp
-(map! :after cider-mode
+(map! :after cider
       :map clojure-mode-map
       :localleader
       (:desc "eval" :prefix "e"

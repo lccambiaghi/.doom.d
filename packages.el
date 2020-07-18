@@ -29,10 +29,11 @@
 ;; (package! org-pretty-tags :pin "40fd72f3e7")
 ;; (package! vuiet :recipe (:host github :repo "mihaiolteanu/vuiet"))
 ;; (package! howdoyou)
-;; (package! evil-cleverparens)
+(package! evil-cleverparens)
 (package! aggressive-indent)
 ;; (package! sayid)
 (package! tree-sitter
   :recipe (:host github :repo "ubolonton/emacs-tree-sitter"
            :files ("lisp/*.el" "*.so" "langs/*.el" "langs/queries")))
 (package! pipenv :disable t)
+(package! centered-cursor-mode)

@@ -61,6 +61,7 @@
   ;;   (when (string-match-p (buffer-name) "*Treemacs*") 10))
 
   ;; (add-to-list 'winum-assign-functions #'winum-assign-0-to-treemacs)
+  ;; (set-face-attribute 'winum-face nil :weight 'bold)
 
     (map! (:when (featurep! :ui window-select)
             :leader
@@ -92,6 +93,10 @@
   (require 'tree-sitter-hl)
   (add-hook 'python-mode-hook #'tree-sitter-hl-mode))
 
+(map! :leader
+      :desc "toggle centered cursor"                   :n "t-" (λ! () (interactive) (centered-cursor-mode 'toggle))
+      )
+
 (after! magit
   ;; (magit-wip-mode)
   (setq magit-repository-directories '(("~/git" . 2))
@@ -119,7 +124,7 @@
 ;;   '(company-capf company-files company-dabbrev-code))
 (after! company
   (use-package company-tabnine :ensure t)
-  (setq company-backends '(company-tabnine company-capf)))
+  (setq company-backends '(company-tabnine company-capf company-yasnippet)))
 
 ;; (after! company
 ;;   (add-to-list 'company-backends 'company-tabnine))
@@ -136,11 +141,12 @@
 ;;                                                             'company-yasnippet-or-completion
 ;;                                                             company-active-map))))
 
-(setq org-directory "~/git/org/"
+(setq org-directory "~/Dropbox/org"
       org-image-actual-width nil
-      +org-export-directory "~/git/org/export/"
-      org-default-notes-file "~/git/org/personal/inbox.org"
-      org-id-locations-file "~/git/org/.orgids"
+      +org-export-directory "~/Dropbox/org/export"
+      org-default-notes-file "~/Dropbox/org/personal/inbox.org"
+      org-id-locations-file "~/Dropbox/org/.orgids"
+      org-agenda-files (directory-files-recursively "~/Dropbox/org/" "\\.org$")
       ;; org-export-in-background t
       org-catch-invisible-edits 'smart)
 
@@ -153,7 +159,7 @@
                     ("u" "URL")))
 
   (add-to-list 'org-capture-templates
-             '("dn" "New Diary Entry" entry(file+olp+datetree"~/git/org/personal/diary.org" "Daily Logs")
+             '("dn" "New Diary Entry" entry(file+olp+datetree"~/git/Dropbox/org/personal/diary.org" "Daily Logs")
 "* %^{thought for the day}
 :PROPERTIES:
 :CATEGORY: %^{category}
@@ -173,7 +179,7 @@
 - %?"))
 
   (add-to-list 'org-capture-templates
-      '("un" "New URL Entry" entry(file+function "~/git/org/personal/dailies.org" org-reverse-datetree-goto-date-in-file)
+      '("un" "New URL Entry" entry(file+function "~/Dropbox/org/personal/dailies.org" org-reverse-datetree-goto-date-in-file)
             "* [[%^{URL}][%^{Description}]] %^g %?")))
 
 (after! org-superstar
@@ -190,6 +196,20 @@
 
 (after! evil-org
   (setq org-babel-clojure-backend 'cider))
+
+(after! org-re-reveal
+(setq org-re-reveal-root "./reveal.js")
+  )
+
+(after! evil-org
+    (use-package ox-moderncv
+        :load-path "/Users/luca/git/org-cv/"
+        :init (require 'ox-altacv))
+        ;; :init (require 'ox-moderncv))
+    )
+
+(after! latex
+    (setq org-latex-compiler "xelatex"))
 
 (after! evil-org
   (setq org-babel-default-header-args:jupyter-python '((:async . "yes")
@@ -289,6 +309,28 @@
 (after! lsp-python-ms
   (set-lsp-priority! 'mspyls 1))
 
+;; (setq lsp-pyright-server-cmd '("pyright-langserver"
+;;                                "--stdio"))
+
+;; (after! lsp-mode
+;;   (lsp-register-client
+;;    (make-lsp-client
+;;     :new-connection (lsp-stdio-connection
+;;                      (lambda () lsp-pyright-server-cmd)
+;;                      (lambda ()
+;;                        (and (cl-first lsp-pyright-server-cmd)
+;;                             (executable-find (cl-first lsp-pyright-server-cmd)))))
+;;     :major-modes '(python-mode)
+;;     :server-id 'mspyright
+;;     :priority 1
+;;     :initialized-fn (lambda (workspace)
+;;                       (with-lsp-workspace workspace
+;;                         (lsp--set-configuration (lsp-configuration-section "python"))))
+;;     :notification-handlers (lsp-ht ("pyright/beginProgress" 'ignore)
+;;                                    ("pyright/reportProgress" 'ignore)
+;;                                    ("pyright/endProgress" 'ignore))))
+;;   )
+
 (after! lsp-mode
   (setq lsp-auto-guess-root nil))
 
@@ -339,20 +381,18 @@
 
 (set-popup-rule! "^\\*pytest*" :side 'right :size .50)
 
-(after! dap-mode
+(after! dap-python
   (setq dap-auto-show-output nil)
+
+  (setq dap-auto-configure-features '(locals))
 
   (setq dap-ui-buffer-configurations
         `((,"*dap-ui-locals*"  . ((side . right) (slot . 1) (window-width . 0.50))) ;; changed this to 0.50
-          (,"*dap-ui-repl*" . ((side . bottom) (slot . 2) (window-width . 0.50)))
           (,"*dap-ui-expressions*" . ((side . right) (slot . 2) (window-width . 0.20)))
           (,"*dap-ui-sessions*" . ((side . right) (slot . 3) (window-width . 0.20)))
           (,"*dap-ui-breakpoints*" . ((side . left) (slot . 2) (window-width . , 0.20)))
           (,"*debug-window*" . ((side . bottom) (slot . 3) (window-width . 0.20)))))
 
-  ;; (set-popup-rule! "*dap-debug-.*" :side 'bottom :size .20 :slot 1)
-  ;; (set-popup-rule! "*dap-ui-repl*" :side 'right :size .50 :select t :vslot 2)
-  ;; (set-popup-rule! "*dap-ui-locals*" :side 'right :size .50)
 
   (defun my/window-visible (b-name)
     "Return whether B-NAME is visible."
@@ -376,24 +416,46 @@
            (kill-buffer dap-ui--locals-buffer))))
 
   (add-hook 'dap-terminated-hook 'my/hide-debug-windows)
+
   )
 
-(after! dap-python
-    (dap-register-debug-template "dap-debug-script"
-                            (list :type "python"
-                                :args "-i"
-                                :cwd (lsp-workspace-root)
-                                :program nil ; (expand-file-name "~/git/blabla")
-                                :request "launch"
-                                :name "dap-debug-script"))
+;; (after! dap-mode
 
-    (dap-register-debug-template "dap-debug-test"
-                            (list :type "python"
-                                :cwd (lsp-workspace-root)
-                                ;; :environment-variables '(("PYTHONPATH" . "src"))
-                                :module "pytest"
-                                :request "launch"
-                                :name "dap-debug-test-file")))
+
+;;   ;; (set-popup-rule! "*dap-debug-.*" :side 'bottom :size .20 :slot 1)
+;;   ;; (set-popup-rule! "*dap-ui-repl*" :side 'right :size .50 :select t :vslot 2)
+;;   ;; (set-popup-rule! "*dap-ui-locals*" :side 'right :size .50)
+
+;;   )
+
+(after! dap-python
+  (dap-register-debug-template "dap-debug-script"
+                               (list :type "python"
+                                     :args "-i"
+                                     :cwd (lsp-workspace-root)
+                                     :program nil ; (expand-file-name "~/git/blabla")
+                                     :request "launch"
+                                     :name "dap-debug-script"))
+
+  (dap-register-debug-template "dap-debug-test"
+                               (list :type "python"
+                                     :cwd (lsp-workspace-root)
+                                     ;; :environment-variables '(("PYTHONPATH" . "src"))
+                                     :module "pytest"
+                                     :request "launch"
+                                     :name "dap-debug-test-file"))
+
+  (dap-register-debug-template "dap-debug-bokeh"
+                               (list :type "python"
+                                     :args "--show crewrelief --log-level info"
+                                     :cwd (expand-file-name "~/git/crewrelief/src")
+                                     :program "serve"
+                                     :module "bokeh"
+                                     :request "launch"
+                                     :name "dap-debug-bokeh"))
+
+
+  )
 
 (after! dap-python
   (defun dap-python-script ()
@@ -430,12 +492,13 @@
 ;;   (defun dap-python--pyenv-executable-find (command)
 ;;     (concat (getenv "VIRTUAL_ENV") "/bin/python")))
 
-(after! dap-mode
   ;; (set-company-backend! 'dap-ui-repl-mode 'company-capf)
 
-  (add-hook 'dap-ui-repl-mode-hook
-            (lambda ()
-              (setq-local company-minimum-prefix-length 0))))
+;; (after! dap-mode
+
+;;   (add-hook 'dap-ui-repl-mode-hook
+;;             (lambda ()
+;;               (setq-local company-minimum-prefix-length 0))))
 
 (map! :after dap-python
     :map python-mode-map
@@ -593,61 +656,63 @@
 
 (add-hook! cider-repl-mode #'evil-normalize-keymaps)
 
-;; (after! smartparens
-;;   (add-hook! clojure-mode #'smartparens-strict-mode)
+(after! smartparens
+  ;; (add-hook! clojure-mode #'smartparens-strict-mode)
 
-;;   (use-package! evil-cleverparens
-;;     :init
-;;     (setq evil-move-beyond-eol t
-;;           evil-cleverparens-use-additional-bindings nil
-;;           ;; evil-cleverparens-swap-move-by-word-and-symbol t
-;;           ;; evil-cleverparens-use-regular-insert t
-;;           )
+  (setq evil-cleverparens-use-s-and-S nil)
 
-;;     (add-hook! clojure-mode #'evil-cleverparens-mode)
-;;     ;; (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode)
-;;     ))
+  (use-package! evil-cleverparens
+    :init
+    (setq evil-move-beyond-eol t
+          evil-cleverparens-use-additional-bindings nil
+          ;; evil-cleverparens-swap-move-by-word-and-symbol t
+          ;; evil-cleverparens-use-regular-insert t
+          )
+
+    (add-hook! clojure-mode #'evil-cleverparens-mode)
+    ;; (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode)
+    ))
 
 (after! clojure-mode
   (use-package! aggressive-indent
     :config (add-hook! clojure-mode (aggressive-indent-mode 1))))
 
-;; (map! :after evil-cleverparens
-;;       :map clojure-mode-map
-;;       :localleader
-;;       (:desc "Wrap round" :n "(" #'sp-wrap-round
-;;        :desc "Wrap square" :n "[" #'sp-wrap-square
-;;        :desc "Wrap curly" :n "{" #'sp-wrap-curly
-;;        :desc "Unwrap sexp" :n "u" #'sp-unwrap-sexp
-;;        ))
+(map! :after evil-cleverparens
+      :map clojure-mode-map
+      :localleader
+      (:desc "Wrap round" :n "(" #'sp-wrap-round
+       :desc "Wrap square" :n "[" #'sp-wrap-square
+       :desc "Wrap curly" :n "{" #'sp-wrap-curly
+       :desc "Unwrap sexp" :n "u" #'sp-unwrap-sexp
+       ))
 
-(after! lispyville
-  (setq lispyville-key-theme
-        '((operators normal)
-          ;; c-w
-          (prettify insert)
-          (atom-movement normal visual)
-          slurp/barf-lispy
-          additional
-          ;; additional-insert
-          additional-wrap
-          additional-motions))
+;; (after! lispyville
+;;   (setq lispyville-key-theme
+;;         '((operators normal)
+;;           ;; c-w
+;;           (prettify insert)
+;;           (atom-movement normal visual)
+;;           slurp/barf-lispy
+;;           additional
+;;           ;; additional-insert
+;;           additional-wrap
+;;           additional-motions))
 
-  ;; (setq lispyville-motions-put-into-special t)
+;;   ;; (setq lispyville-motions-put-into-special t)
 
-  (map! :mode lispy-mode
-        :after lispyville
-        ;; :i "M-[" #'lispy-brackets
-        :n "[" #'lispyville-previous-opening
-        :n "]" #'lispyville-next-opening)
+;;   (map! :mode lispy-mode
+;;         :after lispyville
+;;         ;; :i "M-[" #'lispy-brackets
+;;         :n "[" #'lispyville-previous-opening
+;;         :n "]" #'lispyville-next-opening)
 
-  (map! :map lispy-mode-map
-        :after lispyville
-        :i "[" #'lispy-brackets)
+;;   (map! :map lispy-mode-map
+;;         :after lispyville
+;;         :i "[" #'lispy-brackets)
 
-  ;; (map! :map evil-motion-state-map
-  ;;         :n "[[" #'lispyville-previous-opening)
-  )
+;;   ;; (map! :map evil-motion-state-map
+;;   ;;         :n "[[" #'lispyville-previous-opening)
+;;   )
 
 ;; (after! cider
 ;;   (use-package! vega-view
@@ -718,7 +783,7 @@
 ;;         (kbd "l") 'sayid-show-traced
 ;;         (kbd "h") 'sayid-traced-buf-show-help)))
 
-(map! :after cider-mode
+(map! :after cider
       :map clojure-mode-map
       :localleader
       (:desc "eval" :prefix "e"
