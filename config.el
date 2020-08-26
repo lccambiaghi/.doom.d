@@ -32,7 +32,7 @@
 
 (setq display-line-numbers-type nil)
 
-(setq doom-font (font-spec :family "Menlo" :size 16)
+(setq doom-font (font-spec :family "Menlo" :size 14)
       doom-big-font (font-spec :family "Menlo" :size 20))
 ;; (setq doom-font (font-spec :family "Fira Code" :size 14)
 ;;       doom-big-font (font-spec :family "Fira Code" :size 22)
@@ -40,9 +40,6 @@
 
 (after! which-key
     (setq which-key-idle-delay 0.5))
-
-;; (set-frame-parameter (selected-frame)'alpha '(98 . 98))
-;; (add-to-list 'default-frame-alist'(alpha . (98 . 98)))
 
 (setq doom-theme 'doom-one)
 
@@ -70,11 +67,14 @@
             :n "3" #'winum-select-window-3
         )))
 
-(setq +pretty-code-enabled-modes '(org-mode))
+(setq +ligatures-extras-in-modes
+      '(not special-mode comint-mode eshell-mode term-mode vterm-mode python-mode))
+;; (setq +ligatures-in-modes '(org-mode))
 
 (after! doom-modeline
   (setq doom-modeline-buffer-encoding nil)
-  (setq doom-modeline-env-enable-python nil))
+  (setq doom-modeline-env-enable-python nil)
+(setq lsp-modeline-diagnostics-enable nil))
 ;; (setq doom-modeline-env-python-executable (executable-find "python"))
 
 (after! doom-modeline
@@ -108,49 +108,38 @@
         git-commit-summary-max-length 120))
 
 (after! company
-  (setq company-idle-delay 0.3
+  (setq company-idle-delay 0
         company-minimum-prefix-length 1
   company-dabbrev-code-everywhere t
   company-dabbrev-code-other-buffers 'all))
         ;; company-quickhelp-delay 0.4)
 
-(after! prescient
-  (setq-default history-length 1000)
-  (setq-default prescient-history-length 1000))
-
-;; (add-hook 'after-init-hook 'company-statistics-mode))
-
-;; (set-company-backend! 'org-mode
-;;   '(company-capf company-files company-dabbrev-code))
 (after! company
-  (use-package company-tabnine :ensure t)
-  (setq company-backends '(company-tabnine company-capf company-yasnippet)))
+  (define-key! company-active-map
+    "TAB"       nil
+    [tab]       nil))
 
-;; (after! company
-;;   (add-to-list 'company-backends 'company-tabnine))
+(after! company
+  (defvar company-mode/enable-yas t
+    "Enable yasnippet for all backends.")
 
-;; (after! company
-;;   (defun company-yasnippet-or-completion ()
-;;     (interactive)
-;;     (let ((yas-fallback-behavior nil))
-;;       (unless (yas-expand)
-;;         (call-interactively #'company-complete-common))))
+  (defun company-mode/backend-with-yas (backend)
+    (if (or (not company-mode/enable-yas) (and (listp backend) (member 'company-yasnippet backend)))
+        backend
+      (append (if (consp backend) backend (list backend))
+              '(:with company-yasnippet))))
 
-;;   (add-hook 'company-mode-hook (lambda ()
-;;                                  (substitute-key-definition 'company-complete-common
-;;                                                             'company-yasnippet-or-completion
-;;                                                             company-active-map))))
+  (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends)))
 
 (setq org-directory "~/Dropbox/org"
       org-image-actual-width nil
       +org-export-directory "~/Dropbox/org/export"
       org-default-notes-file "~/Dropbox/org/personal/inbox.org"
       org-id-locations-file "~/Dropbox/org/.orgids"
-      org-agenda-files (directory-files-recursively "~/Dropbox/org/" "\\.org$")
+      ;; org-agenda-files (directory-files-recursively "~/dropbox/org/" "\\.org$")
+      org-agenda-files '("~/dropbox/org/personal/inbox.org" "~/dropbox/org/personal/tasks.org" "~/dropbox/org/personal/birthdays.org")
       ;; org-export-in-background t
       org-catch-invisible-edits 'smart)
-
-;; (load! "modules/ox-ravel")
 
 (after! org
 
@@ -186,10 +175,6 @@
     (setq org-superstar-headline-bullets-list '("✖" "✚" "◆" "▶" "○")
         org-ellipsis "▼"))
 
-;; (setq global-org-pretty-table-mode t)
-
-;; (add-hook! 'org-mode-hook #'+org-pretty-mode)
-
 (set-popup-rule! "*org agenda*" :side 'right :size .40 :select t :vslot 2 :ttl 3)
 
 (require 'ox-ipynb)
@@ -198,7 +183,10 @@
   (setq org-babel-clojure-backend 'cider))
 
 (after! org-re-reveal
-(setq org-re-reveal-root "./reveal.js")
+  (setq org-re-reveal-root "./reveal.js")
+
+  (setq org-re-reveal-external-plugins  '((progress . "{ src: '%s/plugin/toc-progress/toc-progress.js', async: true, callback: function() { toc_progress.initialize(); toc_progress.create();} }")))
+
   )
 
 (after! evil-org
@@ -253,16 +241,16 @@
 (after! evil-org
   (org-babel-lob-ingest "/Users/luca/git/experiments/literate/ml/rpy2.org"))
 
-(after! jupyter
+(after! ob-jupyter
   (set-eval-handler! 'jupyter-repl-interaction-mode #'jupyter-eval-line-or-region))
 
 (add-hook! python-mode
   (set-repl-handler! 'python-mode #'jupyter-repl-pop-to-buffer))
 
-(after! jupyter
+(after! ob-jupyter
   (setq jupyter-eval-use-overlays t))
 
-(after! jupyter
+(after! ob-jupyter
   (cl-defmethod jupyter-org--insert-result (_req context result)
     (let ((str
            (org-element-interpret-data
@@ -272,7 +260,7 @@
                            jupyter-org-strip-last-newline
                            jupyter-org-scalar)
                        result)))))
-      (if (< (length str) 10000)
+      (if (< (length str) 30000)
           (insert str)
         (insert (format ": Result was too long! Length was %d" (length str)))))
     (when (/= (point) (line-beginning-position))
@@ -280,8 +268,6 @@
       ;; converting to their string representation by
       ;; `org-element-interpret-data' so insert one in these cases.
       (insert "\n"))))
-
-;; (setq org-image-actual-width t)
 
 (defadvice! fixed-zmq-start-process (orig-fn &rest args)
   :around #'zmq-start-process
@@ -307,29 +293,7 @@
   (setq python-shell-completion-native-enable nil))
 
 (after! lsp-python-ms
-  (set-lsp-priority! 'mspyls 1))
-
-;; (setq lsp-pyright-server-cmd '("pyright-langserver"
-;;                                "--stdio"))
-
-;; (after! lsp-mode
-;;   (lsp-register-client
-;;    (make-lsp-client
-;;     :new-connection (lsp-stdio-connection
-;;                      (lambda () lsp-pyright-server-cmd)
-;;                      (lambda ()
-;;                        (and (cl-first lsp-pyright-server-cmd)
-;;                             (executable-find (cl-first lsp-pyright-server-cmd)))))
-;;     :major-modes '(python-mode)
-;;     :server-id 'mspyright
-;;     :priority 1
-;;     :initialized-fn (lambda (workspace)
-;;                       (with-lsp-workspace workspace
-;;                         (lsp--set-configuration (lsp-configuration-section "python"))))
-;;     :notification-handlers (lsp-ht ("pyright/beginProgress" 'ignore)
-;;                                    ("pyright/reportProgress" 'ignore)
-;;                                    ("pyright/endProgress" 'ignore))))
-;;   )
+  (set-lsp-priority! 'pyright 1))
 
 (after! lsp-mode
   (setq lsp-auto-guess-root nil))
@@ -339,27 +303,7 @@
 
 (setq read-process-output-max (* 1024 1024))
 
-;; (after! lsp-mode
-;;   (setq lsp-idle-delay 0.500))
-
-;; (setq +lsp-company-backend 'company-capf)
-
 (set-popup-rule! "^\\*lsp-help" :side 'right :size .50 :select t :vslot 1)
-
-;; (after! pyimport
-;;   (setq pyimport-pyflakes-path "~/git/experiments/.venv/bin/pyflakes"))
-
-;; (after! lsp-mode
-;;   (setq lsp-diagnostic-package :flymake))
-
-;; (after! lsp-mode
-;;   (add-hook! python-mode (setq lsp-diagnostic-package :flymake)))
-
-;; (after! python
-;;   (setq python-flymake-command  "~/git/experiments/.venv/bin/pyflakes"))
-
-;; (after! flycheck
-;;   (setq-default flycheck-checker 'python-pylint))
 
 (after! lsp-mode
   (setq lsp-diagnostic-package :none))
@@ -419,20 +363,13 @@
 
   )
 
-;; (after! dap-mode
-
-
-;;   ;; (set-popup-rule! "*dap-debug-.*" :side 'bottom :size .20 :slot 1)
-;;   ;; (set-popup-rule! "*dap-ui-repl*" :side 'right :size .50 :select t :vslot 2)
-;;   ;; (set-popup-rule! "*dap-ui-locals*" :side 'right :size .50)
-
-;;   )
-
 (after! dap-python
   (dap-register-debug-template "dap-debug-script"
                                (list :type "python"
                                      :args "-i"
                                      :cwd (lsp-workspace-root)
+                                     ;; :justMyCode :json-false
+                                     ;; :debugOptions ["DebugStdLib" "ShowReturnValue" "RedirectOutput"]
                                      :program nil ; (expand-file-name "~/git/blabla")
                                      :request "launch"
                                      :name "dap-debug-script"))
@@ -440,7 +377,6 @@
   (dap-register-debug-template "dap-debug-test"
                                (list :type "python"
                                      :cwd (lsp-workspace-root)
-                                     ;; :environment-variables '(("PYTHONPATH" . "src"))
                                      :module "pytest"
                                      :request "launch"
                                      :name "dap-debug-test-file"))
@@ -492,17 +428,18 @@
 ;;   (defun dap-python--pyenv-executable-find (command)
 ;;     (concat (getenv "VIRTUAL_ENV") "/bin/python")))
 
-  ;; (set-company-backend! 'dap-ui-repl-mode 'company-capf)
+(map! :localleader
+        :map +dap-running-session-mode-map
+      "d" nil)
 
-;; (after! dap-mode
+;; (map! :after dap-mode
+;;     :map dap-mode-map
+;;     :localleader "d" nil)
 
-;;   (add-hook 'dap-ui-repl-mode-hook
-;;             (lambda ()
-;;               (setq-local company-minimum-prefix-length 0))))
-
-(map! :after dap-python
+(map! :after dap-mode
     :map python-mode-map
     :localleader
+    ;; "d" nil
     (:desc "debug" :prefix "d"
       :desc "Hydra" :n "h" #'dap-hydra
       :desc "Run debug configuration" :n "d" #'dap-debug
@@ -570,33 +507,6 @@
                                    (ess-fl-keyword:= . t)
                                    (ess-R-fl-keyword:F&T . t))))
 
-(after! ess-r-mode
-  (appendq! +pretty-code-symbols
-            '(:assign "⟵"
-              :multiply "×"))
-  (set-pretty-symbols! 'ess-r-mode
-    ;; Functional
-    :def "function"
-    ;; Types
-    :null "NULL"
-    :true "TRUE"
-    :false "FALSE"
-    :int "int"
-    :floar "float"
-    :bool "bool"
-    ;; Flow
-    :not "!"
-    :and "&&" :or "||"
-    :for "for"
-    :in "%in%"
-    :return "return"
-    ;; Other
-    :assign "<-"
-    :multiply "%*%"))
-
-;; (after! lsp-mode
-;;   (add-hook! clojure-mode (setq lsp-diagnostic-package :flycheck)))
-
 (after! cider
   (add-hook 'company-completion-started-hook 'custom/set-company-maps)
   (add-hook 'company-completion-finished-hook 'custom/unset-company-maps)
@@ -649,8 +559,8 @@
       "C-S-s"   (cond ((featurep! :completion helm) #'helm-company)
                       ((featurep! :completion ivy)  #'counsel-company))
       "C-SPC"   #'company-complete-common
-      "TAB"     #'company-complete-common-or-cycle
-      [tab]     #'company-complete-common-or-cycle
+      ;; "TAB"     #'company-complete-common-or-cycle
+      ;; [tab]     #'company-complete-common-or-cycle
       [backtab] #'company-select-previous    ))
   )
 
@@ -686,102 +596,11 @@
        :desc "Unwrap sexp" :n "u" #'sp-unwrap-sexp
        ))
 
-;; (after! lispyville
-;;   (setq lispyville-key-theme
-;;         '((operators normal)
-;;           ;; c-w
-;;           (prettify insert)
-;;           (atom-movement normal visual)
-;;           slurp/barf-lispy
-;;           additional
-;;           ;; additional-insert
-;;           additional-wrap
-;;           additional-motions))
-
-;;   ;; (setq lispyville-motions-put-into-special t)
-
-;;   (map! :mode lispy-mode
-;;         :after lispyville
-;;         ;; :i "M-[" #'lispy-brackets
-;;         :n "[" #'lispyville-previous-opening
-;;         :n "]" #'lispyville-next-opening)
-
-;;   (map! :map lispy-mode-map
-;;         :after lispyville
-;;         :i "[" #'lispy-brackets)
-
-;;   ;; (map! :map evil-motion-state-map
-;;   ;;         :n "[[" #'lispyville-previous-opening)
-;;   )
-
-;; (after! cider
-;;   (use-package! vega-view
-;;     :init
-;;     (setq vega-view-prefer-png t)))
-
 (after! cider
  (setq nrepl-sync-request-timeout nil))
 
 (after! clojure-mode
   (setq clojure-align-forms-automatically t))
-
-;; (after! cider
-;;   (eval-after-load 'clojure-mode
-;;     '(sayid-setup-package)))
-
-;; (use-package sayid
-;;     :defer t
-;;     :init
-;;     (progn
-;;       (setq sayid--key-binding-prefixes
-;;             '(("mdt" . "trace")))
-;;       (spacemacs|forall-clojure-modes m
-;;         (mapc (lambda (x) (spacemacs/declare-prefix-for-mode m
-;;                             (car x) (cdr x)))
-;;               sayid--key-binding-prefixes)
-;;         (spacemacs/set-leader-keys-for-major-mode m
-;;           ;;These keybindings mostly preserved from the default sayid bindings
-;;           "d!" 'sayid-load-enable-clear
-;;           "dE" 'sayid-eval-last-sexp ;in default sayid bindings this is lowercase e, but that was already used in clojure mode
-;;           "dc" 'sayid-clear-log
-;;           "df" 'sayid-query-form-at-point
-;;           "dh" 'sayid-show-help
-;;           "ds" 'sayid-show-traced
-;;           "dS" 'sayid-show-traced-ns
-;;           "dtb" 'sayid-trace-ns-in-file
-;;           "dtd" 'sayid-trace-fn-disable
-;;           "dtD" 'sayid-trace-disable-all
-;;           "dte" 'sayid-trace-fn-enable
-;;           "dtE" 'sayid-trace-enable-all
-;;           "dtK" 'sayid-kill-all-traces
-;;           "dtn" 'sayid-inner-trace-fn
-;;           "dto" 'sayid-outer-trace-fn
-;;           "dtp" 'sayid-trace-ns-by-pattern
-;;           "dtr" 'sayid-remove-trace-fn
-;;           "dty" 'sayid-trace-all-ns-in-dir
-;;           "dV" 'sayid-set-view
-;;           "dw" 'sayid-get-workspace
-;;           "dx" 'sayid-reset-workspace
-;;           ))
-
-;;       (evilified-state-evilify sayid-mode sayid-mode-map
-;;         (kbd "H") 'sayid-buf-show-help
-;;         (kbd "n") 'sayid-buffer-nav-to-next
-;;         (kbd "N") 'sayid-buffer-nav-to-prev
-;;         (kbd "C-s v") 'sayid-toggle-view
-;;         (kbd "C-s V") 'sayid-set-view
-;;         (kbd "L") 'sayid-buf-back
-;;         (kbd "e") 'sayid-gen-instance-expr) ;Originally this was bound to 'g', but I feel this is still mnemonic and doesn't overlap with evil
-
-;;       (evilified-state-evilify sayid-pprint-mode sayid-pprint-mode-map
-;;         (kbd "h") 'sayid-pprint-buf-show-help
-;;         (kbd "n") 'sayid-pprint-buf-next
-;;         (kbd "N") 'sayid-pprint-buf-prev
-;;         (kbd "l") 'sayid-pprint-buf-exit)
-
-;;       (evilified-state-evilify sayid-traced-mode sayid-traced-mode-map
-;;         (kbd "l") 'sayid-show-traced
-;;         (kbd "h") 'sayid-traced-buf-show-help)))
 
 (map! :after cider
       :map clojure-mode-map
@@ -801,10 +620,4 @@
 (advice-add 'shell-command--save-pos-or-erase :after 'shell-command-print-separator)
 
   (set-popup-rule! "*Async Shell Command*" :side 'bottom :size .40)
-  (set-popup-rule! "vterm" :side 'right :size .40 :quit 'current)
-
-;; (after! counsel
-  ;; :config
-  ;; Thanks to https://github.com/kaushalmodi/.emacs.d/blob/master/setup-files/setup-counsel.el
-  ;; (setq counsel-rg-base-command "rg --with-filename --no-heading --line-number --hidden --color never %s"))
-  ;; (setq counsel-rg-base-command (concat counsel-rg-base-command " --hidden")))
+  (set-popup-rule! "vterm" :side 'right :size .40 :quit 'current :ttl 3)

@@ -59,7 +59,7 @@ We then remap some of the bindings (inspired by [[https://github.com/jsmestad/df
 ** Font and font size:
 Toggle ~big mode~ with =SPC t b=
 #+BEGIN_SRC emacs-lisp
-(setq doom-font (font-spec :family "Menlo" :size 16)
+(setq doom-font (font-spec :family "Menlo" :size 14)
       doom-big-font (font-spec :family "Menlo" :size 20))
 ;; (setq doom-font (font-spec :family "Fira Code" :size 14)
 ;;       doom-big-font (font-spec :family "Fira Code" :size 22)
@@ -71,11 +71,6 @@ Toggle ~big mode~ with =SPC t b=
     (setq which-key-idle-delay 0.5))
 #+END_SRC
 
-** TODO Transparency
-#+BEGIN_SRC emacs-lisp
-;; (set-frame-parameter (selected-frame)'alpha '(98 . 98))
-;; (add-to-list 'default-frame-alist'(alpha . (98 . 98)))
-#+END_SRC
 ** Theme:
 #+BEGIN_SRC emacs-lisp
 (setq doom-theme 'doom-one)
@@ -112,16 +107,19 @@ use those keys!
             :n "3" #'winum-select-window-3
         )))
 #+END_SRC
-** Pretty code
+** Extra ligatures
 #+BEGIN_SRC emacs-lisp
-(setq +pretty-code-enabled-modes '(org-mode))
+(setq +ligatures-extras-in-modes
+      '(not special-mode comint-mode eshell-mode term-mode vterm-mode python-mode))
+;; (setq +ligatures-in-modes '(org-mode))
 #+END_SRC
 ** modeline
 *** Hide undesired info
 #+BEGIN_SRC emacs-lisp
 (after! doom-modeline
   (setq doom-modeline-buffer-encoding nil)
-  (setq doom-modeline-env-enable-python nil))
+  (setq doom-modeline-env-enable-python nil)
+(setq lsp-modeline-diagnostics-enable nil))
 ;; (setq doom-modeline-env-python-executable (executable-find "python"))
 #+END_SRC
 *** Show battery and time
@@ -154,7 +152,6 @@ After ~doom sync~ you should run ~tree-sitter-install-grammars~
       )
 #+END_SRC
 
-
 * Magit
 #+BEGIN_SRC emacs-lisp
 (after! magit
@@ -171,42 +168,33 @@ After ~doom sync~ you should run ~tree-sitter-install-grammars~
 ** Delay, prefix length
 #+BEGIN_SRC emacs-lisp
 (after! company
-  (setq company-idle-delay 0.3
+  (setq company-idle-delay 0
         company-minimum-prefix-length 1
   company-dabbrev-code-everywhere t
   company-dabbrev-code-other-buffers 'all))
         ;; company-quickhelp-delay 0.4)
 #+END_SRC
-** Backends
+** Disable tab
 #+BEGIN_SRC emacs-lisp
-(after! prescient
-  (setq-default history-length 1000)
-  (setq-default prescient-history-length 1000))
-
-;; (add-hook 'after-init-hook 'company-statistics-mode))
-
-;; (set-company-backend! 'org-mode
-;;   '(company-capf company-files company-dabbrev-code))
 (after! company
-  (use-package company-tabnine :ensure t)
-  (setq company-backends '(company-tabnine company-capf company-yasnippet)))
-
-;; (after! company
-;;   (add-to-list 'company-backends 'company-tabnine))
+  (define-key! company-active-map
+    "TAB"       nil
+    [tab]       nil))
 #+END_SRC
-** TODO Interference with yasnippet
-#+BEGIN_SRC emacs-lisp
-;; (after! company
-;;   (defun company-yasnippet-or-completion ()
-;;     (interactive)
-;;     (let ((yas-fallback-behavior nil))
-;;       (unless (yas-expand)
-;;         (call-interactively #'company-complete-common))))
 
-;;   (add-hook 'company-mode-hook (lambda ()
-;;                                  (substitute-key-definition 'company-complete-common
-;;                                                             'company-yasnippet-or-completion
-;;                                                             company-active-map))))
+** Show yasnippets as company suggestions
+#+BEGIN_SRC emacs-lisp
+(after! company
+  (defvar company-mode/enable-yas t
+    "Enable yasnippet for all backends.")
+
+  (defun company-mode/backend-with-yas (backend)
+    (if (or (not company-mode/enable-yas) (and (listp backend) (member 'company-yasnippet backend)))
+        backend
+      (append (if (consp backend) backend (list backend))
+              '(:with company-yasnippet))))
+
+  (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends)))
 #+END_SRC
 
 * Org
@@ -217,16 +205,11 @@ After ~doom sync~ you should run ~tree-sitter-install-grammars~
       +org-export-directory "~/Dropbox/org/export"
       org-default-notes-file "~/Dropbox/org/personal/inbox.org"
       org-id-locations-file "~/Dropbox/org/.orgids"
-      org-agenda-files (directory-files-recursively "~/Dropbox/org/" "\\.org$")
+      ;; org-agenda-files (directory-files-recursively "~/dropbox/org/" "\\.org$")
+      org-agenda-files '("~/dropbox/org/personal/inbox.org" "~/dropbox/org/personal/tasks.org" "~/dropbox/org/personal/birthdays.org")
       ;; org-export-in-background t
       org-catch-invisible-edits 'smart)
 #+END_SRC
-** TODO Export
-Load ~ox-ravel~:
-#+BEGIN_SRC emacs-lisp
-;; (load! "modules/ox-ravel")
-#+END_SRC
-This allows to export from ~.org~ to ~.Rmd~
 ** Capture templates
 #+BEGIN_SRC emacs-lisp
 (after! org
@@ -266,14 +249,6 @@ This allows to export from ~.org~ to ~.Rmd~
     (setq org-superstar-headline-bullets-list '("✖" "✚" "◆" "▶" "○")
         org-ellipsis "▼"))
 #+END_SRC
-*** TODO Tables
-#+BEGIN_SRC emacs-lisp
-;; (setq global-org-pretty-table-mode t)
-#+END_SRC
-*** TODO Pretty mode
-#+BEGIN_SRC emacs-lisp
-;; (add-hook! 'org-mode-hook #'+org-pretty-mode)
-#+END_SRC
 ** Org agenda popup
 #+BEGIN_SRC emacs-lisp
 (set-popup-rule! "*org agenda*" :side 'right :size .40 :select t :vslot 2 :ttl 3)
@@ -290,7 +265,10 @@ This allows to export from ~.org~ to ~.Rmd~
 ** Reveal
 #+BEGIN_SRC emacs-lisp
 (after! org-re-reveal
-(setq org-re-reveal-root "./reveal.js")
+  (setq org-re-reveal-root "./reveal.js")
+
+  (setq org-re-reveal-external-plugins  '((progress . "{ src: '%s/plugin/toc-progress/toc-progress.js', async: true, callback: function() { toc_progress.initialize(); toc_progress.create();} }")))
+
   )
 #+END_SRC
 
@@ -363,7 +341,7 @@ This allows to export from ~.org~ to ~.Rmd~
 ** Eval handler
 With ~g r~ we can send code to the Jupyter REPL:
 #+BEGIN_SRC emacs-lisp
-(after! jupyter
+(after! ob-jupyter
   (set-eval-handler! 'jupyter-repl-interaction-mode #'jupyter-eval-line-or-region))
 #+END_SRC
 
@@ -378,12 +356,12 @@ of code we send with ~g r~.
 ** Use overlays
 Evaluate simple expressions to the right of the symbol with =, e e=
 #+BEGIN_SRC emacs-lisp
-(after! jupyter
+(after! ob-jupyter
   (setq jupyter-eval-use-overlays t))
 #+END_SRC
-** TODO Long outputs
+** Long outputs
 #+BEGIN_SRC emacs-lisp
-(after! jupyter
+(after! ob-jupyter
   (cl-defmethod jupyter-org--insert-result (_req context result)
     (let ((str
            (org-element-interpret-data
@@ -393,7 +371,7 @@ Evaluate simple expressions to the right of the symbol with =, e e=
                            jupyter-org-strip-last-newline
                            jupyter-org-scalar)
                        result)))))
-      (if (< (length str) 10000)
+      (if (< (length str) 30000)
           (insert str)
         (insert (format ": Result was too long! Length was %d" (length str)))))
     (when (/= (point) (line-beginning-position))
@@ -403,10 +381,6 @@ Evaluate simple expressions to the right of the symbol with =, e e=
       (insert "\n"))))
 #+END_SRC
 
-** TODO Bigger inline images
-#+BEGIN_SRC emacs-lisp
-;; (setq org-image-actual-width t)
-#+END_SRC
 ** Fix zmq keywords
 #+BEGIN_SRC emacs-lisp
 (defadvice! fixed-zmq-start-process (orig-fn &rest args)
@@ -445,34 +419,10 @@ Evaluate simple expressions to the right of the symbol with =, e e=
 #+END_SRC
 
 ** LSP
-*** Use lsp-python-ms
+*** Use pyright
 #+BEGIN_SRC emacs-lisp
 (after! lsp-python-ms
-  (set-lsp-priority! 'mspyls 1))
-#+END_SRC
-*** TODO Use pyright
-#+BEGIN_SRC emacs-lisp
-;; (setq lsp-pyright-server-cmd '("pyright-langserver"
-;;                                "--stdio"))
-
-;; (after! lsp-mode
-;;   (lsp-register-client
-;;    (make-lsp-client
-;;     :new-connection (lsp-stdio-connection
-;;                      (lambda () lsp-pyright-server-cmd)
-;;                      (lambda ()
-;;                        (and (cl-first lsp-pyright-server-cmd)
-;;                             (executable-find (cl-first lsp-pyright-server-cmd)))))
-;;     :major-modes '(python-mode)
-;;     :server-id 'mspyright
-;;     :priority 1
-;;     :initialized-fn (lambda (workspace)
-;;                       (with-lsp-workspace workspace
-;;                         (lsp--set-configuration (lsp-configuration-section "python"))))
-;;     :notification-handlers (lsp-ht ("pyright/beginProgress" 'ignore)
-;;                                    ("pyright/reportProgress" 'ignore)
-;;                                    ("pyright/endProgress" 'ignore))))
-;;   )
+  (set-lsp-priority! 'pyright 1))
 #+END_SRC
 
 *** Don't guess project root
@@ -491,40 +441,10 @@ In case we get a wrong workspace root, we can delete it with ~lsp-workspace-fold
 #+BEGIN_SRC emacs-lisp
 (setq read-process-output-max (* 1024 1024))
 #+END_SRC
-*** TODO LSP idle delay
-This variable determines how often lsp-mode will refresh the highlights, lenses, links, etc while you type.
-#+BEGIN_SRC emacs-lisp
-;; (after! lsp-mode
-;;   (setq lsp-idle-delay 0.500))
-#+END_SRC
-*** TODO Prefer company-capf over company-lsp
-#+BEGIN_SRC emacs-lisp
-;; (setq +lsp-company-backend 'company-capf)
-#+END_SRC
 *** lsp-help popup
 Lookup documentation with ~SPC c k~
 #+BEGIN_SRC emacs-lisp
 (set-popup-rule! "^\\*lsp-help" :side 'right :size .50 :select t :vslot 1)
-#+END_SRC
-*** TODO Missing imports
-In python mode, use ~, i i~ to add missing imports
-#+BEGIN_SRC emacs-lisp
-;; (after! pyimport
-;;   (setq pyimport-pyflakes-path "~/git/experiments/.venv/bin/pyflakes"))
-#+END_SRC
-*** TODO Use flymake instead of flycheck
-#+BEGIN_SRC emacs-lisp
-;; (after! lsp-mode
-;;   (setq lsp-diagnostic-package :flymake))
-
-;; (after! lsp-mode
-;;   (add-hook! python-mode (setq lsp-diagnostic-package :flymake)))
-
-;; (after! python
-;;   (setq python-flymake-command  "~/git/experiments/.venv/bin/pyflakes"))
-
-;; (after! flycheck
-;;   (setq-default flycheck-checker 'python-pylint))
 #+END_SRC
 *** Disable lsp flycheck checker
 #+BEGIN_SRC emacs-lisp
@@ -598,18 +518,6 @@ In python mode, use ~, i i~ to add missing imports
   )
 #+END_SRC
 
-*** TODO dap-ui windows
-#+BEGIN_SRC emacs-lisp
-;; (after! dap-mode
-
-
-;;   ;; (set-popup-rule! "*dap-debug-.*" :side 'bottom :size .20 :slot 1)
-;;   ;; (set-popup-rule! "*dap-ui-repl*" :side 'right :size .50 :select t :vslot 2)
-;;   ;; (set-popup-rule! "*dap-ui-locals*" :side 'right :size .50)
-
-;;   )
-#+END_SRC
-
 *** Debug templates:
 Templates accessible with =, d d=
 #+BEGIN_SRC emacs-lisp
@@ -618,6 +526,8 @@ Templates accessible with =, d d=
                                (list :type "python"
                                      :args "-i"
                                      :cwd (lsp-workspace-root)
+                                     ;; :justMyCode :json-false
+                                     ;; :debugOptions ["DebugStdLib" "ShowReturnValue" "RedirectOutput"]
                                      :program nil ; (expand-file-name "~/git/blabla")
                                      :request "launch"
                                      :name "dap-debug-script"))
@@ -625,7 +535,6 @@ Templates accessible with =, d d=
   (dap-register-debug-template "dap-debug-test"
                                (list :type "python"
                                      :cwd (lsp-workspace-root)
-                                     ;; :environment-variables '(("PYTHONPATH" . "src"))
                                      :module "pytest"
                                      :request "launch"
                                      :name "dap-debug-test-file"))
@@ -688,21 +597,23 @@ Standard debug test target, accessible with =, d t=
 ;;   (defun dap-python--pyenv-executable-find (command)
 ;;     (concat (getenv "VIRTUAL_ENV") "/bin/python")))
 #+END_SRC
-*** TODO completion
+*** TODO Delete hap hydra bindings
 #+BEGIN_SRC emacs-lisp
-  ;; (set-company-backend! 'dap-ui-repl-mode 'company-capf)
+(map! :localleader
+        :map +dap-running-session-mode-map
+      "d" nil)
 
-;; (after! dap-mode
-
-;;   (add-hook 'dap-ui-repl-mode-hook
-;;             (lambda ()
-;;               (setq-local company-minimum-prefix-length 0))))
+;; (map! :after dap-mode
+;;     :map dap-mode-map
+;;     :localleader "d" nil)
 #+END_SRC
+
 *** Bindings
 #+BEGIN_SRC emacs-lisp
-(map! :after dap-python
+(map! :after dap-mode
     :map python-mode-map
     :localleader
+    ;; "d" nil
     (:desc "debug" :prefix "d"
       :desc "Hydra" :n "h" #'dap-hydra
       :desc "Run debug configuration" :n "d" #'dap-debug
@@ -717,6 +628,7 @@ Standard debug test target, accessible with =, d t=
       :desc "dap eval at point" :n "e" #'dap-eval-thing-at-point
       :desc "Disconnect" :n "q" #'dap-disconnect ))
 #+END_SRC
+
 ** emacs-ipython-notebook
 *** Don't ignore ~ein~ buffers
 #+BEGIN_SRC emacs-lisp
@@ -791,39 +703,8 @@ Disable popup for ESS:
                                    (ess-R-fl-keyword:F&T . t))))
 #+END_SRC
 
-** Pretty symbols
-#+BEGIN_SRC emacs-lisp
-(after! ess-r-mode
-  (appendq! +pretty-code-symbols
-            '(:assign "⟵"
-              :multiply "×"))
-  (set-pretty-symbols! 'ess-r-mode
-    ;; Functional
-    :def "function"
-    ;; Types
-    :null "NULL"
-    :true "TRUE"
-    :false "FALSE"
-    :int "int"
-    :floar "float"
-    :bool "bool"
-    ;; Flow
-    :not "!"
-    :and "&&" :or "||"
-    :for "for"
-    :in "%in%"
-    :return "return"
-    ;; Other
-    :assign "<-"
-    :multiply "%*%"))
-#+END_SRC
 * Clojure
-** TODO Use flycheck
-#+BEGIN_SRC emacs-lisp
-;; (after! lsp-mode
-;;   (add-hook! clojure-mode (setq lsp-diagnostic-package :flycheck)))
-#+END_SRC
-** Company keybingins
+** Company keybindings
 #+BEGIN_SRC emacs-lisp
 (after! cider
   (add-hook 'company-completion-started-hook 'custom/set-company-maps)
@@ -877,8 +758,8 @@ Disable popup for ESS:
       "C-S-s"   (cond ((featurep! :completion helm) #'helm-company)
                       ((featurep! :completion ivy)  #'counsel-company))
       "C-SPC"   #'company-complete-common
-      "TAB"     #'company-complete-common-or-cycle
-      [tab]     #'company-complete-common-or-cycle
+      ;; "TAB"     #'company-complete-common-or-cycle
+      ;; [tab]     #'company-complete-common-or-cycle
       [backtab] #'company-select-previous    ))
   )
 #+END_SRC
@@ -924,44 +805,6 @@ With ~lispyville~ you can wrap using =M-(= for example!
        :desc "Unwrap sexp" :n "u" #'sp-unwrap-sexp
        ))
 #+END_SRC
-** TODO Lispyville
-#+BEGIN_SRC emacs-lisp
-;; (after! lispyville
-;;   (setq lispyville-key-theme
-;;         '((operators normal)
-;;           ;; c-w
-;;           (prettify insert)
-;;           (atom-movement normal visual)
-;;           slurp/barf-lispy
-;;           additional
-;;           ;; additional-insert
-;;           additional-wrap
-;;           additional-motions))
-
-;;   ;; (setq lispyville-motions-put-into-special t)
-
-;;   (map! :mode lispy-mode
-;;         :after lispyville
-;;         ;; :i "M-[" #'lispy-brackets
-;;         :n "[" #'lispyville-previous-opening
-;;         :n "]" #'lispyville-next-opening)
-
-;;   (map! :map lispy-mode-map
-;;         :after lispyville
-;;         :i "[" #'lispy-brackets)
-
-;;   ;; (map! :map evil-motion-state-map
-;;   ;;         :n "[[" #'lispyville-previous-opening)
-;;   )
-#+END_SRC
-
-** TODO Vega view
-#+BEGIN_SRC emacs-lisp
-;; (after! cider
-;;   (use-package! vega-view
-;;     :init
-;;     (setq vega-view-prefer-png t)))
-#+END_SRC
 ** nREPL timeout
 #+BEGIN_SRC emacs-lisp
 (after! cider
@@ -973,66 +816,6 @@ With ~lispyville~ you can wrap using =M-(= for example!
   (setq clojure-align-forms-automatically t))
 #+END_SRC
 
-** TODO Sayid debugger
-#+BEGIN_SRC emacs-lisp
-;; (after! cider
-;;   (eval-after-load 'clojure-mode
-;;     '(sayid-setup-package)))
-
-;; (use-package sayid
-;;     :defer t
-;;     :init
-;;     (progn
-;;       (setq sayid--key-binding-prefixes
-;;             '(("mdt" . "trace")))
-;;       (spacemacs|forall-clojure-modes m
-;;         (mapc (lambda (x) (spacemacs/declare-prefix-for-mode m
-;;                             (car x) (cdr x)))
-;;               sayid--key-binding-prefixes)
-;;         (spacemacs/set-leader-keys-for-major-mode m
-;;           ;;These keybindings mostly preserved from the default sayid bindings
-;;           "d!" 'sayid-load-enable-clear
-;;           "dE" 'sayid-eval-last-sexp ;in default sayid bindings this is lowercase e, but that was already used in clojure mode
-;;           "dc" 'sayid-clear-log
-;;           "df" 'sayid-query-form-at-point
-;;           "dh" 'sayid-show-help
-;;           "ds" 'sayid-show-traced
-;;           "dS" 'sayid-show-traced-ns
-;;           "dtb" 'sayid-trace-ns-in-file
-;;           "dtd" 'sayid-trace-fn-disable
-;;           "dtD" 'sayid-trace-disable-all
-;;           "dte" 'sayid-trace-fn-enable
-;;           "dtE" 'sayid-trace-enable-all
-;;           "dtK" 'sayid-kill-all-traces
-;;           "dtn" 'sayid-inner-trace-fn
-;;           "dto" 'sayid-outer-trace-fn
-;;           "dtp" 'sayid-trace-ns-by-pattern
-;;           "dtr" 'sayid-remove-trace-fn
-;;           "dty" 'sayid-trace-all-ns-in-dir
-;;           "dV" 'sayid-set-view
-;;           "dw" 'sayid-get-workspace
-;;           "dx" 'sayid-reset-workspace
-;;           ))
-
-;;       (evilified-state-evilify sayid-mode sayid-mode-map
-;;         (kbd "H") 'sayid-buf-show-help
-;;         (kbd "n") 'sayid-buffer-nav-to-next
-;;         (kbd "N") 'sayid-buffer-nav-to-prev
-;;         (kbd "C-s v") 'sayid-toggle-view
-;;         (kbd "C-s V") 'sayid-set-view
-;;         (kbd "L") 'sayid-buf-back
-;;         (kbd "e") 'sayid-gen-instance-expr) ;Originally this was bound to 'g', but I feel this is still mnemonic and doesn't overlap with evil
-
-;;       (evilified-state-evilify sayid-pprint-mode sayid-pprint-mode-map
-;;         (kbd "h") 'sayid-pprint-buf-show-help
-;;         (kbd "n") 'sayid-pprint-buf-next
-;;         (kbd "N") 'sayid-pprint-buf-prev
-;;         (kbd "l") 'sayid-pprint-buf-exit)
-
-;;       (evilified-state-evilify sayid-traced-mode sayid-traced-mode-map
-;;         (kbd "l") 'sayid-show-traced
-;;         (kbd "h") 'sayid-traced-buf-show-help)))
-#+END_SRC
 ** Cider keybindings
 Remember you can use =gr af= to evaluate the outer form.
 =ap= is a paragraph, =as= is a sentence.
@@ -1060,13 +843,5 @@ Remember you can use =gr af= to evaluate the outer form.
 ** Async command and vterm popups
 #+BEGIN_SRC emacs-lisp
   (set-popup-rule! "*Async Shell Command*" :side 'bottom :size .40)
-  (set-popup-rule! "vterm" :side 'right :size .40 :quit 'current)
-#+END_SRC
-** TODO Counsel rg base command
-#+BEGIN_SRC emacs-lisp
-;; (after! counsel
-  ;; :config
-  ;; Thanks to https://github.com/kaushalmodi/.emacs.d/blob/master/setup-files/setup-counsel.el
-  ;; (setq counsel-rg-base-command "rg --with-filename --no-heading --line-number --hidden --color never %s"))
-  ;; (setq counsel-rg-base-command (concat counsel-rg-base-command " --hidden")))
+  (set-popup-rule! "vterm" :side 'right :size .40 :quit 'current :ttl 3)
 #+END_SRC
