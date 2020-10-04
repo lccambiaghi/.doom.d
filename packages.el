@@ -34,6 +34,12 @@
 ;; (package! sayid)
 (package! tree-sitter
   :recipe (:host github :repo "ubolonton/emacs-tree-sitter"
-           :files ("lisp/*.el" "*.so" "langs/*.el" "langs/queries")))
+           :files ("lisp/*.el")))
+(package! tree-sitter-langs
+  :recipe (:host github :repo "ubolonton/emacs-tree-sitter"
+           :files ("langs/*.el" "langs/queries")))
 (package! pipenv :disable t)
 (package! centered-cursor-mode)
+(package! evil-lisp-state)
+(unpin! dap-mode lsp-mode treemacs)
+(package! solaire-mode :disable t)

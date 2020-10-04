@@ -13,6 +13,9 @@
 
 (delete-selection-mode 1)                         ; Replace selection when inserting text
 ;; (global-subword-mode 1)                           ; Iterate through CamelCase words
+(setq +evil-want-o/O-to-continue-comments nil)
+
+;; (setq comp-deferred-compilation t)
 
 (general-auto-unbind-keys)
 
@@ -30,6 +33,8 @@
         :desc "Eshell"               :n "'" #'projectile-run-eshell
         :desc "Terminal" :n "t" #'projectile-run-vterm ))
 
+(define-key evil-normal-state-map (kbd "s-d") #'evil-multiedit-match-symbol-and-next)
+
 (setq display-line-numbers-type nil)
 
 (setq doom-font (font-spec :family "Menlo" :size 14)
@@ -41,7 +46,77 @@
 (after! which-key
     (setq which-key-idle-delay 0.5))
 
-(setq doom-theme 'doom-one)
+(defmacro modus-themes-format-sexp (sexp &rest objects)
+  `(eval (read (format ,(format "%S" sexp) ,@objects))))
+
+(dolist (theme '("operandi" "vivendi"))
+  (modus-themes-format-sexp
+   (defun modus-%1$s-theme-load ()
+     (setq modus-%1$s-theme-slanted-constructs t
+           modus-%1$s-theme-bold-constructs t
+           modus-%1$s-theme-fringes 'subtle ; {nil,'subtle,'intense}
+           modus-%1$s-theme-mode-line '3d ; {nil,'3d,'moody}
+           modus-%1$s-theme-faint-syntax nil
+           modus-%1$s-theme-intense-hl-line nil
+           modus-%1$s-theme-intense-paren-match nil
+           modus-%1$s-theme-no-link-underline t
+           modus-%1$s-theme-no-mixed-fonts nil
+           modus-%1$s-theme-prompts nil ; {nil,'subtle,'intense}
+           modus-%1$s-theme-completions 'moderate ; {nil,'moderate,'opinionated}
+           modus-%1$s-theme-diffs nil ; {nil,'desaturated,'fg-only}
+           modus-%1$s-theme-org-blocks 'greyscale ; {nil,'greyscale,'rainbow}
+           modus-%1$s-theme-headings  ; Read further below in the manual for this one
+           '((1 . line)
+             (t . rainbow-line-no-bold))
+           modus-%1$s-theme-variable-pitch-headings t
+           modus-%1$s-theme-scale-headings t
+           modus-%1$s-theme-scale-1 1.1
+           modus-%1$s-theme-scale-2 1.15
+           modus-%1$s-theme-scale-3 1.21
+           modus-%1$s-theme-scale-4 1.27
+           modus-%1$s-theme-scale-5 1.33)
+     (setq doom-theme 'modus-%1$s)
+     (doom/reload-theme))
+   theme))
+
+(setq modus-operandi-theme-override-colors-alist
+            '(("bg-main" . "#fefcf4")
+              ("bg-dim" . "#faf6ef")
+              ("bg-alt" . "#f7efe5")
+              ("bg-hl-line" . "#f4f0e3")
+              ("bg-active" . "#e8dfd1")
+              ("bg-inactive" . "#f6ece5")
+              ("bg-region" . "#c6bab1")
+              ("bg-header" . "#ede3e0")
+              ("bg-tab-bar" . "#dcd3d3")
+              ("bg-tab-active" . "#fdf6eb")
+              ("bg-tab-inactive" . "#c8bab8")
+              ("fg-unfocused" . "#55556f"))
+            modus-vivendi-theme-override-colors-alist
+            '(("bg-main" . "#100b17")
+              ("bg-dim" . "#161129")
+              ("bg-alt" . "#181732")
+              ("bg-hl-line" . "#191628")
+              ("bg-active" . "#282e46")
+              ("bg-inactive" . "#1a1e39")
+              ("bg-region" . "#393a53")
+              ("bg-header" . "#202037")
+              ("bg-tab-bar" . "#262b41")
+              ("bg-tab-active" . "#120f18")
+              ("bg-tab-inactive" . "#3a3a5a")
+              ("fg-unfocused" . "#9a9aab"))
+            modus-operandi-theme-intense-paren-match t
+            modus-operandi-theme-distinct-org-blocks t)
+
+;; Light for the day
+(run-at-time "05:00" (* 60 60 24)
+             (lambda ()
+               (modus-operandi-theme-load)))
+
+;; ;; Dark for the night
+(run-at-time "18:00" (* 60 60 24)
+             (lambda ()
+               (modus-vivendi-theme-load)))
 
 (setq +doom-dashboard-banner-file
       (expand-file-name "splash-images/black-hole2.png" doom-private-dir))
@@ -148,7 +223,7 @@
                     ("u" "URL")))
 
   (add-to-list 'org-capture-templates
-             '("dn" "New Diary Entry" entry(file+olp+datetree"~/git/Dropbox/org/personal/diary.org" "Daily Logs")
+             '("dn" "New Diary Entry" entry(file+olp+datetree"~/Dropbox/org/personal/diary.org" "Daily Logs")
 "* %^{thought for the day}
 :PROPERTIES:
 :CATEGORY: %^{category}
@@ -184,6 +259,8 @@
 
 (after! org-re-reveal
   (setq org-re-reveal-root "./reveal.js")
+
+  (setq org-re-reveal-revealjs-version "3.8")
 
   (setq org-re-reveal-external-plugins  '((progress . "{ src: '%s/plugin/toc-progress/toc-progress.js', async: true, callback: function() { toc_progress.initialize(); toc_progress.create();} }")))
 
@@ -238,8 +315,8 @@
 (set-popup-rule! "^\\*Org Src*" :side 'right :size .60 :select t :vslot 2 :ttl 3 :quit nil)
 (set-popup-rule! "*jupyter-repl*" :side 'bottom :size .30 :vslot 2 :ttl 3)
 
-(after! evil-org
-  (org-babel-lob-ingest "/Users/luca/git/experiments/literate/ml/rpy2.org"))
+;; (after! evil-org
+;;   (org-babel-lob-ingest "/Users/luca/git/experiments/literate/ml/rpy2.org"))
 
 (after! ob-jupyter
   (set-eval-handler! 'jupyter-repl-interaction-mode #'jupyter-eval-line-or-region))
@@ -247,8 +324,8 @@
 (add-hook! python-mode
   (set-repl-handler! 'python-mode #'jupyter-repl-pop-to-buffer))
 
-(after! ob-jupyter
-  (setq jupyter-eval-use-overlays t))
+;; (after! ob-jupyter
+;;   (setq jupyter-eval-use-overlays t))
 
 (after! ob-jupyter
   (cl-defmethod jupyter-org--insert-result (_req context result)
@@ -276,6 +353,12 @@
            (plist-delete! plist :coding-system)
            (apply make-process plist))
     (apply orig-fn args)))
+
+;; (map! :after org-evil
+;;         :map evil-org-mode-map
+;;       :n "M-<down>" nil
+;;       :n "M-j" nil
+;;       )
 
 (defadvice! +python-poetry-open-repl-a (orig-fn &rest args)
   "Use the Python binary from the current virtual environment."
@@ -325,13 +408,13 @@
 
 (set-popup-rule! "^\\*pytest*" :side 'right :size .50)
 
-(after! dap-python
+(after! dap-mode
   (setq dap-auto-show-output nil)
-
   (setq dap-auto-configure-features '(locals))
 
   (setq dap-ui-buffer-configurations
         `((,"*dap-ui-locals*"  . ((side . right) (slot . 1) (window-width . 0.50))) ;; changed this to 0.50
+          (,"*dap-ui-repl*" . ((side . right) (slot . 1) (window-width . 0.50))) ;; added this! TODO enable when release on MELPA
           (,"*dap-ui-expressions*" . ((side . right) (slot . 2) (window-width . 0.20)))
           (,"*dap-ui-sessions*" . ((side . right) (slot . 3) (window-width . 0.20)))
           (,"*dap-ui-breakpoints*" . ((side . left) (slot . 2) (window-width . , 0.20)))
@@ -348,30 +431,41 @@
     "Show debug windows."
     (let ((lsp--cur-workspace (dap--debug-session-workspace session)))
       (save-excursion
-        (unless (my/window-visible dap-ui--locals-buffer)
-          (dap-ui-locals)))))
+        (unless (my/window-visible dap-ui--repl-buffer)
+          (dap-ui-repl)))))
 
   (add-hook 'dap-stopped-hook 'my/show-debug-windows)
 
   (defun my/hide-debug-windows (session)
     "Hide debug windows when all debug sessions are dead."
     (unless (-filter 'dap--session-running (dap--get-sessions))
-      (and (get-buffer dap-ui--locals-buffer)
-           (kill-buffer dap-ui--locals-buffer))))
+      (and (get-buffer dap-ui--repl-buffer)
+           (kill-buffer dap-ui--repl-buffer))))
 
   (add-hook 'dap-terminated-hook 'my/hide-debug-windows)
 
   )
 
+;; (setq dap-auto-configure-features '(locals))
+(after! dap-mode
+  (setq dap-overlays-use-overlays nil)
+  (remove-hook 'dap-ui-mode-hook #'dap-ui-controls-mode)
+  )
+(remove-hook 'dap-mode-hook #'dap-tooltip-mode)
+
 (after! dap-python
   (dap-register-debug-template "dap-debug-script"
                                (list :type "python"
-                                     :args "-i"
+                                     ;; :args "-i"
                                      :cwd (lsp-workspace-root)
+                                    ;; :cwd "/Users/luca/git/wondercast/dashboards"
                                      ;; :justMyCode :json-false
                                      ;; :debugOptions ["DebugStdLib" "ShowReturnValue" "RedirectOutput"]
                                      :program nil ; (expand-file-name "~/git/blabla")
+                                     ;; :program "/Users/luca/git/wondercast/empties/src/empties/bookings_feature/merge_bookings_with_activities/__main__.py"
+                                     ;; :program "/Users/luca/git/wondercast/dashboards/src/dashboards/caf_leg_accuracy/leg_accuracy_main.py"
                                      :request "launch"
+                                     :debugger 'ptvsd
                                      :name "dap-debug-script"))
 
   (dap-register-debug-template "dap-debug-test"
@@ -399,8 +493,11 @@
      (dap-debug
       (list :type "python"
             :args "-i"
-            :cwd (lsp-workspace-root)
+            ;; :cwd (lsp-workspace-root)
+            :cwd "/Users/luca/git/wondercast/dashboards"
             :program nil
+            ;; :debugger 'debugpy
+            ;; :request "attach"
             :request "launch"
             :name "dap-debug-script")))))
 
@@ -412,9 +509,12 @@
        (dap-debug
         (list :type "python"
               :args ""
+              ;; :args []
               :cwd (lsp-workspace-root)
               :program (concat (buffer-file-name) ":" ":" (python-pytest--current-defun))
               :module "pytest"
+              :debugger 'ptvsd
+              ;; :debugger 'debugpy
               :request "launch"
               :name "dap-debug-test-function")))))
 
@@ -453,6 +553,9 @@
       :desc "dap step in" :n "i" #'dap-step-in
       :desc "dap eval at point" :n "e" #'dap-eval-thing-at-point
       :desc "Disconnect" :n "q" #'dap-disconnect ))
+
+(after! dap-mode
+  (setq dap-python-debugger 'debugpy))
 
 (after! ein
   (set-popup-rule! "^\\*ein" :ignore t))
@@ -609,6 +712,11 @@
        :desc "sexp in comment" :n "E" #'cider-pprint-eval-last-sexp-to-comment
        :desc "defun in comment" :n "D" #'cider-pprint-eval-defun-to-comment
        ))
+
+(use-package! evil-lisp-state
+  :custom
+  (evil-lisp-state-global t)
+  :config (evil-lisp-state-leader "SPC k"))
 
 (defun shell-command-print-separator ()
   (overlay-put (make-overlay (point-max) (point-max))
