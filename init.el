@@ -29,7 +29,7 @@
        ;;ido               ; the other *other* search engine...
        (ivy                             ; a search engine for love and life
         ;; +childframe
-        ;; +icons
+        +icons
         )
 
        :ui
@@ -151,7 +151,7 @@
        ;;lua               ; one-based indices? one-based indices
        (markdown +grip)          ; writing docs for people to ignore
        ;;nim               ; python + lisp at the speed of c
-       ;;nix               ; I hereby declare "nix geht mehr!"
+       nix               ; I hereby declare "nix geht mehr!"
        ;;ocaml             ; an objective camel
        (org              ; organize your plain life in plain text
         +dragndrop       ; drag & drop files/images into org buffers

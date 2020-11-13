@@ -37,7 +37,7 @@
 
 (setq display-line-numbers-type nil)
 
-(setq doom-font (font-spec :family "Menlo" :size 14)
+(setq doom-font (font-spec :family "Menlo" :size 16)
       doom-big-font (font-spec :family "Menlo" :size 20))
 ;; (setq doom-font (font-spec :family "Fira Code" :size 14)
 ;;       doom-big-font (font-spec :family "Fira Code" :size 22)
@@ -109,12 +109,12 @@
             modus-operandi-theme-distinct-org-blocks t)
 
 ;; Light for the day
-(run-at-time "05:00" (* 60 60 24)
+(run-at-time "07:00" (* 60 60 24)
              (lambda ()
                (modus-operandi-theme-load)))
 
 ;; ;; Dark for the night
-(run-at-time "18:00" (* 60 60 24)
+(run-at-time "16:00" (* 60 60 24)
              (lambda ()
                (modus-vivendi-theme-load)))
 
@@ -165,8 +165,9 @@
 (after! tree-sitter
   (require 'tree-sitter)
   (require 'tree-sitter-langs)
-  (require 'tree-sitter-hl)
-  (add-hook 'python-mode-hook #'tree-sitter-hl-mode))
+  (require 'tree-sitter-hl))
+
+(add-hook 'python-mode-hook #'tree-sitter-hl-mode)
 
 (map! :leader
       :desc "toggle centered cursor"                   :n "t-" (λ! () (interactive) (centered-cursor-mode 'toggle))
@@ -219,11 +220,41 @@
 (after! org
 
   (setq org-capture-templates
-                  '(("d" "Diary")
-                    ("u" "URL")))
+        `(("a" "Article to write" entry
+           (file+headline "personal/tasks.org" "Writing list")
+           ,(concat "* WRITE %^{Title} %^g\n"
+                    "SCHEDULED: %^t\n"
+                    ":PROPERTIES:\n"
+                    ":CAPTURED: %U\n:END:\n\n"
+                    "%i%?"))
+          ("b" "Basic task for future review" entry
+           (file+headline "personal/tasks.org" "Basic tasks that need to be reviewed")
+           ,(concat "* %^{Title}\n"
+                    ":PROPERTIES:\n"
+                    ":CAPTURED: %U\n"
+                    ":END:\n\n"
+                    "%i%l"))
+          ("w" "Task or assignment" entry
+           (file+headline "personal/tasks.org" "Work tasks")
+           ,(concat "* TODO [#A] %^{Title} :@work:\n"
+                    "SCHEDULED: %^t\n"
+                    ":PROPERTIES:\n:CAPTURED: %U\n:END:\n\n"
+                    "%i%?"))
+          ("t" "Task with a due date" entry
+           (file+headline "personal/tasks.org" "Task list with a date")
+           ,(concat "* %^{Scope of task||TODO|STUDY|MEET} %^{Title} %^g\n"
+                    "SCHEDULED: %^t\n"
+                    ":PROPERTIES:\n:CAPTURED: %U\n:END:\n\n"
+                    "%i%?"))
+          ("r" "Reply to an email" entry
+           (file+headline "tasks.org" "Mail correspondence")
+           ,(concat "* TODO [#B] %:subject :mail:\n"
+                    "SCHEDULED: %t\n:"
+                    "PROPERTIES:\n:CONTEXT: %a\n:END:\n\n"
+                    "%i%?"))))
 
   (add-to-list 'org-capture-templates
-             '("dn" "New Diary Entry" entry(file+olp+datetree"~/Dropbox/org/personal/diary.org" "Daily Logs")
+             '("d" "New Diary Entry" entry(file+olp+datetree"~/Dropbox/org/personal/diary.org" "Daily Logs")
 "* %^{thought for the day}
 :PROPERTIES:
 :CATEGORY: %^{category}
@@ -243,7 +274,7 @@
 - %?"))
 
   (add-to-list 'org-capture-templates
-      '("un" "New URL Entry" entry(file+function "~/Dropbox/org/personal/dailies.org" org-reverse-datetree-goto-date-in-file)
+      '("u" "New URL Entry" entry(file+function "~/Dropbox/org/personal/dailies.org" org-reverse-datetree-goto-date-in-file)
             "* [[%^{URL}][%^{Description}]] %^g %?")))
 
 (after! org-superstar
@@ -278,9 +309,9 @@
 
 (after! evil-org
   (setq org-babel-default-header-args:jupyter-python '((:async . "yes")
-                                                       (:pandoc t)
+                                                       ;; (:pandoc t)
                                                        (:kernel . "python3")))
-  (setq org-babel-default-header-args:jupyter-R '((:pandoc t)
+  (setq org-babel-default-header-args:jupyter-R '(;; (:pandoc t)
                                                   (:kernel . "ir"))))
 
 ;; (:when (featurep! :lang +jupyter)
@@ -360,6 +391,56 @@
 ;;       :n "M-j" nil
 ;;       )
 
+(after! jupyter
+  (defun jupyter-run-repl-or-pop-to-buffer-dwim ()
+    "If a buffer is already associated with a jupyter buffer,
+then pop to it. Otherwise start a jupyter kernel."
+    (interactive)
+    (if (bound-and-true-p jupyter-current-client)
+        (jupyter-repl-pop-to-buffer)
+      (call-interactively #'jupyter-run-repl)))
+
+  ;; * eldoc integration
+  (defun scimax-jupyter-signature ()
+    "Try to return a function signature for the thing at point."
+    (when (and (eql major-mode 'org-mode)
+               (string= (or (get-text-property (point) 'lang) "") "jupyter-python"))
+      (save-window-excursion
+     ;;; Essentially copied from (jupyter-inspect-at-point).
+        (jupyter-org-with-src-block-client
+         (cl-destructuring-bind (code pos)
+             (jupyter-code-context 'inspect)
+           (jupyter-inspect code pos nil 0)))
+        (when (get-buffer "*Help*")
+          (with-current-buffer "*Help*"
+            (goto-char (point-min))
+            (prog1
+                (cond
+                 ((re-search-forward "Signature:" nil t 1)
+                  (buffer-substring (line-beginning-position) (line-end-position)))
+                 ((re-search-forward "Docstring:" nil t 1)
+                  (forward-line)
+                  (buffer-substring (line-beginning-position) (line-end-position)))
+                 (t
+                  nil))
+              ;; get rid of this so we don't accidentally show old results later
+              (with-current-buffer "*Help*"
+                (toggle-read-only)
+                (erase-buffer))))))))
+
+  (defun scimax-jupyter-eldoc-advice (orig-func &rest args)
+    "Advice function to get eldoc signatures in blocks in org-mode."
+    (or (scimax-jupyter-signature) (apply orig-func args)))
+
+
+  (defun scimax-jupyter-turn-on-eldoc ()
+    "Turn on eldoc signatures."
+    (interactive)
+    (advice-add 'org-eldoc-documentation-function :around #'scimax-jupyter-eldoc-advice))
+
+  ( scimax-jupyter-turn-on-eldoc )
+  )
+
 (defadvice! +python-poetry-open-repl-a (orig-fn &rest args)
   "Use the Python binary from the current virtual environment."
   :around #'+python/open-repl
@@ -390,6 +471,12 @@
 
 (after! lsp-mode
   (setq lsp-diagnostic-package :none))
+
+(after! flycheck
+    (add-hook 'pyhon-mode-local-vars-hook
+            (lambda ()
+                (when (flycheck-may-enable-checker 'python-pyright)
+                (flycheck-select-checker 'python-pyright)))))
   ;; (setq flycheck-disabled-checkers 'lsp)
 
 (after! lsp-mode
@@ -447,76 +534,73 @@
   )
 
 ;; (setq dap-auto-configure-features '(locals))
-(after! dap-mode
-  (setq dap-overlays-use-overlays nil)
-  (remove-hook 'dap-ui-mode-hook #'dap-ui-controls-mode)
-  )
+;; (after! dap-mode
+;;   (setq dap-overlays-use-overlays nil)
+;;   )
 (remove-hook 'dap-mode-hook #'dap-tooltip-mode)
+(remove-hook 'dap-ui-mode-hook #'dap-ui-controls-mode)
 
 (after! dap-python
   (dap-register-debug-template "dap-debug-script"
                                (list :type "python"
-                                     ;; :args "-i"
-                                     :cwd (lsp-workspace-root)
-                                    ;; :cwd "/Users/luca/git/wondercast/dashboards"
+                                     :args []
+                                     ;; :cwd (lsp-workspace-root)
                                      ;; :justMyCode :json-false
                                      ;; :debugOptions ["DebugStdLib" "ShowReturnValue" "RedirectOutput"]
-                                     :program nil ; (expand-file-name "~/git/blabla")
-                                     ;; :program "/Users/luca/git/wondercast/empties/src/empties/bookings_feature/merge_bookings_with_activities/__main__.py"
-                                     ;; :program "/Users/luca/git/wondercast/dashboards/src/dashboards/caf_leg_accuracy/leg_accuracy_main.py"
+                                     ;; :program nil ; (expand-file-name "~/git/blabla")
                                      :request "launch"
-                                     :debugger 'ptvsd
+                                     ;; :debugger 'ptvsd
+                                     :debugger 'debugpy
                                      :name "dap-debug-script"))
 
-  (dap-register-debug-template "dap-debug-test"
-                               (list :type "python"
-                                     :cwd (lsp-workspace-root)
+  (dap-register-debug-template "Python :: Run pytest (at point), ptvsd"
+                               (list :type "python-test-at-point"
+                                     :args ""
                                      :module "pytest"
                                      :request "launch"
-                                     :name "dap-debug-test-file"))
+                                     :debugger 'ptvsd
+                                     :name "Python :: Run pytest (at point)"))
 
-  (dap-register-debug-template "dap-debug-bokeh"
-                               (list :type "python"
-                                     :args "--show crewrelief --log-level info"
-                                     :cwd (expand-file-name "~/git/crewrelief/src")
-                                     :program "serve"
-                                     :module "bokeh"
+  (dap-register-debug-template "Python :: Run pytest (at point), debugpy"
+                               (list :type "python-test-at-point"
+                                     :args ["/Users/luca/git/wondercast/caf/test/customer_allocation/summarize_historical/summarize_historical_test.py::test_summarize"]
+                                     ;; :module "pytest"
                                      :request "launch"
-                                     :name "dap-debug-bokeh"))
-
+                                     :debugger 'debugpy
+                                     :name "Python :: Run pytest (at point)"))
 
   )
 
-(after! dap-python
-  (defun dap-python-script ()
-    (interactive
-     (dap-debug
-      (list :type "python"
-            :args "-i"
-            ;; :cwd (lsp-workspace-root)
-            :cwd "/Users/luca/git/wondercast/dashboards"
-            :program nil
-            ;; :debugger 'debugpy
-            ;; :request "attach"
-            :request "launch"
-            :name "dap-debug-script")))))
+;; (after! dap-python
+;;   (require 'python-pytest)
 
-(after! dap-python
-  (require 'python-pytest)
+;;   (defun dap-python-test-method-at-point-debugpy ()
+;;     (interactive
+;;        (dap-debug
+;;         (list :type "python"
+;;               ;; :args []
+;;               ;; :args "py.test /Users/luca/git/wondercast/caf/test/customer_allocation/summarize_historical/summarize_historical_test.py"
+;;               :args (concat (buffer-file-name) ":" ":" (python-pytest--current-defun))
+;;               ;; :program (concat (buffer-file-name) ":" ":" (python-pytest--current-defun))
+;;               ;; :program "/Users/luca/git/wondercast/caf/test/customer_allocation/summarize_historical/summarize_historical_test.py"
+;;               ;; :module "pytest"
+;;               :debugger 'debugpy
+;;               :request "launch"
+;;               :name "dap-debug-test-function-debugpy"))))
 
-  (defun dap-python-test-method-at-point ()
-    (interactive
-       (dap-debug
-        (list :type "python"
-              :args ""
-              ;; :args []
-              :cwd (lsp-workspace-root)
-              :program (concat (buffer-file-name) ":" ":" (python-pytest--current-defun))
-              :module "pytest"
-              :debugger 'ptvsd
-              ;; :debugger 'debugpy
-              :request "launch"
-              :name "dap-debug-test-function")))))
+;;   (defun dap-python-test-method-at-point ()
+;;     (interactive
+;;        (dap-debug
+;;         (list :type "python"
+;;               :args ""
+;;               ;; :args []
+;;               :cwd (lsp-workspace-root)
+;;               :program (concat (buffer-file-name) ":" ":" (python-pytest--current-defun))
+;;               :module "pytest"
+;;               :debugger 'ptvsd
+;;               ;; :debugger 'debugpy
+;;               :request "launch"
+;;               :name "dap-debug-test-function")))))
 
 (defadvice! +dap-python-poetry-executable-find-a (orig-fn &rest args)
   "Use the Python binary from the current virtual environment."
@@ -590,6 +674,9 @@
   (setq dash-docs-docsets '("Pandas" "scikit-learn")))
 
 (set-popup-rule! "*compilation*" :side 'right :size .50 :select t :vslot 2 :quit 'current)
+
+(after! pyvenv
+  (setq pyvenv-mode-line-indicator nil))
 
 (set-popup-rule! "^\\*R:" :ignore t)
 

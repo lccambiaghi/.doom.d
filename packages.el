@@ -35,11 +35,19 @@
 (package! tree-sitter
   :recipe (:host github :repo "ubolonton/emacs-tree-sitter"
            :files ("lisp/*.el")))
+(package! tsc :recipe (:host github
+            :repo "ubolonton/emacs-tree-sitter"
+            :files ("core/*.el")))
 (package! tree-sitter-langs
   :recipe (:host github :repo "ubolonton/emacs-tree-sitter"
            :files ("langs/*.el" "langs/queries")))
 (package! pipenv :disable t)
+(package! pyvenv :disable t)
 (package! centered-cursor-mode)
 (package! evil-lisp-state)
 (unpin! dap-mode lsp-mode treemacs)
-(package! solaire-mode :disable t)
+;; (package! solaire-mode :disable t)
+(package! modus-operandi-theme :recipe (:no-native-compile t))
+(package! modus-vivendi-theme :recipe (:no-native-compile t))
+(unpin! vterm)
+(package! jupyter :recipe (:no-native-compile t))
