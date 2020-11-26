@@ -106,7 +106,7 @@
         +docsets)        ; ...or in Dash docsets locally
        lsp
        ;; macos             ; MacOS-specific commands
-       magit             ; a git porcelain for Emacs
+       (magit +forge)             ; a git porcelain for Emacs
        ;; make              ; run make tasks from Emacs
        ;;pass              ; password manager for nerds
        ;; pdf               ; pdf enhancements
@@ -127,7 +127,7 @@
        ;;common-lisp       ; if you've seen one lisp, you've seen them all
        ;;coq               ; proofs-as-programs
        ;;crystal           ; ruby at the speed of c
-       ;;csharp            ; unity, .NET, and mono shenanigans
+       csharp            ; unity, .NET, and mono shenanigans
        data              ; config/data formats
        ;;elixir            ; erlang done right
        ;;elm               ; care for a cup of TEA?
@@ -166,7 +166,7 @@
        ;;plantuml          ; diagrams for confusing people more
        ;;purescript        ; javascript, but functional
        (python
-        +poetry
+        ;; +poetry
         +lsp
         +pyright
         )            ; beautiful is better than ugly

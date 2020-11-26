@@ -160,18 +160,46 @@
 (setq evil-split-window-below t
       evil-vsplit-window-right t)
 
-(use-package tree-sitter :after python-mode)
+;; (use-package tree-sitter :after python-mode)
 
-(after! tree-sitter
-  (require 'tree-sitter)
-  (require 'tree-sitter-langs)
-  (require 'tree-sitter-hl))
+;; (after! tree-sitter
+;;   (require 'tree-sitter)
+;;   (require 'tree-sitter-langs)
+;;   (require 'tree-sitter-hl))
 
-(add-hook 'python-mode-hook #'tree-sitter-hl-mode)
+;; (add-hook 'python-mode-hook #'tree-sitter-hl-mode)
 
 (map! :leader
       :desc "toggle centered cursor"                   :n "t-" (λ! () (interactive) (centered-cursor-mode 'toggle))
       )
+
+;; (set-frame-parameter nil 'undecorated t)
+
+(defun my/startup-window-setup ()
+  "Called by emacs-startup-hook to set up my initial window configuration."
+
+  (split-window-right)
+  (other-window 1)
+  (find-file "~/txt/todo.org")
+  (other-window 1))
+
+;; (add-hook 'emacs-startup-hook #'my-default-window-setup)
+
+(defun my/enable-elegant-light ()
+  "Enable elegant-emacs theme"
+  (load! "/Users/luca/.emacs.d/.local/straight/repos/elegant-emacs/elegance.el")
+  (load! "/Users/luca/.emacs.d/.local/straight/repos/elegant-emacs/sanity.el")
+  ;; (setq doom-theme 'elegance)
+  ;; (add-hook! 'doom-load-theme-hook #'elegance-light)
+  (doom/reload-theme))
+
+(defun my/enable-elegant-dark ()
+  "Enable elegant-emacs theme"
+  (load! "/Users/luca/.emacs.d/.local/straight/repos/elegant-emacs/elegance.el")
+  (load! "/Users/luca/.emacs.d/.local/straight/repos/elegant-emacs/sanity.el")
+  (setq doom-theme 'elegance)
+  (add-hook! 'doom-load-theme-hook #'elegance-dark)
+  (doom/reload-theme))
 
 (after! magit
   ;; (magit-wip-mode)
@@ -368,7 +396,7 @@
                            jupyter-org-strip-last-newline
                            jupyter-org-scalar)
                        result)))))
-      (if (< (length str) 30000)
+      (if (< (length str) 100000)
           (insert str)
         (insert (format ": Result was too long! Length was %d" (length str)))))
     (when (/= (point) (line-beginning-position))
@@ -496,7 +524,9 @@ then pop to it. Otherwise start a jupyter kernel."
 (set-popup-rule! "^\\*pytest*" :side 'right :size .50)
 
 (after! dap-mode
-  (setq dap-auto-show-output nil)
+  ;; (setq dap-auto-show-output t)
+  (setq dap-output-window-max-height 50)
+  (setq dap-output-window-min-height 50)
   (setq dap-auto-configure-features '(locals))
 
   (setq dap-ui-buffer-configurations
@@ -506,6 +536,8 @@ then pop to it. Otherwise start a jupyter kernel."
           (,"*dap-ui-sessions*" . ((side . right) (slot . 3) (window-width . 0.20)))
           (,"*dap-ui-breakpoints*" . ((side . left) (slot . 2) (window-width . , 0.20)))
           (,"*debug-window*" . ((side . bottom) (slot . 3) (window-width . 0.20)))))
+
+;; (set-popup-rule! "^\\*dap-debug-script*" :side 'bottom :size .30)
 
 
   (defun my/window-visible (b-name)
@@ -527,7 +559,9 @@ then pop to it. Otherwise start a jupyter kernel."
     "Hide debug windows when all debug sessions are dead."
     (unless (-filter 'dap--session-running (dap--get-sessions))
       (and (get-buffer dap-ui--repl-buffer)
-           (kill-buffer dap-ui--repl-buffer))))
+           (kill-buffer dap-ui--repl-buffer)
+           (get-buffer dap-ui--debug-window-buffer)
+           (kill-buffer dap-ui--debug-window-buffer))))
 
   (add-hook 'dap-terminated-hook 'my/hide-debug-windows)
 
@@ -544,6 +578,7 @@ then pop to it. Otherwise start a jupyter kernel."
   (dap-register-debug-template "dap-debug-script"
                                (list :type "python"
                                      :args []
+                                     :cwd "${workspaceFolder}"
                                      ;; :cwd (lsp-workspace-root)
                                      ;; :justMyCode :json-false
                                      ;; :debugOptions ["DebugStdLib" "ShowReturnValue" "RedirectOutput"]
@@ -553,21 +588,21 @@ then pop to it. Otherwise start a jupyter kernel."
                                      :debugger 'debugpy
                                      :name "dap-debug-script"))
 
-  (dap-register-debug-template "Python :: Run pytest (at point), ptvsd"
-                               (list :type "python-test-at-point"
-                                     :args ""
-                                     :module "pytest"
-                                     :request "launch"
-                                     :debugger 'ptvsd
-                                     :name "Python :: Run pytest (at point)"))
+  ;; (dap-register-debug-template "Python :: Run pytest (at point), ptvsd"
+  ;;                              (list :type "python-test-at-point"
+  ;;                                    :args ""
+  ;;                                    :module "pytest"
+  ;;                                    :request "launch"
+  ;;                                    :debugger 'ptvsd
+  ;;                                    :name "Python :: Run pytest (at point)"))
 
-  (dap-register-debug-template "Python :: Run pytest (at point), debugpy"
-                               (list :type "python-test-at-point"
-                                     :args ["/Users/luca/git/wondercast/caf/test/customer_allocation/summarize_historical/summarize_historical_test.py::test_summarize"]
-                                     ;; :module "pytest"
-                                     :request "launch"
-                                     :debugger 'debugpy
-                                     :name "Python :: Run pytest (at point)"))
+  ;; (dap-register-debug-template "Python :: Run pytest (at point), debugpy"
+  ;;                              (list :type "python-test-at-point"
+  ;;                                    :args ["/Users/luca/git/wondercast/caf/test/customer_allocation/summarize_historical/summarize_historical_test.py::test_summarize"]
+  ;;                                    ;; :module "pytest"
+  ;;                                    :request "launch"
+  ;;                                    :debugger 'debugpy
+  ;;                                    :name "Python :: Run pytest (at point)"))
 
   )
 
@@ -628,7 +663,7 @@ then pop to it. Otherwise start a jupyter kernel."
       :desc "Hydra" :n "h" #'dap-hydra
       :desc "Run debug configuration" :n "d" #'dap-debug
       :desc "dap-ui REPL" :n "r" #'dap-ui-repl
-      :desc "Debug test function" :n "t" #'dap-python-test-method-at-point
+      :desc "Debug test function" :n "t" #'dap-python-debug-test-at-point
       :desc "Run last debug configuration" :n "l" #'dap-debug-last
       :desc "Toggle breakpoint" :n "b" #'dap-breakpoint-toggle
       :desc "dap continue" :n "c" #'dap-continue
@@ -800,10 +835,72 @@ then pop to it. Otherwise start a jupyter kernel."
        :desc "defun in comment" :n "D" #'cider-pprint-eval-defun-to-comment
        ))
 
-(use-package! evil-lisp-state
-  :custom
-  (evil-lisp-state-global t)
-  :config (evil-lisp-state-leader "SPC k"))
+;; (use-package! evil-lisp-state
+;;   :custom
+;;   (evil-lisp-state-global t)
+;;   :config (evil-lisp-state-leader "SPC k"))
+
+(require 'miracle)
+
+(defun disable-cider-enable-miracle ()
+  "Activate miracle for arcadia development"
+  (interactive)
+  (setq cider-mode nil)
+  (cider-mode -1)
+  (add-hook 'clojure-mode-hook 'clojure-enable-miracle)
+  (add-to-list 'company-backends 'company-miracle)
+  ;; (miracle)
+  )
+
+(after! miracle
+  (defun miracle-eval-string (s callback)
+    (miracle-send-eval-string
+     s
+     (lambda (response)
+       (miracle-dbind-response response (id value status)
+                               (when (member "done" status)
+                                 (remhash id miracle-requests))
+                               (when value
+                                 (funcall callback nil value))))))
+  (defun miracle-get-completions (word callback)
+    (interactive)
+    (miracle-eval-string
+     (format "(do (require '[%s]) (%s/completions \"%s\"))"
+             "complete.core" "complete.core" word)
+     (lambda (err s)
+       (progn
+         ;; XXX
+         (message (format "received str: %s" s))
+         (message (format "err: %s" err))
+         (when (not err)
+           (funcall callback (read-from-whole-string s)))))))
+
+  (defun company-miracle (command &optional arg &rest ignored)
+    (interactive (list 'interactive))
+    (cl-case command
+      (interactive (company-begin-backend 'company-miracle))
+      (prefix (and (or ;;(eq major-mode 'clojurec-mode)
+                    ;;(eq major-mode 'clojure-mode)
+                    (eq major-mode 'miracle-mode))
+                   (get-buffer "*miracle-connection*")
+                   (substring-no-properties (company-grab-symbol))))
+      (candidates (lexical-let ((arg (substring-no-properties arg)))
+                    (cons :async (lambda (callback)
+                                   (miracle-get-completions arg callback)))))))
+
+  )
+
+  (map! :after miracle
+        :map miracle-interaction-mode-map
+
+        :localleader
+        (:desc "eval" :prefix "e"
+         :desc "Expression" :n "e" #'miracle-eval-expression-at-point
+         :desc "defun" :n "d" #'miracle-eval-defun)
+        :desc "describe" :n "?" #'miracle-describe
+        )
+
+(set-popup-rule! "*miracle*" :side 'bottom :size .40)
 
 (defun shell-command-print-separator ()
   (overlay-put (make-overlay (point-max) (point-max))
@@ -816,3 +913,22 @@ then pop to it. Otherwise start a jupyter kernel."
 
   (set-popup-rule! "*Async Shell Command*" :side 'bottom :size .40)
   (set-popup-rule! "vterm" :side 'right :size .40 :quit 'current :ttl 3)
+
+;; (use-package webkit
+;;   :bind ("s-b" 'webkit) ;; Bind to whatever global key binding you want if you want
+;;   :init
+;;   (setq webkit-search-prefix "https://google.com/search?q=") ;; If you don't care so much about privacy
+;;   (setq webkit-ace-chars "aoeuidhtns") ;; More convienent if you use dvorak
+;;   ;; (setq webkit-history-filename "~/path/to/webkit-history") ;; If you want history saved in a different place
+;;   ;; (setq webkit-history-filename nil) ;; If you don't want history saved to file (will stay in memory)
+;;   ;; (setq webkit-own-window t) ;; See above explination; must be set before webkit.el is loaded
+;;   ;; (setq browse-url-browser-function 'webkit-browse-url) ; Set as the default browse-url browser
+;;   ;; (setq webkit-browse-url-force-new t) ; Always open a new session instead of reusing a current one
+;;   :config
+;;   ;; (add-hook 'webkit-new-hook #'webkit-enable-javascript) ;; disable javascript
+;;   )
+
+;; (use-package evil-collection-webkit
+;;   :config
+;;   (evil-collection-xwidget-setup)
+;;   )

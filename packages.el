@@ -1,5 +1,4 @@
 (package! org-reverse-datetree)
-;; (package! poetry)
 ;; (package! kubernetes)
 ;; (package! kubernetes-evil)
 ;; (package! kubel)
@@ -44,10 +43,21 @@
 (package! pipenv :disable t)
 (package! pyvenv :disable t)
 (package! centered-cursor-mode)
-(package! evil-lisp-state)
+;; (package! evil-lisp-state)
 (unpin! dap-mode lsp-mode treemacs)
 ;; (package! solaire-mode :disable t)
-(package! modus-operandi-theme :recipe (:no-native-compile t))
-(package! modus-vivendi-theme :recipe (:no-native-compile t))
+;; (package! modus-operandi-theme :recipe (:no-native-compile t))
+;; (package! modus-vivendi-theme :recipe (:no-native-compile t))
 (unpin! vterm)
 (package! jupyter :recipe (:no-native-compile t))
+(package! miracle :recipe (:host github :repo "Saikyun/miracle"))
+
+(package! cider :pin "bfcf9157a970c9423fe27c5021f445b509e71280")
+(package! elegant-emacs
+  :recipe (:host github :repo "rougier/elegant-emacs"
+           :files ("*.el")))
+;; (package! webkit
+;;   :recipe (:host github :repo "akirakyle/emacs-webkit"
+;;            :branch "main"
+;;            :files (:defaults "*.js" "*.css")
+;;            :build ("make")))
