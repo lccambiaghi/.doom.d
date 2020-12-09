@@ -1,10 +1,12 @@
 #+EXPORT_FILE_NAME: readme
-# #+SETUPFILE: https://fniessen.github.io/org-html-themes/setup/theme-readtheorg.setup
+#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
 
 * Preamble
 This is my private DOOM emacs configuration. It is tangled from ~config.org~ to ~config.el~
 and is exported to ~readme.org~ with =,e O o= to render in the githup repo.
-It is also rendered to HTML thanks to [[https://github.com/fniessen/org-html-themes][org-html-themes]] with =,e h h=
+It is also rendered to HTML thanks to [[https://github.com/fniessen/org-html-themes][org-html-themes]] with =,e h h= .
+
+NOTE: the code blocks in the sections marked with TODO are excluded from being tangled in my ~config.el~ file.
 
 ** Username and e-mail:
 #+BEGIN_SRC emacs-lisp
@@ -27,11 +29,6 @@ It is also rendered to HTML thanks to [[https://github.com/fniessen/org-html-the
 ;; (global-subword-mode 1)                           ; Iterate through CamelCase words
 (setq +evil-want-o/O-to-continue-comments nil)
 #+END_SRC
-** TODO Native-comp
-#+BEGIN_SRC emacs-lisp
-;; (setq comp-deferred-compilation t)
-#+END_SRC
-
 * Keybindings
 ** Auto unbind
 Let's have ~general~ auto-unbind keys:
@@ -43,6 +40,7 @@ We then remap some of the bindings (inspired by [[https://github.com/jsmestad/df
 #+BEGIN_SRC emacs-lisp
 (map! :leader
       :desc "M-x"                   :n "SPC" #'counsel-M-x
+
       :desc "ivy resume" :n ":" #'ivy-resume
       :desc "Async shell command"   :n "!"   #'async-shell-command
       :desc "Toggle eshell"         :n "'"   #'+eshell/toggle
@@ -57,9 +55,14 @@ We then remap some of the bindings (inspired by [[https://github.com/jsmestad/df
 
 #+END_SRC
 ** evil multiedit
-Add this keybinding because external keyboard inputs delta when pressing ~M-d~:
+Add this keybinding because external keyboard inputs delta when pressing ~M-d~.
+Bind command to restrict matches to highlighted region as ~RET~ does not really work.
 #+BEGIN_SRC emacs-lisp
 (define-key evil-normal-state-map (kbd "s-d") #'evil-multiedit-match-symbol-and-next)
+
+(after! evil-multiedit
+  (setq evil-multiedit-follow-matches t)
+  (map! :v "zD" #'evil-multiedit-toggle-or-restrict-region))
 #+END_SRC
 
 * User Interface
@@ -72,9 +75,6 @@ Toggle ~big mode~ with =SPC t b=
 #+BEGIN_SRC emacs-lisp
 (setq doom-font (font-spec :family "Menlo" :size 16)
       doom-big-font (font-spec :family "Menlo" :size 20))
-;; (setq doom-font (font-spec :family "Fira Code" :size 14)
-;;       doom-big-font (font-spec :family "Fira Code" :size 22)
-;; doom-variable-pitch-font (font-spec :family "Overpass" :size 16))
 #+END_SRC
 ** which-key delay
 #+BEGIN_SRC emacs-lisp
@@ -148,15 +148,15 @@ Toggle ~big mode~ with =SPC t b=
 
 #+END_SRC
 
-** Toggle mouds themes at sunrise/sunset
+** Toggle modus themes at sunrise/sunset
 #+BEGIN_SRC emacs-lisp
-;; Light for the day
+;;Light for the day
 (run-at-time "07:00" (* 60 60 24)
              (lambda ()
                (modus-operandi-theme-load)))
 
-;; ;; Dark for the night
-(run-at-time "16:00" (* 60 60 24)
+;; Dark for the night
+(run-at-time "15:00" (* 60 60 24)
              (lambda ()
                (modus-vivendi-theme-load)))
 #+END_SRC
@@ -180,12 +180,6 @@ note: insteadf of using =SPC 0=, use =SPC w h= to access its window. In general,
 use those keys!
 #+BEGIN_SRC emacs-lisp
 (after! winum
-  ;; (defun winum-assign-0-to-treemacs ()
-  ;;   (when (string-match-p (buffer-name) "*Treemacs*") 10))
-
-  ;; (add-to-list 'winum-assign-functions #'winum-assign-0-to-treemacs)
-  ;; (set-face-attribute 'winum-face nil :weight 'bold)
-
     (map! (:when (featurep! :ui window-select)
             :leader
             :n "1" #'winum-select-window-1
@@ -204,47 +198,51 @@ use those keys!
 #+BEGIN_SRC emacs-lisp
 (after! doom-modeline
   (setq doom-modeline-buffer-encoding nil)
-  (setq doom-modeline-env-enable-python nil)
-(setq lsp-modeline-diagnostics-enable nil))
-;; (setq doom-modeline-env-python-executable (executable-find "python"))
+  (setq doom-modeline-env-enable-python nil))
+
+(after! lsp-mode
+  (setq lsp-modeline-diagnostics-enable nil))
 #+END_SRC
-*** Show battery and time
-#+BEGIN_SRC emacs-lisp
+*** TODO Show battery and time
+#+BEGIN_SRC emacs-lisp :tangle no
 (after! doom-modeline
     (setq display-time-default-load-average nil)      ; don't show load average
     (display-time-mode 1)                             ; Enable time in the mode-line
     (display-battery-mode 1))                          ; On laptops it's nice to know how much power you have
 #+END_SRC
-** Split window and move to it
-#+BEGIN_SRC emacs-lisp
+** TODO Split window and move to it
+#+BEGIN_SRC emacs-lisp :tangle no
 (setq evil-split-window-below t
       evil-vsplit-window-right t)
 #+END_SRC
-** TODO Syntax highlighting
-After ~doom sync~ you should run ~tree-sitter-install-grammars~
-#+BEGIN_SRC emacs-lisp
-;; (use-package tree-sitter :after python-mode)
-
-;; (after! tree-sitter
-;;   (require 'tree-sitter)
-;;   (require 'tree-sitter-langs)
-;;   (require 'tree-sitter-hl))
-
-;; (add-hook 'python-mode-hook #'tree-sitter-hl-mode)
+** TODO Emacs tree sitter
+After ~doom sync~ you should run ~tree-sitter-install-grammars~ (maybe?).
+Disabled because of a bug with ~evil-multiedit~.
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package tree-sitter
+  :after python-mode
+  :defer t
+  :config
+  (after! tree-sitter
+    (require 'tree-sitter)
+    (require 'tree-sitter-langs)
+    (require 'tree-sitter-hl)
+    (add-hook 'python-mode-hook #'tree-sitter-hl-mode)
+    )
+  )
 #+END_SRC
 ** Toggle centered cursor
 #+BEGIN_SRC emacs-lisp
-(map! :leader
-      :desc "toggle centered cursor"                   :n "t-" (λ! () (interactive) (centered-cursor-mode 'toggle))
-      )
-#+END_SRC
-** TODO Hide frame bar
-#+BEGIN_SRC emacs-lisp
-;; (set-frame-parameter nil 'undecorated t)
-#+END_SRC
+(use-package! centered-cursor-mode
+  :defer t
+  :config
+  (map! :leader
+        :desc "toggle centered cursor"                   :n "t-" (λ! () (interactive) (centered-cursor-mode 'toggle))
+        ))
 
+#+END_SRC
 ** TODO Startup windows
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (defun my/startup-window-setup ()
   "Called by emacs-startup-hook to set up my initial window configuration."
 
@@ -253,28 +251,83 @@ After ~doom sync~ you should run ~tree-sitter-install-grammars~
   (find-file "~/txt/todo.org")
   (other-window 1))
 
-;; (add-hook 'emacs-startup-hook #'my-default-window-setup)
+(add-hook 'emacs-startup-hook #'my-default-window-setup)
 #+END_SRC
 
 ** TODO Elegant emacs
-#+BEGIN_SRC emacs-lisp
-(defun my/enable-elegant-light ()
+Need to disable ~centaur-tabs-mode~
+#+BEGIN_SRC emacs-lisp :tangle no
+(defun my/enable-elegant ()
   "Enable elegant-emacs theme"
-  (load! "/Users/luca/.emacs.d/.local/straight/repos/elegant-emacs/elegance.el")
-  (load! "/Users/luca/.emacs.d/.local/straight/repos/elegant-emacs/sanity.el")
+  (interactive)
+  (require 'elegance)
+  (require 'sanity)
   ;; (setq doom-theme 'elegance)
   ;; (add-hook! 'doom-load-theme-hook #'elegance-light)
-  (doom/reload-theme))
+  ;; (doom/reload-theme)
+  )
+#+END_SRC
+** Prescient + selectrum + consult
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package! selectrum
+  :commands (selectrum-mode)
+  :config
+  (map! :map selectrum-minibuffer-map
+        :in "C-j" #'selectrum-next-candidate
+        ))
 
-(defun my/enable-elegant-dark ()
-  "Enable elegant-emacs theme"
-  (load! "/Users/luca/.emacs.d/.local/straight/repos/elegant-emacs/elegance.el")
-  (load! "/Users/luca/.emacs.d/.local/straight/repos/elegant-emacs/sanity.el")
-  (setq doom-theme 'elegance)
-  (add-hook! 'doom-load-theme-hook #'elegance-dark)
-  (doom/reload-theme))
+(use-package! selectrum-prescient
+  :when (featurep! +prescient)
+  :commands (selectrum-prescient-mode))
+
+(use-package! company-prescient
+  :commands (company-prescient-mode 1))
+
+(add-hook! '(doom-first-input-hook)
+  (selectrum-mode +1)
+  (when (featurep! +prescient)
+    (selectrum-prescient-mode +1)
+    (company-prescient-mode 1)
+    (prescient-persist-mode +1)))
+
+Projectile defaults to forcing icomplete instead of completing-read
+(after! projectile
+  (setq projectile-completion-system 'default))
+
+(use-package consult
+  ;; Replace bindings
+  ;; :bind (("C-c o" . consult-outline)
+  ;;        ("C-x b" . consult-buffer)
+  ;;        ("M-g o" . consult-outline) ;; "M-s o" is a good alternative
+  ;;        ("M-g l" . consult-line)    ;; "M-s l" is a good alternative
+  ;;        ("M-s m" . consult-multi-occur)
+  ;;        ("M-y" . consult-yank-pop)
+
+  :init
+
+  ;; Replace functions (consult-multi-occur is a drop-in replacement)
+  (fset 'multi-occur #'consult-multi-occur)
+
+  :config
+
+  (map! :leader :desc "consult line" :n "ss" #'consult-line
+        :desc "M-x"                   :n "SPC" #'execute-extended-command
+        :desc "consult line" :n "ss" #'consult-line
+        )
+
+  ;; Enable richer annotations during completion
+  ;; Works only with selectrum as of now.
+  (consult-annotate-mode)
+
+  ;; Enable richer annotations for M-x.
+  ;; I have this disabled by default, since I don't want to be flooded with information.
+  ;; Annotations are only enabled by default for the describe-* class of functions.
+  (add-to-list 'consult-annotate-commands
+               '(execute-extended-command . consult-annotate-symbol))
+  )
 
 #+END_SRC
+
 * Magit
 #+BEGIN_SRC emacs-lisp
 (after! magit
@@ -293,9 +346,9 @@ After ~doom sync~ you should run ~tree-sitter-install-grammars~
 (after! company
   (setq company-idle-delay 0
         company-minimum-prefix-length 1
-  company-dabbrev-code-everywhere t
-  company-dabbrev-code-other-buffers 'all))
-        ;; company-quickhelp-delay 0.4)
+        company-dabbrev-code-everywhere t
+        company-dabbrev-code-other-buffers 'all))
+;; company-quickhelp-delay 0.4)
 #+END_SRC
 ** Disable tab
 #+BEGIN_SRC emacs-lisp
@@ -323,6 +376,7 @@ After ~doom sync~ you should run ~tree-sitter-install-grammars~
 * Org
 ** Better defaults
 #+BEGIN_SRC emacs-lisp
+(after! org
 (setq org-directory "~/Dropbox/org"
       org-image-actual-width nil
       +org-export-directory "~/Dropbox/org/export"
@@ -331,7 +385,7 @@ After ~doom sync~ you should run ~tree-sitter-install-grammars~
       ;; org-agenda-files (directory-files-recursively "~/dropbox/org/" "\\.org$")
       org-agenda-files '("~/dropbox/org/personal/inbox.org" "~/dropbox/org/personal/tasks.org" "~/dropbox/org/personal/birthdays.org")
       ;; org-export-in-background t
-      org-catch-invisible-edits 'smart)
+      org-catch-invisible-edits 'smart))
 #+END_SRC
 ** Capture templates
 #+BEGIN_SRC emacs-lisp
@@ -395,8 +449,7 @@ After ~doom sync~ you should run ~tree-sitter-install-grammars~
       '("u" "New URL Entry" entry(file+function "~/Dropbox/org/personal/dailies.org" org-reverse-datetree-goto-date-in-file)
             "* [[%^{URL}][%^{Description}]] %^g %?")))
 #+END_SRC
-** Prettify
-*** Bullets
+** Prettify bullets
 #+BEGIN_SRC emacs-lisp
 (after! org-superstar
     (setq org-superstar-headline-bullets-list '("✖" "✚" "◆" "▶" "○")
@@ -441,6 +494,117 @@ Update to reveal 4 at some point. Install the =toc-progress= plugin in the defau
 #+BEGIN_SRC emacs-lisp
 (after! latex
     (setq org-latex-compiler "xelatex"))
+#+END_SRC
+** HTML export does not fail when org links are present
+#+BEGIN_SRC emacs-lisp
+(after! org
+  (defun html-body-id-filter (output backend info)
+    "Remove random ID attributes generated by Org."
+    (when (eq backend 'html)
+      (replace-regexp-in-string
+       " id=\"[[:alpha:]-]*org[[:alnum:]]\\{7\\}\""
+       ""
+       output t)))
+
+  (add-to-list 'org-export-filter-final-output-functions 'html-body-id-filter))
+#+END_SRC
+** TODO org-tree-slide
+#+BEGIN_SRC emacs-lisp :tangle no
+(defvar my:slide-left-margin 10
+  "Left margin during slideshow.")
+
+(defvar my:slide-right-margin 10
+  "Right margin during slideshow.")
+
+(defvar my:slide-top-margin 500
+  "Top margin, for face `header-line' :height.")
+
+(defvar my:slide-fill-column-save nil
+  "Max characters in a line when not displaying slideshow.")
+
+(defvar my:slide-fill-column 42
+  "Max characters in a line of paragraph text on a slide.")
+
+(defvar my:org-src-block-faces nil
+  "Stores src-block faces while presenting.")
+
+(defvar my:org-slider-src-block-faces
+  '(("emacs-lisp" (:background "black" :box nil)))
+  "Override faces for source blocks during slideshow.")
+
+(defvar my:slide-background nil ;;"#000000"
+  "When non-nil, override background color.")
+
+(defun my:show-headers ()
+  "Called when stopping the slideshow."
+  ;; restore org's source-block faces
+  (setq org-src-block-faces my:org-src-block-faces)
+  ;; restore fill-col
+  (setq fill-column my:slide-fill-column-save)
+  ;; turn off the fringe
+  (set-fringe-mode nil)
+  ;; tear-down headerline
+  (setq header-line-format nil)
+  (merge-face-attribute 'header-line :height 1)
+  ;; remove margins
+  (set-window-margins (get-buffer-window (current-buffer)) 0 0)
+  ;; restore hidden block headers
+  (hide-lines-show-all)
+  ;; expand everything when exiting the presentation
+  (org-show-all))
+
+(defun my:hide-headers ()
+  "Called when starting the slideshow."
+  ;; preserve org's source block faces then overide them
+  (setq my:org-src-block-faces org-src-block-faces)
+  (setq org-src-block-faces my:org-slider-src-block-faces)
+
+  ;; preserve then set fill-column
+  (setq my:slide-fill-column-save fill-column)
+  (setq fill-column my:slide-fill-column)
+
+  ;; expressly turn off boxing and restyle background (thanks Drew)
+  ;; https://stackoverflow.com/questions/19201358/how-to-get-emacs-background-color
+  (let ((bg (or my:slide-background
+                (face-attribute 'default :background))))
+    (set-face-attribute 'header-line nil
+                        :height my:slide-top-margin
+                        :box nil
+                        :background bg)
+    (dolist (aface '(org-code org-tree-slide-header-overlay-face))
+      (merge-face-attribute aface :background bg)))
+
+  ;; turn off the fringe
+  (set-fringe-mode (cons 0 0))
+  ;; use header-line for top-margin
+  (setq header-line-format "")
+  ;; setup margins
+  (set-window-margins (get-buffer-window (current-buffer))
+                      my:slide-left-margin
+                      my:slide-right-margin)
+  ;; hide block begin/end markers
+  ;; not sure why but hide-lines *really* needs
+  ;; loaded each time we call this..
+  (load-library "hide-lines")
+  (hide-lines-matching
+   "#\\+\\(BEGIN\\|END\\)_\\(SRC\\|EXAMPLE\\|VERSE\\|QUOTE\\)"))
+
+;; TODO maybe need to add to packages.el
+;; help us hide the begin/end blocks
+(use-package hide-lines :ensure t :demand)
+
+(use-package org-tree-slide :ensure t :demand
+             :bind ("C-<f2>" . org-tree-slide-mode)
+             :hook ((org-tree-slide-play . my:hide-headers)
+                (org-tree-slide-stop . my:show-headers))
+             :config
+             ;; this advice will save/restore src block faces if we use C-c '
+             (defun advice:org-edit-src-code (&rest _)
+               (interactive) (my:show-headers))
+             (advice-add 'org-edit-src-code :before #'advice:org-edit-src-code)
+             (defun advice:org-edit-src-exit ()
+               (interactive) (my:hide-headers))
+             (advice-add 'org-edit-src-exit :after #'advice:org-edit-src-exit))
 #+END_SRC
 
 * emacs-jupyter
@@ -664,7 +828,7 @@ Lookup documentation with ~SPC c k~
 #+BEGIN_SRC emacs-lisp
 (set-popup-rule! "^\\*lsp-help" :side 'right :size .50 :select t :vslot 1)
 #+END_SRC
-*** Disable lsp flycheck checker
+*** Disable lsp flycheck checker and use flake8
 #+BEGIN_SRC emacs-lisp
 (after! lsp-mode
   (setq lsp-diagnostic-package :none))
@@ -672,8 +836,8 @@ Lookup documentation with ~SPC c k~
 (after! flycheck
     (add-hook 'pyhon-mode-local-vars-hook
             (lambda ()
-                (when (flycheck-may-enable-checker 'python-pyright)
-                (flycheck-select-checker 'python-pyright)))))
+                (when (flycheck-may-enable-checker 'python-flake8)
+                (flycheck-select-checker 'python-flake8)))))
   ;; (setq flycheck-disabled-checkers 'lsp)
 #+END_SRC
 
@@ -683,14 +847,22 @@ Lookup documentation with ~SPC c k~
   (setq lsp-eldoc-enable-hover nil
         lsp-signature-auto-activate nil
         ;; lsp-enable-on-type-formatting nil
-        lsp-enable-symbol-highlighting nil))
-        ;; lsp-enable-file-watchers nil))
+        ;; lsp-enable-symbol-highlighting nil
+        lsp-enable-file-watchers nil))
 #+END_SRC
 *** Don't restart on exit
 #+BEGIN_SRC emacs-lisp
 (after! lsp-mode
   (setq lsp-restart 'ignore))
 #+END_SRC
+*** TODO Eglot
+#+BEGIN_SRC emacs-lisp :tangle no
+(when (featurep! +eglot)
+  (after! eglot
+    (add-to-list 'eglot-server-programs '(python-mode . ("pyright-langserver" "--stdio"))))
+  )
+#+END_SRC
+
 
 ** Pytest
 #+BEGIN_SRC emacs-lisp
@@ -1030,28 +1202,27 @@ Disable popup for ESS:
 
 ** Cleverparens
 #+BEGIN_SRC emacs-lisp
-(after! smartparens
-  ;; (add-hook! clojure-mode #'smartparens-strict-mode)
-
-  (setq evil-cleverparens-use-s-and-S nil)
-
-  (use-package! evil-cleverparens
-    :init
-    (setq evil-move-beyond-eol t
-          evil-cleverparens-use-additional-bindings nil
-          ;; evil-cleverparens-swap-move-by-word-and-symbol t
-          ;; evil-cleverparens-use-regular-insert t
-          )
-
-    (add-hook! clojure-mode #'evil-cleverparens-mode)
-    ;; (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode)
-    ))
+(use-package! evil-cleverparens
+  :defer t
+  :after smartparens
+  :init
+  (setq evil-move-beyond-eol t
+        evil-cleverparens-use-additional-bindings nil
+        evil-cleverparens-use-s-and-S nil
+        ;; evil-cleverparens-swap-move-by-word-and-symbol t
+        ;; evil-cleverparens-use-regular-insert t
+        )
+  :config
+  (add-hook! clojure-mode #'evil-cleverparens-mode)
+  ;; (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode)
+  )
 #+END_SRC
 ** Aggressive indent
 #+BEGIN_SRC emacs-lisp
-(after! clojure-mode
-  (use-package! aggressive-indent
-    :config (add-hook! clojure-mode (aggressive-indent-mode 1))))
+(use-package! aggressive-indent
+  :after clojure-mode
+  :defer t
+  :config (add-hook! clojure-mode (aggressive-indent-mode 1)))
 #+END_SRC
 ** Cleverparens keybindings
 With ~lispyville~ you can wrap using =M-(= for example!
@@ -1088,15 +1259,16 @@ Remember you can use =gr af= to evaluate the outer form.
        :desc "defun in comment" :n "D" #'cider-pprint-eval-defun-to-comment
        ))
 #+END_SRC
-** evil lisp state
-#+BEGIN_SRC emacs-lisp
-;; (use-package! evil-lisp-state
-;;   :custom
-;;   (evil-lisp-state-global t)
-;;   :config (evil-lisp-state-leader "SPC k"))
+** TODO evil lisp state
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package! evil-lisp-state
+  :defer t
+  :custom
+  (evil-lisp-state-global t)
+  :config (evil-lisp-state-leader "SPC k"))
 #+END_SRC
-** Miracle
-#+BEGIN_SRC emacs-lisp
+** TODO Miracle
+#+BEGIN_SRC emacs-lisp :tangle no
 (require 'miracle)
 
 (defun disable-cider-enable-miracle ()
@@ -1159,6 +1331,13 @@ Remember you can use =gr af= to evaluate the outer form.
 
 (set-popup-rule! "*miracle*" :side 'bottom :size .40)
 #+END_SRC
+** cider-doc while developing Unity
+#+BEGIN_SRC emacs-lisp
+(after! cider
+  (set-lookup-handlers! 'clojure-mode
+    :documentation #'cider-doc))
+#+END_SRC
+
 * Shell
 ** Async Shell command
 #+BEGIN_SRC emacs-lisp
@@ -1176,24 +1355,29 @@ Remember you can use =gr af= to evaluate the outer form.
   (set-popup-rule! "*Async Shell Command*" :side 'bottom :size .40)
   (set-popup-rule! "vterm" :side 'right :size .40 :quit 'current :ttl 3)
 #+END_SRC
-* TODO Webkit
+** Eshell popup to the right
 #+BEGIN_SRC emacs-lisp
-;; (use-package webkit
-;;   :bind ("s-b" 'webkit) ;; Bind to whatever global key binding you want if you want
-;;   :init
-;;   (setq webkit-search-prefix "https://google.com/search?q=") ;; If you don't care so much about privacy
-;;   (setq webkit-ace-chars "aoeuidhtns") ;; More convienent if you use dvorak
-;;   ;; (setq webkit-history-filename "~/path/to/webkit-history") ;; If you want history saved in a different place
-;;   ;; (setq webkit-history-filename nil) ;; If you don't want history saved to file (will stay in memory)
-;;   ;; (setq webkit-own-window t) ;; See above explination; must be set before webkit.el is loaded
-;;   ;; (setq browse-url-browser-function 'webkit-browse-url) ; Set as the default browse-url browser
-;;   ;; (setq webkit-browse-url-force-new t) ; Always open a new session instead of reusing a current one
-;;   :config
-;;   ;; (add-hook 'webkit-new-hook #'webkit-enable-javascript) ;; disable javascript
-;;   )
+(set-popup-rule! "*eshell*" :side 'right :size .50)
+#+END_SRC
 
-;; (use-package evil-collection-webkit
-;;   :config
-;;   (evil-collection-xwidget-setup)
-;;   )
+* TODO Webkit
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package webkit
+  :bind ("s-b" 'webkit) ;; Bind to whatever global key binding you want if you want
+  :init
+  (setq webkit-search-prefix "https://google.com/search?q=") ;; If you don't care so much about privacy
+  (setq webkit-ace-chars "aoeuidhtns") ;; More convienent if you use dvorak
+  ;; (setq webkit-history-filename "~/path/to/webkit-history") ;; If you want history saved in a different place
+  ;; (setq webkit-history-filename nil) ;; If you don't want history saved to file (will stay in memory)
+  ;; (setq webkit-own-window t) ;; See above explination; must be set before webkit.el is loaded
+  ;; (setq browse-url-browser-function 'webkit-browse-url) ; Set as the default browse-url browser
+  ;; (setq webkit-browse-url-force-new t) ; Always open a new session instead of reusing a current one
+  :config
+  ;; (add-hook 'webkit-new-hook #'webkit-enable-javascript) ;; disable javascript
+  )
+
+(use-package evil-collection-webkit
+  :config
+  (evil-collection-xwidget-setup)
+  )
 #+END_SRC

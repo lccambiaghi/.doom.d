@@ -15,12 +15,11 @@
 ;; (global-subword-mode 1)                           ; Iterate through CamelCase words
 (setq +evil-want-o/O-to-continue-comments nil)
 
-;; (setq comp-deferred-compilation t)
-
 (general-auto-unbind-keys)
 
 (map! :leader
       :desc "M-x"                   :n "SPC" #'counsel-M-x
+
       :desc "ivy resume" :n ":" #'ivy-resume
       :desc "Async shell command"   :n "!"   #'async-shell-command
       :desc "Toggle eshell"         :n "'"   #'+eshell/toggle
@@ -35,13 +34,14 @@
 
 (define-key evil-normal-state-map (kbd "s-d") #'evil-multiedit-match-symbol-and-next)
 
+(after! evil-multiedit
+  (setq evil-multiedit-follow-matches t)
+  (map! :v "zD" #'evil-multiedit-toggle-or-restrict-region))
+
 (setq display-line-numbers-type nil)
 
 (setq doom-font (font-spec :family "Menlo" :size 16)
       doom-big-font (font-spec :family "Menlo" :size 20))
-;; (setq doom-font (font-spec :family "Fira Code" :size 14)
-;;       doom-big-font (font-spec :family "Fira Code" :size 22)
-;; doom-variable-pitch-font (font-spec :family "Overpass" :size 16))
 
 (after! which-key
     (setq which-key-idle-delay 0.5))
@@ -108,13 +108,13 @@
             modus-operandi-theme-intense-paren-match t
             modus-operandi-theme-distinct-org-blocks t)
 
-;; Light for the day
+;;Light for the day
 (run-at-time "07:00" (* 60 60 24)
              (lambda ()
                (modus-operandi-theme-load)))
 
-;; ;; Dark for the night
-(run-at-time "16:00" (* 60 60 24)
+;; Dark for the night
+(run-at-time "15:00" (* 60 60 24)
              (lambda ()
                (modus-vivendi-theme-load)))
 
@@ -129,12 +129,6 @@
   (centaur-tabs-group-by-projectile-project))
 
 (after! winum
-  ;; (defun winum-assign-0-to-treemacs ()
-  ;;   (when (string-match-p (buffer-name) "*Treemacs*") 10))
-
-  ;; (add-to-list 'winum-assign-functions #'winum-assign-0-to-treemacs)
-  ;; (set-face-attribute 'winum-face nil :weight 'bold)
-
     (map! (:when (featurep! :ui window-select)
             :leader
             :n "1" #'winum-select-window-1
@@ -148,58 +142,17 @@
 
 (after! doom-modeline
   (setq doom-modeline-buffer-encoding nil)
-  (setq doom-modeline-env-enable-python nil)
-(setq lsp-modeline-diagnostics-enable nil))
-;; (setq doom-modeline-env-python-executable (executable-find "python"))
+  (setq doom-modeline-env-enable-python nil))
 
-(after! doom-modeline
-    (setq display-time-default-load-average nil)      ; don't show load average
-    (display-time-mode 1)                             ; Enable time in the mode-line
-    (display-battery-mode 1))                          ; On laptops it's nice to know how much power you have
+(after! lsp-mode
+  (setq lsp-modeline-diagnostics-enable nil))
 
-(setq evil-split-window-below t
-      evil-vsplit-window-right t)
-
-;; (use-package tree-sitter :after python-mode)
-
-;; (after! tree-sitter
-;;   (require 'tree-sitter)
-;;   (require 'tree-sitter-langs)
-;;   (require 'tree-sitter-hl))
-
-;; (add-hook 'python-mode-hook #'tree-sitter-hl-mode)
-
-(map! :leader
-      :desc "toggle centered cursor"                   :n "t-" (λ! () (interactive) (centered-cursor-mode 'toggle))
-      )
-
-;; (set-frame-parameter nil 'undecorated t)
-
-(defun my/startup-window-setup ()
-  "Called by emacs-startup-hook to set up my initial window configuration."
-
-  (split-window-right)
-  (other-window 1)
-  (find-file "~/txt/todo.org")
-  (other-window 1))
-
-;; (add-hook 'emacs-startup-hook #'my-default-window-setup)
-
-(defun my/enable-elegant-light ()
-  "Enable elegant-emacs theme"
-  (load! "/Users/luca/.emacs.d/.local/straight/repos/elegant-emacs/elegance.el")
-  (load! "/Users/luca/.emacs.d/.local/straight/repos/elegant-emacs/sanity.el")
-  ;; (setq doom-theme 'elegance)
-  ;; (add-hook! 'doom-load-theme-hook #'elegance-light)
-  (doom/reload-theme))
-
-(defun my/enable-elegant-dark ()
-  "Enable elegant-emacs theme"
-  (load! "/Users/luca/.emacs.d/.local/straight/repos/elegant-emacs/elegance.el")
-  (load! "/Users/luca/.emacs.d/.local/straight/repos/elegant-emacs/sanity.el")
-  (setq doom-theme 'elegance)
-  (add-hook! 'doom-load-theme-hook #'elegance-dark)
-  (doom/reload-theme))
+(use-package! centered-cursor-mode
+  :defer t
+  :config
+  (map! :leader
+        :desc "toggle centered cursor"                   :n "t-" (λ! () (interactive) (centered-cursor-mode 'toggle))
+        ))
 
 (after! magit
   ;; (magit-wip-mode)
@@ -214,9 +167,9 @@
 (after! company
   (setq company-idle-delay 0
         company-minimum-prefix-length 1
-  company-dabbrev-code-everywhere t
-  company-dabbrev-code-other-buffers 'all))
-        ;; company-quickhelp-delay 0.4)
+        company-dabbrev-code-everywhere t
+        company-dabbrev-code-other-buffers 'all))
+;; company-quickhelp-delay 0.4)
 
 (after! company
   (define-key! company-active-map
@@ -235,6 +188,7 @@
 
   (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends)))
 
+(after! org
 (setq org-directory "~/Dropbox/org"
       org-image-actual-width nil
       +org-export-directory "~/Dropbox/org/export"
@@ -243,7 +197,7 @@
       ;; org-agenda-files (directory-files-recursively "~/dropbox/org/" "\\.org$")
       org-agenda-files '("~/dropbox/org/personal/inbox.org" "~/dropbox/org/personal/tasks.org" "~/dropbox/org/personal/birthdays.org")
       ;; org-export-in-background t
-      org-catch-invisible-edits 'smart)
+      org-catch-invisible-edits 'smart))
 
 (after! org
 
@@ -334,6 +288,17 @@
 
 (after! latex
     (setq org-latex-compiler "xelatex"))
+
+(after! org
+  (defun html-body-id-filter (output backend info)
+    "Remove random ID attributes generated by Org."
+    (when (eq backend 'html)
+      (replace-regexp-in-string
+       " id=\"[[:alpha:]-]*org[[:alnum:]]\\{7\\}\""
+       ""
+       output t)))
+
+  (add-to-list 'org-export-filter-final-output-functions 'html-body-id-filter))
 
 (after! evil-org
   (setq org-babel-default-header-args:jupyter-python '((:async . "yes")
@@ -503,16 +468,16 @@ then pop to it. Otherwise start a jupyter kernel."
 (after! flycheck
     (add-hook 'pyhon-mode-local-vars-hook
             (lambda ()
-                (when (flycheck-may-enable-checker 'python-pyright)
-                (flycheck-select-checker 'python-pyright)))))
+                (when (flycheck-may-enable-checker 'python-flake8)
+                (flycheck-select-checker 'python-flake8)))))
   ;; (setq flycheck-disabled-checkers 'lsp)
 
 (after! lsp-mode
   (setq lsp-eldoc-enable-hover nil
         lsp-signature-auto-activate nil
         ;; lsp-enable-on-type-formatting nil
-        lsp-enable-symbol-highlighting nil))
-        ;; lsp-enable-file-watchers nil))
+        ;; lsp-enable-symbol-highlighting nil
+        lsp-enable-file-watchers nil))
 
 (after! lsp-mode
   (setq lsp-restart 'ignore))
@@ -791,26 +756,25 @@ then pop to it. Otherwise start a jupyter kernel."
 
 (add-hook! cider-repl-mode #'evil-normalize-keymaps)
 
-(after! smartparens
-  ;; (add-hook! clojure-mode #'smartparens-strict-mode)
+(use-package! evil-cleverparens
+  :defer t
+  :after smartparens
+  :init
+  (setq evil-move-beyond-eol t
+        evil-cleverparens-use-additional-bindings nil
+        evil-cleverparens-use-s-and-S nil
+        ;; evil-cleverparens-swap-move-by-word-and-symbol t
+        ;; evil-cleverparens-use-regular-insert t
+        )
+  :config
+  (add-hook! clojure-mode #'evil-cleverparens-mode)
+  ;; (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode)
+  )
 
-  (setq evil-cleverparens-use-s-and-S nil)
-
-  (use-package! evil-cleverparens
-    :init
-    (setq evil-move-beyond-eol t
-          evil-cleverparens-use-additional-bindings nil
-          ;; evil-cleverparens-swap-move-by-word-and-symbol t
-          ;; evil-cleverparens-use-regular-insert t
-          )
-
-    (add-hook! clojure-mode #'evil-cleverparens-mode)
-    ;; (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode)
-    ))
-
-(after! clojure-mode
-  (use-package! aggressive-indent
-    :config (add-hook! clojure-mode (aggressive-indent-mode 1))))
+(use-package! aggressive-indent
+  :after clojure-mode
+  :defer t
+  :config (add-hook! clojure-mode (aggressive-indent-mode 1)))
 
 (map! :after evil-cleverparens
       :map clojure-mode-map
@@ -835,72 +799,9 @@ then pop to it. Otherwise start a jupyter kernel."
        :desc "defun in comment" :n "D" #'cider-pprint-eval-defun-to-comment
        ))
 
-;; (use-package! evil-lisp-state
-;;   :custom
-;;   (evil-lisp-state-global t)
-;;   :config (evil-lisp-state-leader "SPC k"))
-
-(require 'miracle)
-
-(defun disable-cider-enable-miracle ()
-  "Activate miracle for arcadia development"
-  (interactive)
-  (setq cider-mode nil)
-  (cider-mode -1)
-  (add-hook 'clojure-mode-hook 'clojure-enable-miracle)
-  (add-to-list 'company-backends 'company-miracle)
-  ;; (miracle)
-  )
-
-(after! miracle
-  (defun miracle-eval-string (s callback)
-    (miracle-send-eval-string
-     s
-     (lambda (response)
-       (miracle-dbind-response response (id value status)
-                               (when (member "done" status)
-                                 (remhash id miracle-requests))
-                               (when value
-                                 (funcall callback nil value))))))
-  (defun miracle-get-completions (word callback)
-    (interactive)
-    (miracle-eval-string
-     (format "(do (require '[%s]) (%s/completions \"%s\"))"
-             "complete.core" "complete.core" word)
-     (lambda (err s)
-       (progn
-         ;; XXX
-         (message (format "received str: %s" s))
-         (message (format "err: %s" err))
-         (when (not err)
-           (funcall callback (read-from-whole-string s)))))))
-
-  (defun company-miracle (command &optional arg &rest ignored)
-    (interactive (list 'interactive))
-    (cl-case command
-      (interactive (company-begin-backend 'company-miracle))
-      (prefix (and (or ;;(eq major-mode 'clojurec-mode)
-                    ;;(eq major-mode 'clojure-mode)
-                    (eq major-mode 'miracle-mode))
-                   (get-buffer "*miracle-connection*")
-                   (substring-no-properties (company-grab-symbol))))
-      (candidates (lexical-let ((arg (substring-no-properties arg)))
-                    (cons :async (lambda (callback)
-                                   (miracle-get-completions arg callback)))))))
-
-  )
-
-  (map! :after miracle
-        :map miracle-interaction-mode-map
-
-        :localleader
-        (:desc "eval" :prefix "e"
-         :desc "Expression" :n "e" #'miracle-eval-expression-at-point
-         :desc "defun" :n "d" #'miracle-eval-defun)
-        :desc "describe" :n "?" #'miracle-describe
-        )
-
-(set-popup-rule! "*miracle*" :side 'bottom :size .40)
+(after! cider
+  (set-lookup-handlers! 'clojure-mode
+    :documentation #'cider-doc))
 
 (defun shell-command-print-separator ()
   (overlay-put (make-overlay (point-max) (point-max))
@@ -914,21 +815,4 @@ then pop to it. Otherwise start a jupyter kernel."
   (set-popup-rule! "*Async Shell Command*" :side 'bottom :size .40)
   (set-popup-rule! "vterm" :side 'right :size .40 :quit 'current :ttl 3)
 
-;; (use-package webkit
-;;   :bind ("s-b" 'webkit) ;; Bind to whatever global key binding you want if you want
-;;   :init
-;;   (setq webkit-search-prefix "https://google.com/search?q=") ;; If you don't care so much about privacy
-;;   (setq webkit-ace-chars "aoeuidhtns") ;; More convienent if you use dvorak
-;;   ;; (setq webkit-history-filename "~/path/to/webkit-history") ;; If you want history saved in a different place
-;;   ;; (setq webkit-history-filename nil) ;; If you don't want history saved to file (will stay in memory)
-;;   ;; (setq webkit-own-window t) ;; See above explination; must be set before webkit.el is loaded
-;;   ;; (setq browse-url-browser-function 'webkit-browse-url) ; Set as the default browse-url browser
-;;   ;; (setq webkit-browse-url-force-new t) ; Always open a new session instead of reusing a current one
-;;   :config
-;;   ;; (add-hook 'webkit-new-hook #'webkit-enable-javascript) ;; disable javascript
-;;   )
-
-;; (use-package evil-collection-webkit
-;;   :config
-;;   (evil-collection-xwidget-setup)
-;;   )
+(set-popup-rule! "*eshell*" :side 'right :size .50)
