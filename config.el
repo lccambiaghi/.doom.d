@@ -265,19 +265,21 @@
 
 (set-popup-rule! "*org agenda*" :side 'right :size .40 :select t :vslot 2 :ttl 3)
 
-(require 'ox-ipynb)
+(after! org
+  (require 'ox-ipynb))
 
 (after! evil-org
   (setq org-babel-clojure-backend 'cider))
 
-(after! org-re-reveal
-  (setq org-re-reveal-root "./reveal.js")
-
-  (setq org-re-reveal-revealjs-version "3.8")
-
-  (setq org-re-reveal-external-plugins  '((progress . "{ src: '%s/plugin/toc-progress/toc-progress.js', async: true, callback: function() { toc_progress.initialize(); toc_progress.create();} }")))
-
-  )
+(use-package! org-re-reveal
+  :after ox
+  :config
+  ;; (setq org-re-reveal-root (expand-file-name "../../" (locate-library "dist/reveal.js" t))
+  ;;       org-re-reveal-revealjs-version "4")
+  (setq org-re-reveal-root "./reveal.js"
+        org-re-reveal-revealjs-version "3.8"
+        org-re-reveal-external-plugins  '((progress . "{ src: '%s/plugin/toc-progress/toc-progress.js', async: true, callback: function() { toc_progress.initialize(); toc_progress.create();} }"))
+        ))
 
 (after! evil-org
     (use-package ox-moderncv
@@ -299,6 +301,70 @@
        output t)))
 
   (add-to-list 'org-export-filter-final-output-functions 'html-body-id-filter))
+
+(after! org
+  (map! :leader :n "t p" #'org-tree-slide-mode))
+
+;; (defun remap-faces-for-present ()
+
+;;         )
+
+(use-package! org-tree-slide
+  :after org
+  :defer t
+  :commands org-tree-slide-mode
+  :hook ((org-tree-slide-play . (lambda ()
+                                  (setq-local face-remapping-alist '((default (:height 2.0) variable-pitch)
+                                                                     (org-verbatim (:height 1.75) org-verbatim)
+                                                                     (org-block (:height 1.25) org-block)))
+                                  (hide-mode-line-mode +1)
+                                  (centaur-tabs-mode -1)
+                                  ))
+         (org-tree-slide-stop . (lambda ()
+                                  (setq-local face-remapping-alist '((default variable-pitch default)))
+                                  (hide-mode-line-mode -1)
+                                  (centaur-tabs-mode +1)
+                                  )))
+  :config
+  (org-tree-slide-presentation-profile)
+  ;; (org-tree-slide-simple-profile)
+  (setq ;; org-tree-slide-skip-outline-level 0
+   org-tree-slide-activate-message " "
+   org-tree-slide-deactivate-message " "
+   ;; org-tree-slide-modeline-display nil
+   ;; org-tree-slide-heading-emphasis  t
+   org-tree-slide-slide-in-effect nil
+   ;; text-scale-mode-amount 5
+   )
+
+
+
+  ;; always toggle inline images
+  (add-hook 'org-tree-slide-mode-after-narrow-hook #'org-display-inline-images)
+
+  ;; (defun +org-present-hide-blocks-h ()
+  ;;   "Hide org #+ constructs."
+  ;;   (save-excursion
+  ;;     (goto-char (point-min))
+  ;;     (while (re-search-forward "^[[:space:]]*\\(#\\+\\)\\(\\(?:BEGIN\\|END\\|ATTR\\)[^[:space:]]+\\).*" nil t)
+  ;;       (+org-present--make-invisible
+  ;;        (match-beginning 1)
+  ;;        (match-end 0)))))
+
+  ;; (add-hook! 'org-tree-slide-mode-hook
+  ;;            #'+org-present-hide-blocks-h
+  ;;            #'+org-present-prettify-slide-h
+  ;;            )
+
+  (map! :map org-tree-slide-mode-map
+        :n "C-j" #'org-tree-slide-move-next-tree
+        :n "C-k"  #'org-tree-slide-move-previous-tree)
+
+  (add-hook 'org-tree-slide-mode-hook #'evil-normalize-keymaps)
+  )
+
+(after! ox
+  (add-to-list 'org-export-backends 'beamer))
 
 (after! evil-org
   (setq org-babel-default-header-args:jupyter-python '((:async . "yes")

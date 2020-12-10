@@ -1,5 +1,5 @@
 #+EXPORT_FILE_NAME: readme
-#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
+# #+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
 
 * Preamble
 This is my private DOOM emacs configuration. It is tangled from ~config.org~ to ~config.el~
@@ -223,12 +223,10 @@ Disabled because of a bug with ~evil-multiedit~.
   :after python-mode
   :defer t
   :config
-  (after! tree-sitter
-    (require 'tree-sitter)
-    (require 'tree-sitter-langs)
-    (require 'tree-sitter-hl)
-    (add-hook 'python-mode-hook #'tree-sitter-hl-mode)
-    )
+  (require 'tree-sitter)
+  (require 'tree-sitter-langs)
+  (require 'tree-sitter-hl)
+  (add-hook 'python-mode-hook #'tree-sitter-hl-mode)
   )
 #+END_SRC
 ** Toggle centered cursor
@@ -461,24 +459,26 @@ Projectile defaults to forcing icomplete instead of completing-read
 #+END_SRC
 ** ox-ipynb
 #+BEGIN_SRC emacs-lisp
-(require 'ox-ipynb)
+(after! org
+  (require 'ox-ipynb))
 #+END_SRC
 ** Org babel clojure
 #+BEGIN_SRC emacs-lisp
 (after! evil-org
   (setq org-babel-clojure-backend 'cider))
 #+END_SRC
-** TODO Reveal
+** TODO org-re-reveal
 Update to reveal 4 at some point. Install the =toc-progress= plugin in the default ~org-re-reveal-root~.
 #+BEGIN_SRC emacs-lisp
-(after! org-re-reveal
-  (setq org-re-reveal-root "./reveal.js")
-
-  (setq org-re-reveal-revealjs-version "3.8")
-
-  (setq org-re-reveal-external-plugins  '((progress . "{ src: '%s/plugin/toc-progress/toc-progress.js', async: true, callback: function() { toc_progress.initialize(); toc_progress.create();} }")))
-
-  )
+(use-package! org-re-reveal
+  :after ox
+  :config
+  ;; (setq org-re-reveal-root (expand-file-name "../../" (locate-library "dist/reveal.js" t))
+  ;;       org-re-reveal-revealjs-version "4")
+  (setq org-re-reveal-root "./reveal.js"
+        org-re-reveal-revealjs-version "3.8"
+        org-re-reveal-external-plugins  '((progress . "{ src: '%s/plugin/toc-progress/toc-progress.js', async: true, callback: function() { toc_progress.initialize(); toc_progress.create();} }"))
+        ))
 #+END_SRC
 
 ** org-cv
@@ -508,103 +508,71 @@ Update to reveal 4 at some point. Install the =toc-progress= plugin in the defau
 
   (add-to-list 'org-export-filter-final-output-functions 'html-body-id-filter))
 #+END_SRC
-** TODO org-tree-slide
-#+BEGIN_SRC emacs-lisp :tangle no
-(defvar my:slide-left-margin 10
-  "Left margin during slideshow.")
+** org-tree-slide
+#+BEGIN_SRC emacs-lisp
+(after! org
+  (map! :leader :n "t p" #'org-tree-slide-mode))
 
-(defvar my:slide-right-margin 10
-  "Right margin during slideshow.")
+;; (defun remap-faces-for-present ()
 
-(defvar my:slide-top-margin 500
-  "Top margin, for face `header-line' :height.")
+;;         )
 
-(defvar my:slide-fill-column-save nil
-  "Max characters in a line when not displaying slideshow.")
+(use-package! org-tree-slide
+  :after org
+  :defer t
+  :commands org-tree-slide-mode
+  :hook ((org-tree-slide-play . (lambda ()
+                                  (setq-local face-remapping-alist '((default (:height 2.0) variable-pitch)
+                                                                     (org-verbatim (:height 1.75) org-verbatim)
+                                                                     (org-block (:height 1.25) org-block)))
+                                  (hide-mode-line-mode +1)
+                                  (centaur-tabs-mode -1)
+                                  ))
+         (org-tree-slide-stop . (lambda ()
+                                  (setq-local face-remapping-alist '((default variable-pitch default)))
+                                  (hide-mode-line-mode -1)
+                                  (centaur-tabs-mode +1)
+                                  )))
+  :config
+  (org-tree-slide-presentation-profile)
+  ;; (org-tree-slide-simple-profile)
+  (setq ;; org-tree-slide-skip-outline-level 0
+   org-tree-slide-activate-message " "
+   org-tree-slide-deactivate-message " "
+   ;; org-tree-slide-modeline-display nil
+   ;; org-tree-slide-heading-emphasis  t
+   org-tree-slide-slide-in-effect nil
+   ;; text-scale-mode-amount 5
+   )
 
-(defvar my:slide-fill-column 42
-  "Max characters in a line of paragraph text on a slide.")
 
-(defvar my:org-src-block-faces nil
-  "Stores src-block faces while presenting.")
 
-(defvar my:org-slider-src-block-faces
-  '(("emacs-lisp" (:background "black" :box nil)))
-  "Override faces for source blocks during slideshow.")
+  ;; always toggle inline images
+  (add-hook 'org-tree-slide-mode-after-narrow-hook #'org-display-inline-images)
 
-(defvar my:slide-background nil ;;"#000000"
-  "When non-nil, override background color.")
+  ;; (defun +org-present-hide-blocks-h ()
+  ;;   "Hide org #+ constructs."
+  ;;   (save-excursion
+  ;;     (goto-char (point-min))
+  ;;     (while (re-search-forward "^[[:space:]]*\\(#\\+\\)\\(\\(?:BEGIN\\|END\\|ATTR\\)[^[:space:]]+\\).*" nil t)
+  ;;       (+org-present--make-invisible
+  ;;        (match-beginning 1)
+  ;;        (match-end 0)))))
 
-(defun my:show-headers ()
-  "Called when stopping the slideshow."
-  ;; restore org's source-block faces
-  (setq org-src-block-faces my:org-src-block-faces)
-  ;; restore fill-col
-  (setq fill-column my:slide-fill-column-save)
-  ;; turn off the fringe
-  (set-fringe-mode nil)
-  ;; tear-down headerline
-  (setq header-line-format nil)
-  (merge-face-attribute 'header-line :height 1)
-  ;; remove margins
-  (set-window-margins (get-buffer-window (current-buffer)) 0 0)
-  ;; restore hidden block headers
-  (hide-lines-show-all)
-  ;; expand everything when exiting the presentation
-  (org-show-all))
+  ;; (add-hook! 'org-tree-slide-mode-hook
+  ;;            #'+org-present-hide-blocks-h
+  ;;            #'+org-present-prettify-slide-h
+  ;;            )
 
-(defun my:hide-headers ()
-  "Called when starting the slideshow."
-  ;; preserve org's source block faces then overide them
-  (setq my:org-src-block-faces org-src-block-faces)
-  (setq org-src-block-faces my:org-slider-src-block-faces)
+  (map! :map org-tree-slide-mode-map
+        :n "C-j" #'org-tree-slide-move-next-tree
+        :n "C-k"  #'org-tree-slide-move-previous-tree)
 
-  ;; preserve then set fill-column
-  (setq my:slide-fill-column-save fill-column)
-  (setq fill-column my:slide-fill-column)
+  (add-hook 'org-tree-slide-mode-hook #'evil-normalize-keymaps)
+  )
 
-  ;; expressly turn off boxing and restyle background (thanks Drew)
-  ;; https://stackoverflow.com/questions/19201358/how-to-get-emacs-background-color
-  (let ((bg (or my:slide-background
-                (face-attribute 'default :background))))
-    (set-face-attribute 'header-line nil
-                        :height my:slide-top-margin
-                        :box nil
-                        :background bg)
-    (dolist (aface '(org-code org-tree-slide-header-overlay-face))
-      (merge-face-attribute aface :background bg)))
-
-  ;; turn off the fringe
-  (set-fringe-mode (cons 0 0))
-  ;; use header-line for top-margin
-  (setq header-line-format "")
-  ;; setup margins
-  (set-window-margins (get-buffer-window (current-buffer))
-                      my:slide-left-margin
-                      my:slide-right-margin)
-  ;; hide block begin/end markers
-  ;; not sure why but hide-lines *really* needs
-  ;; loaded each time we call this..
-  (load-library "hide-lines")
-  (hide-lines-matching
-   "#\\+\\(BEGIN\\|END\\)_\\(SRC\\|EXAMPLE\\|VERSE\\|QUOTE\\)"))
-
-;; TODO maybe need to add to packages.el
-;; help us hide the begin/end blocks
-(use-package hide-lines :ensure t :demand)
-
-(use-package org-tree-slide :ensure t :demand
-             :bind ("C-<f2>" . org-tree-slide-mode)
-             :hook ((org-tree-slide-play . my:hide-headers)
-                (org-tree-slide-stop . my:show-headers))
-             :config
-             ;; this advice will save/restore src block faces if we use C-c '
-             (defun advice:org-edit-src-code (&rest _)
-               (interactive) (my:show-headers))
-             (advice-add 'org-edit-src-code :before #'advice:org-edit-src-code)
-             (defun advice:org-edit-src-exit ()
-               (interactive) (my:hide-headers))
-             (advice-add 'org-edit-src-exit :after #'advice:org-edit-src-exit))
+(after! ox
+  (add-to-list 'org-export-backends 'beamer))
 #+END_SRC
 
 * emacs-jupyter
@@ -862,7 +830,6 @@ Lookup documentation with ~SPC c k~
     (add-to-list 'eglot-server-programs '(python-mode . ("pyright-langserver" "--stdio"))))
   )
 #+END_SRC
-
 
 ** Pytest
 #+BEGIN_SRC emacs-lisp

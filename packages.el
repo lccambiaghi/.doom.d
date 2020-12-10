@@ -39,3 +39,10 @@
 ;; (package! company-prescient)
 ;; (package! selectrum-prescient)
 ;; (package! consult :recipe (:host github :repo "minad/consult"))
+
+(package! org-tree-slide :pin "18034c476038adcc1c4697168b8068f4d0ce62fe")
+(package! org-re-reveal :pin "2035217ae9f9dbd20bf054daa8dabf7c6aa3938d")
+(package! revealjs
+  :recipe (:host github :repo "hakimel/reveal.js"
+           :files ("css" "dist" "js" "plugin"))
+  :pin "0582f57517c97a4c7bfeb58762138c78883f94c5")
