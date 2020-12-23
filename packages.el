@@ -21,8 +21,6 @@
 ;; (unpin! dap-mode lsp-mode treemacs)
 ;; (package! solaire-mode :disable t)
 ;; (unpin! vterm)
-(package! jupyter :recipe (:no-native-compile t))
-(package! zmq :recipe (:no-byte-compile t))
 ;; (package! zmq-channel :recipe (:no-byte-compile t))
 ;; (package! miracle :recipe (:host github :repo "Saikyun/miracle"))
 (package! cider :pin "bfcf9157a970c9423fe27c5021f445b509e71280") ; TODO pinned because of arcadia
@@ -35,14 +33,23 @@
 ;;            :branch "main"
 ;;            :files (:defaults "*.js" "*.css")
 ;;            :build ("make")))
+
+;; (package! marginalia)
 ;; (package! prescient)
 ;; (package! company-prescient)
 ;; (package! selectrum-prescient)
-;; (package! consult :recipe (:host github :repo "minad/consult"))
+;; (package! consult)
+;; (package! embark :recipe (:host github :repo "oantolin/embark"))
 
-(package! org-tree-slide :pin "18034c476038adcc1c4697168b8068f4d0ce62fe")
-(package! org-re-reveal :pin "2035217ae9f9dbd20bf054daa8dabf7c6aa3938d")
-(package! revealjs
-  :recipe (:host github :repo "hakimel/reveal.js"
-           :files ("css" "dist" "js" "plugin"))
-  :pin "0582f57517c97a4c7bfeb58762138c78883f94c5")
+;; (package! elpy)
+
+;; (package! org-tree-slide :pin "18034c476038adcc1c4697168b8068f4d0ce62fe")
+;; (package! org-re-reveal :pin "2035217ae9f9dbd20bf054daa8dabf7c6aa3938d")
+;; (package! revealjs
+;;   :recipe (:host github :repo "hakimel/reveal.js"
+;;            :files ("css" "dist" "js" "plugin"))
+;;   :pin "0582f57517c97a4c7bfeb58762138c78883f94c5")
+
+(package! modus-exporter
+  :recipe (:type git :host github :repo "polaris64/modus-exporter" :files ("*.el" "exporters")))
+(package! dired-hide-dotfiles)

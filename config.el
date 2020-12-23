@@ -111,7 +111,9 @@
 ;;Light for the day
 (run-at-time "07:00" (* 60 60 24)
              (lambda ()
-               (modus-operandi-theme-load)))
+               (modus-operandi-theme-load)
+               ;; (shell-command )
+               ))
 
 ;; Dark for the night
 (run-at-time "15:00" (* 60 60 24)
@@ -147,12 +149,41 @@
 (after! lsp-mode
   (setq lsp-modeline-diagnostics-enable nil))
 
+(setq evil-split-window-below t
+      evil-vsplit-window-right t)
+
 (use-package! centered-cursor-mode
   :defer t
   :config
   (map! :leader
         :desc "toggle centered cursor"                   :n "t-" (λ! () (interactive) (centered-cursor-mode 'toggle))
         ))
+
+(after! dired
+
+  (map! :map dired-mode-map
+        :n "h" #'dired-up-directory
+        :n "l" #'dired-find-file
+
+        )
+
+  (defun dired-open-by-macosx ()
+    "Opens a file in dired with the Mac OS X command 'open'."
+    (interactive)
+    (shell-command (concat "open " (shell-quote-argument (expand-file-name (dired-file-name-at-point))))))
+
+  (map! :map dired-mode-map
+        :n "O" #'dired-open-by-macosx
+        )
+
+  (use-package dired-hide-dotfiles
+    :hook (dired-mode . dired-hide-dotfiles-mode)
+    :config
+    (map! :map dired-mode-map
+          :n "H" #'dired-hide-dotfiles-mode
+          ))
+
+  )
 
 (after! magit
   ;; (magit-wip-mode)
@@ -189,47 +220,41 @@
   (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends)))
 
 (after! org
-(setq org-directory "~/Dropbox/org"
-      org-image-actual-width nil
-      +org-export-directory "~/Dropbox/org/export"
-      org-default-notes-file "~/Dropbox/org/personal/inbox.org"
-      org-id-locations-file "~/Dropbox/org/.orgids"
-      ;; org-agenda-files (directory-files-recursively "~/dropbox/org/" "\\.org$")
-      org-agenda-files '("~/dropbox/org/personal/inbox.org" "~/dropbox/org/personal/tasks.org" "~/dropbox/org/personal/birthdays.org")
-      ;; org-export-in-background t
-      org-catch-invisible-edits 'smart))
+  (setq org-directory "~/Dropbox/org"
+        org-image-actual-width nil
+        +org-export-directory "~/Dropbox/org/export"
+        org-default-notes-file "~/Dropbox/org/personal/tasks/todo.org"
+        org-id-locations-file "~/Dropbox/org/.orgids"
+        ;; org-agenda-files (directory-files-recursively "~/dropbox/org/" "\\.org$")
+        org-agenda-files '("~/dropbox/org/personal/tasks/birthdays.org" "~/dropbox/org/personal/tasks/todo.org" "~/dropbox/Notes/Test.inbox.org")
+        ;; org-export-in-background t
+        org-catch-invisible-edits 'smart))
 
 (after! org
 
   (setq org-capture-templates
-        `(("a" "Article to write" entry
-           (file+headline "personal/tasks.org" "Writing list")
+        `(("b" "Blog" entry
+           (file+headline "personal/tasks/todo.org" "Blog")
            ,(concat "* WRITE %^{Title} %^g\n"
                     "SCHEDULED: %^t\n"
                     ":PROPERTIES:\n"
                     ":CAPTURED: %U\n:END:\n\n"
                     "%i%?"))
-          ("b" "Basic task for future review" entry
-           (file+headline "personal/tasks.org" "Basic tasks that need to be reviewed")
+          ("i" "Inbox" entry
+           (file+headline "personal/tasks/todo.org" "Inbox")
            ,(concat "* %^{Title}\n"
                     ":PROPERTIES:\n"
                     ":CAPTURED: %U\n"
                     ":END:\n\n"
                     "%i%l"))
-          ("w" "Task or assignment" entry
-           (file+headline "personal/tasks.org" "Work tasks")
+          ("w" "Work" entry
+           (file+headline "personal/tasks/todo.org" "Work")
            ,(concat "* TODO [#A] %^{Title} :@work:\n"
                     "SCHEDULED: %^t\n"
                     ":PROPERTIES:\n:CAPTURED: %U\n:END:\n\n"
                     "%i%?"))
-          ("t" "Task with a due date" entry
-           (file+headline "personal/tasks.org" "Task list with a date")
-           ,(concat "* %^{Scope of task||TODO|STUDY|MEET} %^{Title} %^g\n"
-                    "SCHEDULED: %^t\n"
-                    ":PROPERTIES:\n:CAPTURED: %U\n:END:\n\n"
-                    "%i%?"))
-          ("r" "Reply to an email" entry
-           (file+headline "tasks.org" "Mail correspondence")
+          ("m" "Mail" entry
+           (file+headline "personal/tasks/todo.org" "Mail")
            ,(concat "* TODO [#B] %:subject :mail:\n"
                     "SCHEDULED: %t\n:"
                     "PROPERTIES:\n:CONTEXT: %a\n:END:\n\n"
@@ -281,12 +306,12 @@
         org-re-reveal-external-plugins  '((progress . "{ src: '%s/plugin/toc-progress/toc-progress.js', async: true, callback: function() { toc_progress.initialize(); toc_progress.create();} }"))
         ))
 
-(after! evil-org
-    (use-package ox-moderncv
-        :load-path "/Users/luca/git/org-cv/"
-        :init (require 'ox-altacv))
-        ;; :init (require 'ox-moderncv))
-    )
+(use-package ox-moderncv
+  :after org
+  :defer t
+  :load-path "/Users/luca/git/org-cv/"
+  :init (require 'ox-altacv))
+;; :init (require 'ox-moderncv))
 
 (after! latex
     (setq org-latex-compiler "xelatex"))
@@ -302,76 +327,73 @@
 
   (add-to-list 'org-export-filter-final-output-functions 'html-body-id-filter))
 
-(after! org
-  (map! :leader :n "t p" #'org-tree-slide-mode))
-
-;; (defun remap-faces-for-present ()
-
-;;         )
-
-(use-package! org-tree-slide
-  :after org
-  :defer t
-  :commands org-tree-slide-mode
-  :hook ((org-tree-slide-play . (lambda ()
-                                  (setq-local face-remapping-alist '((default (:height 2.0) variable-pitch)
-                                                                     (org-verbatim (:height 1.75) org-verbatim)
-                                                                     (org-block (:height 1.25) org-block)))
-                                  (hide-mode-line-mode +1)
-                                  (centaur-tabs-mode -1)
-                                  ))
-         (org-tree-slide-stop . (lambda ()
-                                  (setq-local face-remapping-alist '((default variable-pitch default)))
-                                  (hide-mode-line-mode -1)
-                                  (centaur-tabs-mode +1)
-                                  )))
-  :config
-  (org-tree-slide-presentation-profile)
-  ;; (org-tree-slide-simple-profile)
-  (setq ;; org-tree-slide-skip-outline-level 0
-   org-tree-slide-activate-message " "
-   org-tree-slide-deactivate-message " "
-   ;; org-tree-slide-modeline-display nil
-   ;; org-tree-slide-heading-emphasis  t
-   org-tree-slide-slide-in-effect nil
-   ;; text-scale-mode-amount 5
-   )
-
-
-
-  ;; always toggle inline images
-  (add-hook 'org-tree-slide-mode-after-narrow-hook #'org-display-inline-images)
-
-  ;; (defun +org-present-hide-blocks-h ()
-  ;;   "Hide org #+ constructs."
-  ;;   (save-excursion
-  ;;     (goto-char (point-min))
-  ;;     (while (re-search-forward "^[[:space:]]*\\(#\\+\\)\\(\\(?:BEGIN\\|END\\|ATTR\\)[^[:space:]]+\\).*" nil t)
-  ;;       (+org-present--make-invisible
-  ;;        (match-beginning 1)
-  ;;        (match-end 0)))))
-
-  ;; (add-hook! 'org-tree-slide-mode-hook
-  ;;            #'+org-present-hide-blocks-h
-  ;;            #'+org-present-prettify-slide-h
-  ;;            )
-
-  (map! :map org-tree-slide-mode-map
-        :n "C-j" #'org-tree-slide-move-next-tree
-        :n "C-k"  #'org-tree-slide-move-previous-tree)
-
-  (add-hook 'org-tree-slide-mode-hook #'evil-normalize-keymaps)
+(defun +remap-faces-at-start-present ()
+  (setq-local face-remapping-alist '((default (:height 2.0) variable-pitch)
+                                     (org-verbatim (:height 1.75) org-verbatim)
+                                     (org-block (:height 1.25) org-block)))
+  (hide-mode-line-mode 1)
+  (centaur-tabs-mode 0)
   )
 
-(after! ox
-  (add-to-list 'org-export-backends 'beamer))
+(defun +remap-faces-at-start-present-term ()
+  (interactive)
+  (setq-local face-remapping-alist '((default (:height 2.0) variable-pitch)
+                                     (org-verbatim (:height 1.75) org-verbatim)
+                                     (org-block (:height 1.25) org-block)))
+  )
 
-(after! evil-org
-  (setq org-babel-default-header-args:jupyter-python '((:async . "yes")
-                                                       ;; (:pandoc t)
-                                                       (:kernel . "python3")))
-  (setq org-babel-default-header-args:jupyter-R '(;; (:pandoc t)
-                                                  (:kernel . "ir"))))
+(defun +remap-faces-at-stop-present ()
+  (setq-local face-remapping-alist '((default variable-pitch default)))
+  (hide-mode-line-mode 0)
+  (centaur-tabs-mode 1)
+  )
+
+(after! org-tree-slide
+
+  (use-package! org-tree-slide
+    :commands org-tree-slide-mode
+    :hook ((org-tree-slide-play . (lambda () (+remap-faces-at-start-present)))
+           (org-tree-slide-stop . (lambda () (+remap-faces-at-stop-present))))
+    :config
+    (org-tree-slide-presentation-profile)
+    (setq org-tree-slide-skip-outline-level 0
+          org-tree-slide-modeline-display nil
+          org-tree-slide-slide-in-effect nil)
+
+    ;; (remove-hook 'org-tree-slide-mode-hook #'+org-present-hide-blocks-h)
+    ;; (remove-hook 'org-tree-slide-mode-hook #'+org-present-prettify-slide-h)
+
+    (remove-hook! 'org-tree-slide-mode-hook
+      #'+org-present-hide-blocks-h
+      #'+org-present-prettify-slide-h)
+
+    (map! :map org-tree-slide-mode-map
+          :n "C-j" #'org-tree-slide-move-next-tree
+          :n "C-k"  #'org-tree-slide-move-previous-tree)
+
+    ;; remove unnamed advice
+    (advice-mapc
+     (lambda (adv prop)
+       (advice-remove 'org-tree-slide--display-tree-with-narrow adv))
+     'org-tree-slide--display-tree-with-narrow))
+
+  )
+
+(after! python
+  (defun my/jupyter-eval-buffer ()
+    "Send the contents of BUFFER using `jupyter-current-client'."
+    (interactive)
+    (jupyter-eval-string (jupyter-load-file-code (buffer-file-name)))
+    ))
+
+(after! python
+  (defun my/jupyter-run-repl-or-pop-to-buffer-dwim ()
+    "If a buffer is already associated with a jupyter buffer,
+then pop to it. Otherwise start a jupyter kernel."
+    (interactive)
+    (if (bound-and-true-p jupyter-current-client)
+        (progn (jupyter-repl-pop-to-buffer) (current-buffer))
+      (call-interactively #'jupyter-run-repl))))
 
 ;; (:when (featurep! :lang +jupyter)
 (map! :after evil-org
@@ -386,7 +408,8 @@
       :desc "New code block above" :n "+" #'jupyter-org-insert-src-block
       :desc "New code block below" :n "=" (λ! () (interactive) (jupyter-org-insert-src-block t nil))
       :desc "Merge code blocks" :n "m" #'jupyter-org-merge-blocks
-      :desc "Split code block" :n "-" #'jupyter-org-split-src-block
+      ;; :desc "Split code block" :n "-" #'jupyter-org-split-src-block
+      :desc "Split code block" :n "-" #'org-babel-demarcate-block
       :desc "Fold results" :n "z" #'org-babel-hide-result-toggle
 
       :map org-src-mode-map
@@ -396,26 +419,24 @@
 (map! :after python
       :map python-mode-map
       :localleader
-      (:desc "eval" :prefix "e"
+      (:desc "repl" :n "'" (call-interactively 'my/jupyter-run-repl-or-pop-to-buffer-dwim)
+       :desc "eval" :prefix "e"
        :desc "line or region" :n "e" #'jupyter-eval-line-or-region
         :desc "defun" :n "d" #'jupyter-eval-defun
-       :desc "buffer" :n "b" #'jupyter-eval-buffer))
+       ;; :desc "buffer" :n "b" (λ! () (interactive) (jupyter-eval-buffer (current-buffer))))
+       :desc "buffer" :n "b" (λ! () (interactive) (my/jupyter-eval-buffer)))
+      )
 
-(set-popup-rule! "*jupyter-pager*" :side 'right :size .40 :select t :vslot 2 :ttl 3)
 (set-popup-rule! "^\\*Org Src*" :side 'right :size .60 :select t :vslot 2 :ttl 3 :quit nil)
-(set-popup-rule! "*jupyter-repl*" :side 'bottom :size .30 :vslot 2 :ttl 3)
+(set-popup-rule! "*jupyter-pager*" :side 'right :size .40 :select t :vslot 2 :ttl 3)
+(set-popup-rule! "*jupyter-repl*" :side 'bottom :size .30 :vslot 2 :quit 'current :ttl 3)
 
-;; (after! evil-org
-;;   (org-babel-lob-ingest "/Users/luca/git/experiments/literate/ml/rpy2.org"))
-
-(after! ob-jupyter
-  (set-eval-handler! 'jupyter-repl-interaction-mode #'jupyter-eval-line-or-region))
-
-(add-hook! python-mode
-  (set-repl-handler! 'python-mode #'jupyter-repl-pop-to-buffer))
-
-;; (after! ob-jupyter
-;;   (setq jupyter-eval-use-overlays t))
+(after! evil-org
+  (setq org-babel-default-header-args:jupyter-python '((:async . "yes")
+                                                       ;; (:pandoc t)
+                                                       (:kernel . "python3")))
+  (setq org-babel-default-header-args:jupyter-R '(;; (:pandoc t)
+                                                  (:kernel . "ir"))))
 
 (after! ob-jupyter
   (cl-defmethod jupyter-org--insert-result (_req context result)
@@ -450,57 +471,7 @@
 ;;       :n "M-j" nil
 ;;       )
 
-(after! jupyter
-  (defun jupyter-run-repl-or-pop-to-buffer-dwim ()
-    "If a buffer is already associated with a jupyter buffer,
-then pop to it. Otherwise start a jupyter kernel."
-    (interactive)
-    (if (bound-and-true-p jupyter-current-client)
-        (jupyter-repl-pop-to-buffer)
-      (call-interactively #'jupyter-run-repl)))
-
-  ;; * eldoc integration
-  (defun scimax-jupyter-signature ()
-    "Try to return a function signature for the thing at point."
-    (when (and (eql major-mode 'org-mode)
-               (string= (or (get-text-property (point) 'lang) "") "jupyter-python"))
-      (save-window-excursion
-     ;;; Essentially copied from (jupyter-inspect-at-point).
-        (jupyter-org-with-src-block-client
-         (cl-destructuring-bind (code pos)
-             (jupyter-code-context 'inspect)
-           (jupyter-inspect code pos nil 0)))
-        (when (get-buffer "*Help*")
-          (with-current-buffer "*Help*"
-            (goto-char (point-min))
-            (prog1
-                (cond
-                 ((re-search-forward "Signature:" nil t 1)
-                  (buffer-substring (line-beginning-position) (line-end-position)))
-                 ((re-search-forward "Docstring:" nil t 1)
-                  (forward-line)
-                  (buffer-substring (line-beginning-position) (line-end-position)))
-                 (t
-                  nil))
-              ;; get rid of this so we don't accidentally show old results later
-              (with-current-buffer "*Help*"
-                (toggle-read-only)
-                (erase-buffer))))))))
-
-  (defun scimax-jupyter-eldoc-advice (orig-func &rest args)
-    "Advice function to get eldoc signatures in blocks in org-mode."
-    (or (scimax-jupyter-signature) (apply orig-func args)))
-
-
-  (defun scimax-jupyter-turn-on-eldoc ()
-    "Turn on eldoc signatures."
-    (interactive)
-    (advice-add 'org-eldoc-documentation-function :around #'scimax-jupyter-eldoc-advice))
-
-  ( scimax-jupyter-turn-on-eldoc )
-  )
-
-(defadvice! +python-poetry-open-repl-a (orig-fn &rest args)
+(defadvice! +ipython-use-virtualenv (orig-fn &rest args)
   "Use the Python binary from the current virtual environment."
   :around #'+python/open-repl
   (if (getenv "VIRTUAL_ENV")
@@ -510,7 +481,7 @@ then pop to it. Otherwise start a jupyter kernel."
 
 (setq python-shell-prompt-detect-failure-warning nil)
 
-(set-popup-rule! "^\\*Python*" :ignore t)
+(set-popup-rule! "^\\*Python*"  :side 'bottom :size .30)
 
 (after! python
   (setq python-shell-completion-native-enable nil))
@@ -619,6 +590,18 @@ then pop to it. Otherwise start a jupyter kernel."
                                      :debugger 'debugpy
                                      :name "dap-debug-script"))
 
+  (dap-register-debug-template "dap-debug-test-at-point"
+                               (list :type "python-test-at-point"
+                                     :args ""
+                                     :justMyCode :json-false
+                                     ;; :cwd "${workspaceFolder}"
+                                     :request "launch"
+                                     :module "pytest"
+                                     :debugger 'debugpy
+                                     :name "dap-debug-test-at-point"))
+
+  ;; ("Python :: Run pytest (at point)" :type "python-test-at-point" :args "" :program nil :module "pytest" :request "launch" :name "Python :: Run pytest (at point)")
+
   ;; (dap-register-debug-template "Python :: Run pytest (at point), ptvsd"
   ;;                              (list :type "python-test-at-point"
   ;;                                    :args ""
@@ -694,7 +677,7 @@ then pop to it. Otherwise start a jupyter kernel."
       :desc "Hydra" :n "h" #'dap-hydra
       :desc "Run debug configuration" :n "d" #'dap-debug
       :desc "dap-ui REPL" :n "r" #'dap-ui-repl
-      :desc "Debug test function" :n "t" #'dap-python-debug-test-at-point
+      ;; :desc "Debug test function" :n "t" #'dap-python-debug-test-at-point  # TODO
       :desc "Run last debug configuration" :n "l" #'dap-debug-last
       :desc "Toggle breakpoint" :n "b" #'dap-breakpoint-toggle
       :desc "dap continue" :n "c" #'dap-continue
@@ -740,9 +723,6 @@ then pop to it. Otherwise start a jupyter kernel."
   (setq dash-docs-docsets '("Pandas" "scikit-learn")))
 
 (set-popup-rule! "*compilation*" :side 'right :size .50 :select t :vslot 2 :quit 'current)
-
-(after! pyvenv
-  (setq pyvenv-mode-line-indicator nil))
 
 (set-popup-rule! "^\\*R:" :ignore t)
 
@@ -822,28 +802,26 @@ then pop to it. Otherwise start a jupyter kernel."
 
 (add-hook! cider-repl-mode #'evil-normalize-keymaps)
 
-(use-package! evil-cleverparens
-  :defer t
-  :after smartparens
-  :init
-  (setq evil-move-beyond-eol t
-        evil-cleverparens-use-additional-bindings nil
-        evil-cleverparens-use-s-and-S nil
-        ;; evil-cleverparens-swap-move-by-word-and-symbol t
-        ;; evil-cleverparens-use-regular-insert t
-        )
-  :config
-  (add-hook! clojure-mode #'evil-cleverparens-mode)
-  ;; (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode)
-  )
+(after! smartparens
+  (use-package! evil-cleverparens
+    :init
+    (setq evil-move-beyond-eol t
+          evil-cleverparens-use-additional-bindings nil
+          evil-cleverparens-use-s-and-S nil
+          ;; evil-cleverparens-swap-move-by-word-and-symbol t
+          ;; evil-cleverparens-use-regular-insert t
+          )
+    :config
+    (add-hook! '(emacs-lisp-mode clojure-mode) #'evil-cleverparens-mode)
+    ;; (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode)
+    ))
 
 (use-package! aggressive-indent
-  :after clojure-mode
   :defer t
-  :config (add-hook! clojure-mode (aggressive-indent-mode 1)))
+  :config (add-hook! '(clojure-mode emacs-lisp-mode) (aggressive-indent-mode 1)))
 
-(map! :after evil-cleverparens
-      :map clojure-mode-map
+(map! :after smartparens
+      :map (emacs-lisp-mode-map clojure-mode-map)
       :localleader
       (:desc "Wrap round" :n "(" #'sp-wrap-round
        :desc "Wrap square" :n "[" #'sp-wrap-square
@@ -879,6 +857,10 @@ then pop to it. Otherwise start a jupyter kernel."
 (advice-add 'shell-command--save-pos-or-erase :after 'shell-command-print-separator)
 
   (set-popup-rule! "*Async Shell Command*" :side 'bottom :size .40)
-  (set-popup-rule! "vterm" :side 'right :size .40 :quit 'current :ttl 3)
+  (set-popup-rule! "vterm" :side 'right :size .40 :quit 'current :ttl 1)
 
 (set-popup-rule! "*eshell*" :side 'right :size .50)
+
+(after! vterm
+  (setq vterm-shell (expand-file-name "~/.nix-profile/bin/fish"))
+  )

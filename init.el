@@ -62,11 +62,12 @@
 
        :emacs
        (dired
-        +ranger ;; +icons
+        ;; +ranger
+        +icons
         )             ; making dired pretty [functional]
        electric          ; smarter, keyword-based electric-indent
        ;; ibuffer           ; interactive buffer management
-       ;; vc                ; version-control and Emacs, sitting in a tree
+       vc                ; version-control and Emacs, sitting in a tree
        undo
 
        :term
@@ -148,7 +149,7 @@
         +export
         +pandoc          ; export-with-pandoc support
         +pomodoro        ; be fruitful with the tomato technique
-        ;; +present        ; using org-mode for presentations
+        +present        ; using org-mode for presentations
         )
        ;;perl              ; write code no one else can comprehend
        ;;php               ; perl's insecure younger brother
